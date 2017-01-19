@@ -1,0 +1,12 @@
+GEM
+  specs:
+    ncurses-ruby (1.2.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ncurses-ruby
+
+BUNDLED WITH
+   1.13.6
