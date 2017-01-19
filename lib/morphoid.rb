@@ -9,6 +9,7 @@ module Morphoid
   puts "======================"
 
   Ncurses.initscr
+  Ncurses.clear
   begin
     if (Ncurses.has_colors?)
       bg = Ncurses::COLOR_BLACK
@@ -20,23 +21,33 @@ module Morphoid
       end
     end
     Ncurses.nonl()
+    Ncurses.cbreak()
     Ncurses.noecho()
     Ncurses.curs_set(0)
     Ncurses.stdscr.nodelay(true)
+    Ncurses.stdscr.keypad(true)
 
     game = Game.new()
     renderer = Renderer.new(game, Ncurses.stdscr)
 
     begin
       case(chr = Ncurses.getch())
-      when 'q'[0], 'Q'[0]
+      when 'q'.ord, 'Q'.ord
         Ncurses.curs_set(1)
         Ncurses.endwin()
         exit
+      when Ncurses::KEY_UP
+        game.update(:up)
+      when Ncurses::KEY_DOWN
+        game.update(:down)
+      when Ncurses::KEY_LEFT
+        game.update(:left)
+      when Ncurses::KEY_RIGHT
+        game.update(:right)
       when Ncurses::KEY_RESIZE
         renderer.sigwinch_handler
       else
-        puts "Received #{chr}"
+        #puts "Pressed #{chr}, key_up=#{Ncurses::KEY_UP}"
       end
       sleep(0.050)
       renderer.update(Ncurses.stdscr)

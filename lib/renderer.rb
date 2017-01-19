@@ -16,6 +16,7 @@ module Morphoid
 
     def update(window)
       #adjust_to_new_window_size if (@window_size_changed)
+      window.clear
       @game.update
       @game.get_objects.map do |object|
         object.render(window) # TODO extract render logic

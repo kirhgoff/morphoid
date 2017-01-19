@@ -5,9 +5,9 @@ module Morphoid
       @y = y
     end
 
-    def roam
-      @x += random_shift
-      @y += random_shift
+    def move(dx, dy)
+      @x += dx
+      @y += dy
     end
 
     def random_shift
@@ -15,7 +15,7 @@ module Morphoid
     end
 
     def render(window)
-      window.mvaddstr(@y,@x, "K")
+      window.mvaddstr(@y,@x, "@")
     end
   end
 end
