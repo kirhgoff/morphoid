@@ -1,8 +1,16 @@
 require "./lib/player"
 
 module Morphoid
+
+  SHIFTS = {
+    :up=>[0,-1],
+    :down=>[0,1],
+    :left=>[-1,0],
+    :right=>[1,0]
+  }
+
   class Game
-    SHIFTS = {:up=>[0, -1], :down=>[0,1], :left=>[-1,0], :right=>[1,0]}
+
     def initialize
       @player = Player.new(15,15)
     end
