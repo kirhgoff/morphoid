@@ -1,3 +1,5 @@
+require './lib/creature'
+
 module Morphoid
   class Player < Creature
 
