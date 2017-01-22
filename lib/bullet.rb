@@ -4,7 +4,7 @@ require './lib/game'
 module Morphoid
   class Bullet < Creature
     attr_reader :direction
-    def initialize(x,y,direction, decoy_length=5)
+    def initialize(x,y,direction, decoy_length=15)
       super(x,y)
 
       @initial_x = x
