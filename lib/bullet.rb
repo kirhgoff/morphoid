@@ -8,7 +8,7 @@ module Morphoid
       @initial_y = y
 
       @direction = direction
-      @decoy_length = 15
+      @decoy_length = 5
     end
 
     def render(window)
@@ -16,11 +16,11 @@ module Morphoid
     end
 
     def symbol
-      if !alive
+      if !alive?
         "*"
-      elsif direction == :up || direction == :down
+      elsif @direction == :up || @direction == :down
         "|"
-      elsif direction == :left || :direction == :right
+      elsif @direction == :left || @direction == :right
         "-"
       else
         "?"
@@ -28,10 +28,10 @@ module Morphoid
     end
 
     def do_step
-      shifts = SHIFTS[:direction]
+      shifts = SHIFTS[@direction]
       @x += shifts[0]
       @y += shifts[1]
-      @alive = (@initial_x + @initial_y - @x - @y).abs > @decoy_length
+      @alive = (@initial_x + @initial_y - @x - @y).abs < @decoy_length
     end
   end
 end

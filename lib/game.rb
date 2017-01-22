@@ -1,4 +1,5 @@
 require "./lib/player"
+require "./lib/bullet"
 
 module Morphoid
 
@@ -22,18 +23,15 @@ module Morphoid
       if !action_map.nil?
         # Update states for objects
         if action_map[:action] == :move
-          if SHIFTS.key?(action)
-            dx, dy = SHIFTS[action]
-            @player.move(dx, dy)
-          end
+          dx, dy = SHIFTS[action_map[:direction]]
+          @player.move(dx, dy)
         elsif action_map[:action] == :shoot
           objects.push Bullet.new(@player.x, @player.y, action_map[:direction])
         end
+      end
 
-        # Remove dead objects
-        objects.map do |object|
-          object.do_step
-        end
+      objects.map do |object|
+        object.do_step
       end
     end
 
