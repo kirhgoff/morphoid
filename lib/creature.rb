@@ -17,7 +17,11 @@ module Morphoid
     end
 
     def alive?
-      true
+      @alive
+    end
+
+    def kill
+      @alive = false
     end
   end
 end

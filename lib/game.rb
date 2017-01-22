@@ -2,7 +2,7 @@ require "./lib/player"
 require "./lib/bullet"
 
 module Morphoid
-
+  # TODO move out to separate file
   SHIFTS = {
     :up=>[0,-1],
     :down=>[0,1],
