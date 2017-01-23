@@ -27,7 +27,7 @@ module Morphoid
 
     def update(action_map=nil)
       @objects = @objects.select {|object| object.alive?}
-      if !action_map.nil?
+      if !action_map.nil? && @player.alive?
         # Update states for objects
         if action_map[:action] == :move
           dx, dy = SHIFTS[action_map[:direction]]
@@ -65,10 +65,36 @@ module Morphoid
         end
       end
 
+      # move objects
       objects.map do |object|
         object.do_step
       end
+
+      # fix their positions
+      objects.map do |object|
+        fix_object(object)
+      end
     end
 
+    def fix_object(object)
+      dx, dy = fix(object.x, object.y)
+      if dx != 0 || dy != 0
+        if object.instance_of?(Bullet)
+          object.kill
+        else
+          object.move(dx, dy)
+        end
+      end
+    end
+
+    def fix(x, y)
+      dx = 0
+      dy = 0
+      dx = @width - 1 - x if x >= @width
+      dy = @height - 1 - y if y >= @height
+      dx = - x if x < 0
+      dy = - y if y < 0
+      [dx, dy]
+    end
   end
 end
