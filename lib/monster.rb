@@ -39,11 +39,14 @@ module Morphoid
 
     def render(window)
       color = Ncurses.COLOR_PAIR(1)
-      chr = alive? ? energy.to_s : 'X'
+      chr = energy.to_s
       if @shot_decoy > 0
         chr = '*'
         color = Ncurses.COLOR_PAIR(3)
         @shot_decoy -= 1
+      elsif !alive?
+        chr = 'x'
+        color = Ncurses.COLOR_PAIR(4) | Ncurses::A_BOLD
       end
       window.attron(color)
       window.mvaddstr(@y, @x, chr)

@@ -27,6 +27,8 @@ module Morphoid
       Ncurses.init_pair(2, COLOR_YELLOW, COLOR_BLACK) # player
       Ncurses.init_pair(3, COLOR_RED, COLOR_BLACK) # bullet
 
+      Ncurses.init_color(100, 250, 150, 100)
+      Ncurses.init_pair(4, 100, COLOR_BLACK)
 
       Ncurses.nonl()
       Ncurses.cbreak()
