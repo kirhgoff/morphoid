@@ -46,7 +46,10 @@ module Morphoid
       renderer = Renderer.new(game, Ncurses.stdscr)
 
       begin
+        #system("stty raw -echo")
+        #chr = STDIN.read_nonblock(1) rescue nil
         case(chr = Ncurses.getch())
+        #case chr
         when 'q'.ord, 'Q'.ord
           Ncurses.curs_set(1)
           Ncurses.endwin()
