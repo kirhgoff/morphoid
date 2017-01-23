@@ -21,9 +21,7 @@ module Morphoid
     end
 
     def symbol
-      if !alive?
-        "*"
-      elsif @direction == :up || @direction == :down
+      if @direction == :up || @direction == :down
         "|"
       elsif @direction == :left || @direction == :right
         "-"

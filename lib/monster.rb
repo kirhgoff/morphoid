@@ -2,12 +2,16 @@ module Morphoid
   class Monster < Creature
     attr_reader :energy
 
+    SHOT_DECOY = 3
+
     def initialize(x,y,energy,speed)
       super(x,y)
       @energy = energy
       @speed = (1/speed).ceil
 
+      # dynamically changed
       @steps = speed
+      @shot_decoy = 0
     end
 
     def alive?
@@ -34,14 +38,22 @@ module Morphoid
     end
 
     def render(window)
-      window.attron(Ncurses.COLOR_PAIR(1))
-      window.mvaddstr(@y,@x, alive? ? energy.to_s : 'X')
-      window.attroff(Ncurses.COLOR_PAIR(1))
+      color = Ncurses.COLOR_PAIR(1)
+      chr = alive? ? energy.to_s : 'X'
+      if @shot_decoy > 0
+        chr = '*'
+        color = Ncurses.COLOR_PAIR(3)
+        @shot_decoy -= 1
+      end
+      window.attron(color)
+      window.mvaddstr(@y, @x, chr)
+      window.attroff(color)
     end
 
     def shot(damage)
       @energy -= damage
       @enery = 0 if @energy < 0
+      @shot_decoy = SHOT_DECOY
     end
 
     def eat(other)
