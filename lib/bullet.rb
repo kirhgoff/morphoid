@@ -39,5 +39,8 @@ module Morphoid
       @alive = (@initial_x + @initial_y - @x - @y).abs < @decoy_length
     end
 
+    def persistent?
+     alive?
+    end
   end
 end

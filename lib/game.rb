@@ -26,20 +26,22 @@ module Morphoid
     end
 
     def update(action_map=nil)
-      @objects = @objects.select {|object| object.alive?}
+      @objects = @objects.select {|object| object.persistent?}
       if !action_map.nil? && @player.alive?
         # Update states for objects
         if action_map[:action] == :move
           dx, dy = SHIFTS[action_map[:direction]]
           @player.move(dx, dy)
         elsif action_map[:action] == :shoot
-          objects.push Bullet.new(@player.x, @player.y, action_map[:direction])
+          @objects.push Bullet.new(@player.x, @player.y, action_map[:direction])
         end
       end
 
+      alive_objects = @objects.select {|object| object.alive?}
+
       # interactions between objects
       # TODO optimize
-      pairs = objects.combination(2).find_all do
+      pairs = alive_objects.combination(2).find_all do
         |pair| pair[0].x == pair[1].x && pair[0].y == pair[1].y
       end
 
@@ -66,12 +68,12 @@ module Morphoid
       end
 
       # move objects
-      objects.map do |object|
+      alive_objects.map do |object|
         object.do_step
       end
 
       # fix their positions
-      objects.map do |object|
+      alive_objects.map do |object|
         fix_object(object)
       end
     end

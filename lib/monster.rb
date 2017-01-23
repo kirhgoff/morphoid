@@ -35,7 +35,7 @@ module Morphoid
 
     def render(window)
       window.attron(Ncurses.COLOR_PAIR(1))
-      window.mvaddstr(@y,@x, energy.to_s)
+      window.mvaddstr(@y,@x, alive? ? energy.to_s : 'X')
       window.attroff(Ncurses.COLOR_PAIR(1))
     end
 

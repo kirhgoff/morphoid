@@ -16,8 +16,13 @@ module Morphoid
     def do_step
     end
 
+    # TODO rename to is_alive?
     def alive?
       @alive
+    end
+
+    def persistent?
+      true
     end
 
     def kill
