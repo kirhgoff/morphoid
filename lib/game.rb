@@ -1,5 +1,6 @@
 require "./lib/player"
 require "./lib/bullet"
+require "./lib/monster"
 
 module Morphoid
   # TODO move out to separate file
@@ -13,9 +14,15 @@ module Morphoid
   class Game
     attr_reader :objects
 
-    def initialize
-      @player = Player.new(15,15)
+    def initialize(width,height)
+      @width = width
+      @height = height
+
+      @player = Player.new(@width/2,@height/2)
       @objects = [@player]
+      10.times do
+        @objects.push(Monster.new(rand(@width), rand(@height), rand(10)))
+      end
     end
 
     def update(action_map=nil)
@@ -27,6 +34,34 @@ module Morphoid
           @player.move(dx, dy)
         elsif action_map[:action] == :shoot
           objects.push Bullet.new(@player.x, @player.y, action_map[:direction])
+        end
+      end
+
+      # interactions between objects
+      # TODO optimize
+      pairs = objects.combination(2).find_all do
+        |pair| pair[0].x == pair[1].x && pair[0].y == pair[1].y
+      end
+
+      pairs.map do |pair|
+        obj1 = pair[0]
+        obj2 = pair[1]
+        if obj1.instance_of?(Bullet) && obj2.instance_of?(Monster)
+          obj1.kill
+          obj2.shot(1)
+        elsif obj1.instance_of?(Monster) && obj2.instance_of?(Bullet)
+          obj1.shot(1)
+          obj2.kill
+        elsif obj1.instance_of?(Monster) && obj2.instance_of?(Monster)
+          if obj1.energy > obj2.energy
+            obj1.eat(obj2)
+          else
+            obj2.eat(obj1)
+          end
+        elsif obj1.instance_of?(Player) && obj2.instance_of?(Monster)
+          obj1.kill
+        elsif obj1.instance_of?(Monster) && obj2.instance_of?(Player)
+          obj2.kill
         end
       end
 

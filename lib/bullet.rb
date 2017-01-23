@@ -36,5 +36,6 @@ module Morphoid
       @y += shifts[1]
       @alive = (@initial_x + @initial_y - @x - @y).abs < @decoy_length
     end
+
   end
 end

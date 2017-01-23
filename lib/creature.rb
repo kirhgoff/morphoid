@@ -1,6 +1,6 @@
 module Morphoid
   class Creature
-    attr_reader :alive, :x, :y
+    attr_reader :x, :y
 
     def initialize(x, y)
       @alive = true

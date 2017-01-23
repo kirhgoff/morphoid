@@ -8,7 +8,7 @@ module Morphoid
     end
 
     def render(window)
-      window.mvaddstr(@y,@x, "@")
+      window.mvaddstr(@y,@x, alive? ? "@" : "X")
     end
 
   end

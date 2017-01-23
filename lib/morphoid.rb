@@ -37,7 +37,14 @@ module Morphoid
       Ncurses.stdscr.nodelay(true)
       Ncurses.stdscr.keypad(true)
 
-      game = Game.new()
+      #width, height
+      lines   = []
+      columns = []
+      Ncurses.stdscr.getmaxyx(lines,columns)
+      height = lines[0]
+      width = columns[0]
+
+      game = Game.new(width,height)
       renderer = Renderer.new(game, Ncurses.stdscr)
 
       begin
