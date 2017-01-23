@@ -21,7 +21,7 @@ module Morphoid
       @player = Player.new(@width/2,@height/2)
       @objects = [@player]
       10.times do
-        @objects.push(Monster.new(rand(@width), rand(@height), rand(10)))
+        @objects.push(Monster.new(rand(@width), rand(@height), rand(10), rand()))
       end
     end
 
