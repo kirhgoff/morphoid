@@ -4,7 +4,7 @@ require "./lib/game"
 require "./lib/renderer"
 
 module Morphoid
-
+  include Ncurses
   def self.move(direction)
     {:action=>:move, :direction=>direction}
   end
@@ -21,15 +21,13 @@ module Morphoid
     Ncurses.initscr
     Ncurses.clear
     begin
-      if (Ncurses.has_colors?)
-        bg = Ncurses::COLOR_BLACK
-        Ncurses.start_color
-        if (Ncurses.respond_to?("use_default_colors"))
-          if (Ncurses.use_default_colors == Ncurses::OK)
-            bg = -1
-          end
-        end
-      end
+      Ncurses.start_color
+      # TODO create constants
+      Ncurses.init_pair(1, COLOR_GREEN, COLOR_BLACK) # monster
+      Ncurses.init_pair(2, COLOR_YELLOW, COLOR_BLACK) # player
+      Ncurses.init_pair(3, COLOR_RED, COLOR_BLACK) # bullet
+
+
       Ncurses.nonl()
       Ncurses.cbreak()
       Ncurses.noecho()
@@ -74,7 +72,7 @@ module Morphoid
         else
           #puts "Pressed #{chr}, w=#{'w'.ord}"
         end
-        sleep(0.050)
+        sleep(0.05) # TODO create settings file
         renderer.update(Ncurses.stdscr)
         Ncurses.refresh
       end while true

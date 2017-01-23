@@ -34,7 +34,9 @@ module Morphoid
     end
 
     def render(window)
+      window.attron(Ncurses.COLOR_PAIR(1))
       window.mvaddstr(@y,@x, energy.to_s)
+      window.attroff(Ncurses.COLOR_PAIR(1))
     end
 
     def shot(damage)
