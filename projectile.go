@@ -38,3 +38,9 @@ func (projectile *Projectile) run() {
 		projectile.energy--
 	}
 }
+
+// Collide : destroyed on collision
+func (projectile *Projectile) Collide(physical tl.Physical) {
+	projectile.energy = 0
+	projectile.level.RemoveEntity(projectile)
+}

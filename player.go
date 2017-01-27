@@ -58,10 +58,10 @@ func (player *Player) Tick(event tl.Event) {
 	}
 }
 
-// Collide : standard collision
+// Collide : any collision kills player
 func (player *Player) Collide(collision tl.Physical) {
-	// Check if it's a Rectangle we're colliding with
-	if _, ok := collision.(*tl.Rectangle); ok {
-		player.SetPosition(player.prevX, player.prevY)
-	}
+	x, y := player.Position()
+	corpse := NewCorpse(player.level, x, y)
+	player.level.RemoveEntity(player)
+	player.level.AddEntity(&corpse)
 }
