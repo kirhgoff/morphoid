@@ -10,7 +10,7 @@ import (
 type Projectile struct {
 	*tl.Entity
 	direction Direction
-	energy    int16
+	energy    int
 	level     *tl.BaseLevel
 }
 
