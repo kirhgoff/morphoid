@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
@@ -13,7 +12,7 @@ type Monster struct {
 	level        *tl.BaseLevel
 	energy       int
 	speed        int
-	takingDamage bool
+	currentSpeed int
 }
 
 // NewMonster : creates new instance of monster
@@ -22,20 +21,16 @@ func NewMonster(level *tl.BaseLevel, x, y, energy, speed int) Monster {
 		Entity:       tl.NewEntity(x, y, 1, 1),
 		level:        level,
 		energy:       energy,
-		speed:        speed,
-		takingDamage: false,
+		speed:        speed, //TODO rename to steps
+		currentSpeed: speed,
 	}
 	cell := tl.Cell{Fg: monster.getColor(), Ch: monster.getRune()}
 	monster.SetCell(0, 0, &cell)
 	return monster
 }
 
-//func (monster *Monster) Draw(screen *tl.Screen) {
-//player.Entity.Draw(screen)
-//}
-
 func (monster *Monster) getRune() rune {
-	return rune(48 + monster.energy)
+	return rune(48 + monster.energy) //ASCII code of zero
 }
 
 func (monster *Monster) getColor() tl.Attr {
@@ -43,45 +38,64 @@ func (monster *Monster) getColor() tl.Attr {
 }
 
 func randShifts() (int, int) {
-	return rand.Intn(2) - 1, rand.Intn(2) - 1
+	return rand.Intn(3) - 1, rand.Intn(3) - 1
 }
 
-// Tick decrases the energy, moves the projectile
-// and destroys it if energy is over
-func (monster *Monster) run() {
-	for {
-		time.Sleep(time.Millisecond * time.Duration(monster.speed))
-		x, y := monster.Position()
-		if monster.energy <= 0 {
-			monster.level.RemoveEntity(monster)
-			corpse := NewCorpse(monster.level, x, y)
-			monster.level.AddEntity(&corpse)
-			return
-		}
-		//TODO show damage
-		//monster.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed | tl.AttrBold, Ch: '*'})
-		dx, dy := randShifts()
-		//newX := x + dx
-		//newY := y + dy
-
-		monster.SetPosition(x+dx, y+dy)
+// Draw : and destroys it if energy is over
+func (monster *Monster) Draw(screen *tl.Screen) {
+	x, y := monster.Position()
+	if monster.energy <= 0 {
+		monster.level.RemoveEntity(monster)
+		corpse := NewCorpse(monster.level, x, y)
+		monster.level.AddEntity(&corpse)
+		return
 	}
+	// TODO redo using channels
+	if monster.currentSpeed < 0 {
+		monster.currentSpeed = monster.speed
+	} else if monster.currentSpeed == 0 {
+		width, height := screen.Size()
+		dx, dy := randShifts()
+		newX := x + dx
+		newY := y + dy
+		if newX < 0 || newX > width-1 {
+			newX = x - dx
+		}
+		if newY < 0 || newY > height-1 {
+			newY = y - dy
+		}
+		changeCharacter(monster.Entity, tl.ColorGreen|tl.AttrBold, monster.getRune())
+		monster.SetPosition(newX, newY)
+	}
+
+	monster.currentSpeed--
+	monster.Entity.Draw(screen)
 }
 
 // Collide : monster should eat other monster
 // eat another weaker monster and decrease energy from bullet
 func (monster *Monster) Collide(collision tl.Physical) {
-	//log("Monster collide %+v", physical)
+	log("Monster collide %+v", collision)
 	if projectile, ok := collision.(*Projectile); ok {
 		monster.energy--
-		x, y := monster.Position()
-		dx, dy := projectile.direction.shifts()
-		monster.SetPosition(x+dx, y+dy)
+		changeCharacter(monster.Entity, tl.ColorRed|tl.AttrBold, '*')
+		if monster.energy > 0 {
+			x, y := monster.Position()
+			dx, dy := projectile.direction.shifts()
+			monster.SetPosition(x+dx, y+dy)
+		}
 	} else if otherMonster, ok := collision.(*Monster); ok {
+		//TODO think how to make it better
 		if otherMonster.energy > monster.energy {
-			monster.level.RemoveEntity(monster)
-		} else {
 			otherMonster.energy += monster.energy
+			monster.energy = 0
+		} else {
+			monster.energy += otherMonster.energy
+			otherMonster.energy = 0
 		}
 	}
+}
+
+func changeCharacter(entity *tl.Entity, color tl.Attr, character rune) {
+	entity.SetCell(0, 0, &tl.Cell{Fg: color, Ch: character})
 }

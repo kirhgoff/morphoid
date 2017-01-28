@@ -22,17 +22,6 @@ func runLoggingChannel(game *tl.Game) {
 	}
 }
 
-// NewPlayer : create new player instance
-func NewPlayer(level *tl.BaseLevel, x, y int) Player {
-	player := Player{
-		Entity: tl.NewEntity(x, y, 1, 1),
-		level:  level,
-	}
-	cell := tl.Cell{Fg: tl.ColorYellow | tl.AttrBold, Ch: '@'}
-	player.SetCell(0, 0, &cell)
-	return player
-}
-
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	game := tl.NewGame()
@@ -52,10 +41,9 @@ func main() {
 		x := rand.Intn(100)
 		y := rand.Intn(30)
 		energy := rand.Intn(10)
-		speed := rand.Intn(500) + 500
+		speed := rand.Intn(3000) + 2000
 		monster := NewMonster(level, x, y, energy, speed)
 		level.AddEntity(&monster)
-		go monster.run()
 	}
 
 	game.Screen().SetLevel(level)

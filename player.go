@@ -7,26 +7,39 @@ import (
 // Player : user-controlled entity
 type Player struct {
 	*tl.Entity
-	prevX int
-	prevY int
-	level *tl.BaseLevel
+	prevX  int
+	prevY  int
+	level  *tl.BaseLevel
+	energy int
+}
+
+// NewPlayer : create new player instance
+func NewPlayer(level *tl.BaseLevel, x, y int) Player {
+	player := Player{
+		Entity: tl.NewEntity(x, y, 1, 1),
+		level:  level,
+		energy: 1,
+	}
+	cell := tl.Cell{Fg: tl.ColorYellow | tl.AttrBold, Ch: '@'}
+	player.SetCell(0, 0, &cell)
+	return player
 }
 
 func (player *Player) shoot(direction Direction) {
-	//log("shoot %v", direction)
 	x, y := player.Position()
-	dx, dy := direction.shifts()
-	projectile := Projectile{
-		Entity:    tl.NewEntity(x+dx, y+dy, 1, 1),
-		direction: direction,
-		energy:    20,
-		level:     player.level,
-	}
-	// Set the character at position (0, 0) on the entity.
-	character := projectile.getSymbol()
-	projectile.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed | tl.AttrBold, Ch: character})
+	projectile := NewProjectile(player.level, x, y, direction)
 	player.level.AddEntity(&projectile)
-	go projectile.run()
+}
+
+// Draw : draw player
+func (player *Player) Draw(screen *tl.Screen) {
+	if player.energy <= 0 {
+		x, y := player.Position()
+		corpse := NewCorpse(player.level, x, y)
+		player.level.RemoveEntity(player)
+		player.level.AddEntity(&corpse)
+	}
+	player.Entity.Draw(screen)
 }
 
 // Tick : standard function implementation
@@ -60,8 +73,7 @@ func (player *Player) Tick(event tl.Event) {
 
 // Collide : any collision kills player
 func (player *Player) Collide(collision tl.Physical) {
-	x, y := player.Position()
-	corpse := NewCorpse(player.level, x, y)
-	player.level.RemoveEntity(player)
-	player.level.AddEntity(&corpse)
+	if monster, ok := collision.(*Monster); ok {
+		player.energy -= monster.energy
+	}
 }
