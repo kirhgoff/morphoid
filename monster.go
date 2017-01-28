@@ -75,7 +75,6 @@ func (monster *Monster) Draw(screen *tl.Screen) {
 // Collide : monster should eat other monster
 // eat another weaker monster and decrease energy from bullet
 func (monster *Monster) Collide(collision tl.Physical) {
-	log("Monster collide %+v", collision)
 	if projectile, ok := collision.(*Projectile); ok {
 		monster.energy--
 		changeCharacter(monster.Entity, tl.ColorRed|tl.AttrBold, '*')
