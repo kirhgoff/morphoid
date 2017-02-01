@@ -1,4 +1,5 @@
 package genome
 
-// Actor creates action in surrounding world
-type Actor interface{}
+// Actor produces action to surrounding world
+type Actor interface {
+}

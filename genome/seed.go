@@ -32,5 +32,6 @@ func (seed *Seed) Produce() Creature {
 			break
 		}
 	}
+	//TODO link limbs
 	return NewCreature(seed.kind, limbs)
 }
