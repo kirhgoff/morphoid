@@ -4,5 +4,5 @@ package genome
 type Action struct {
 	CreatureID string
 	Type       string
-	params     []interface{}
+	Params     []interface{}
 }
