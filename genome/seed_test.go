@@ -1,8 +1,6 @@
-package genome_test
+package genome
 
 import (
-	. "github.com/kirhgoff/morphoid/genome"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

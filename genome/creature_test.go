@@ -1,9 +1,7 @@
-package genome_test
+package genome
 
 import (
 	biom "github.com/kirhgoff/morphoid/biom"
-	. "github.com/kirhgoff/morphoid/genome"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -28,7 +26,7 @@ var _ = Describe("Creature", func() {
 
 			action := actions[0]
 			Expect(action.CreatureID).To(Equal(creature.CreatureID))
-			Expect(action.Params[0]).To(Equal("dat2a"))
+			Expect(action.Params[0]).To(Equal("data"))
 		})
 	})
 })
