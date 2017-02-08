@@ -1,5 +1,7 @@
 package engine
 
+import uuid "github.com/nu7hatch/gouuid"
+
 // Entity represents something in game
 type Entity interface {
 	GetID() string
@@ -18,6 +20,23 @@ type BaseEntity struct {
 	y      int
 	width  int
 	height int
+}
+
+// NewEntity create new entity
+func NewEntity(kind string, x, y, width, height int) Entity {
+	uuid, err := uuid.NewV4()
+	if err != nil {
+		panic(err)
+	}
+
+	return &BaseEntity{
+		id:     uuid.String(),
+		kind:   kind,
+		x:      x,
+		y:      y,
+		width:  width,
+		height: height,
+	}
 }
 
 // GetID returns predefined id

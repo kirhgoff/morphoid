@@ -36,5 +36,5 @@ func (world *World) GetCreatures() []Creatures {
 
 // GetLore returns surroundings for a creature
 func (world *World) GetLore(creature *Creature) Lore {
-	return nil
+	return nil //TODO
 }

@@ -2,14 +2,14 @@ package engine
 
 // Seed creates alive being in appropriate conditions:w
 type Seed struct {
-	kind   string
+	BaseEntity
 	energy int // Shows how expressive genome is
 	genome []Gene
 }
 
 // NewSeed creates new seed
-func NewSeed(kind string, energy int, genome []Gene) Seed {
-	return Seed{kind: kind, energy: energy, genome: genome}
+func NewSeed(kind string, x, y int, energy int, genome []Gene) *Seed {
+	return &Seed{NewEntity(kind, x, y, 1, 1), energy: energy, genome: genome}
 }
 
 // Produce gives birth to new creature

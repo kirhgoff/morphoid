@@ -11,5 +11,6 @@ type MateNearbyReceptor struct {
 
 // Process sends signal that there are mates around
 func (m *MateNearbyReceptor) Process(lore *biom.Lore) []Signal {
-	lore.MapAround(')
+	//lore.MapAround(')
+	nil
 }
