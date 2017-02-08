@@ -1,4 +1,4 @@
-package genome
+package engine
 
 // Seed creates alive being in appropriate conditions:w
 type Seed struct {

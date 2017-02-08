@@ -1,4 +1,4 @@
-package genome
+package engine
 
 import (
 	. "github.com/onsi/ginkgo"

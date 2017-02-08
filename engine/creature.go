@@ -1,23 +1,23 @@
-package genome
+package engine
 
 import (
 	"fmt"
 
-	biom "github.com/kirhgoff/morphoid/biom"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
 // Creature : live being
-type Creature struct {
-	CreatureID string
-	Kind       string
-	Limbs      []Limb
-	Receptors  []Receptor
+type Creature interface {
+	GetID() string
+	GetKind() string
+	GetLimbs() []Limb
+	GetReceptors() []Receptor
+	Process(Lore) []Action
 }
 
 // Process applies surroundings to creature and gets
 // its reactions
-func (creature *Creature) Process(lore *biom.Lore) []Action {
+func (creature *Creature) Process(lore Lore) []Action {
 	actions := make([]Action, 0)
 	for _, receptor := range creature.Receptors {
 		signals := receptor.Process(lore)

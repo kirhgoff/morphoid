@@ -1,4 +1,4 @@
-package genome
+package engine
 
 // Gene : describes limbs that could be produced by Seed
 type Gene interface {

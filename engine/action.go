@@ -1,4 +1,4 @@
-package genome
+package engine
 
 // Action command to engine to do something with creature
 type Action struct {

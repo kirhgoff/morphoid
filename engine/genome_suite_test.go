@@ -1,4 +1,4 @@
-package genome_test
+package engine_test
 
 import (
 	. "github.com/onsi/ginkgo"

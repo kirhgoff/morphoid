@@ -1,7 +1,6 @@
-package genome
+package engine
 
 import (
-	biom "github.com/kirhgoff/morphoid/biom"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -12,8 +11,6 @@ type AllInOneLimb struct{}
 func (limb *AllInOneLimb) Process(lore *biom.Lore) []Signal {
 	return []Signal{Action{Type: "type", Params: []interface{}{"data"}}}
 }
-
-//func (limb *AllInOneLimb) Limb() {}
 
 var _ = Describe("Creature", func() {
 	Context("After creation", func() {
