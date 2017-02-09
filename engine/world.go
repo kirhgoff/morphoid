@@ -15,26 +15,26 @@ type BasicWorld struct {
 
 // NewWorld creates world
 func NewWorld(entities []Entity) World {
-	creatures = make([]Creature, 0)
+	creatures := make([]Creature, 0)
 	for _, entity := range entities {
 		if creature, ok := entity.(Creature); ok {
 			creatures = append(creatures, creature)
 		}
 	}
-	return BasicWorld{entities, creatures}
+	return &BasicWorld{entities, creatures}
 }
 
 // GetEntities get all objects in the world
-func (world *World) GetEntities() []Entity {
-	return Entities
+func (world *BasicWorld) GetEntities() []Entity {
+	return world.Entities
 }
 
 // GetCreatures get living beings
-func (world *World) GetCreatures() []Creatures {
-	return Creatures
+func (world *BasicWorld) GetCreatures() []Creature {
+	return world.Creatures
 }
 
 // GetLore returns surroundings for a creature
-func (world *World) GetLore(creature *Creature) Lore {
+func (world *BasicWorld) GetLore(creature *Creature) Lore {
 	return nil //TODO
 }

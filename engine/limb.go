@@ -10,7 +10,7 @@ type MateNearbyReceptor struct {
 }
 
 // Process sends signal that there are mates around
-func (m *MateNearbyReceptor) Process(lore *biom.Lore) []Signal {
+func (m *MateNearbyReceptor) Process(lore *Lore) []Signal {
 	//lore.MapAround(')
-	nil
+	return nil
 }

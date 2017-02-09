@@ -23,7 +23,7 @@ type BaseEntity struct {
 }
 
 // NewEntity create new entity
-func NewEntity(kind string, x, y, width, height int) Entity {
+func NewEntity(kind string, x, y, width, height int) *BaseEntity {
 	uuid, err := uuid.NewV4()
 	if err != nil {
 		panic(err)
@@ -41,30 +41,30 @@ func NewEntity(kind string, x, y, width, height int) Entity {
 
 // GetID returns predefined id
 func (b *BaseEntity) GetID() string {
-	return id
+	return b.id
 }
 
 // GetKind type of entity
 func (b *BaseEntity) GetKind() string {
-	return kind
+	return b.kind
 }
 
 // GetX return most left point
 func (b *BaseEntity) GetX() int {
-	return x
+	return b.x
 }
 
 // GetY return topmost point
 func (b *BaseEntity) GetY() int {
-	return y
+	return b.y
 }
 
 // GetWidth return width
 func (b *BaseEntity) GetWidth() int {
-	return width
+	return b.width
 }
 
 // GetHeight return height
 func (b *BaseEntity) GetHeight() int {
-	return height
+	return b.height
 }

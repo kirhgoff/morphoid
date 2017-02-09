@@ -8,9 +8,9 @@ import (
 var _ = Describe("Seed", func() {
 	Context("With simple seed", func() {
 		It("should create creature", func() {
-			seed := NewSeed("sample", 0, make([]Gene, 0))
+			seed := NewSeed("sample", 0, 0, 0, make([]Gene, 0))
 			creature := seed.Produce()
-			Expect(creature.Kind).To(Equal("sample"))
+			Expect(creature.GetKind()).To(Equal("sample"))
 		})
 	})
 })

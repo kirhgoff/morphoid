@@ -4,6 +4,7 @@ import "fmt"
 
 // Creature : live being
 type Creature interface {
+	Entity
 	GetLimbs() []Limb
 	GetReceptors() []Receptor
 	Process(Lore) []Action
@@ -11,13 +12,13 @@ type Creature interface {
 
 // BaseCreature implementation
 type BaseCreature struct {
-	Entity
+	*BaseEntity
 	Limbs     []Limb
 	Receptors []Receptor
 }
 
 // NewCreature creates Creature with given parameters
-func NewCreature(kind string, x, y int, limbs []Limb) Creature {
+func NewCreature(kind string, x, y int, limbs []Limb) *BaseCreature {
 	// We will have at least one receptor and one actor
 	receptors := make([]Receptor, 0)
 	for _, limb := range limbs {
