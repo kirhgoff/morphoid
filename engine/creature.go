@@ -8,6 +8,7 @@ type Creature interface {
 	GetLimbs() []Limb
 	GetReceptors() []Receptor
 	Process(Lore) []Action
+	GetVision() int
 }
 
 // BaseCreature implementation
@@ -57,4 +58,15 @@ func (creature *BaseCreature) Process(lore Lore) []Action {
 		}
 	}
 	return actions
+}
+
+// GetVision returns number of cells visible by the receptor
+func (creature *BaseCreature) GetVision() int {
+	vision := 0
+	for _, receptor := range creature.Receptors {
+		if vision < receptor.GetVision() {
+			vision = receptor.GetVision()
+		}
+	}
+	return vision
 }

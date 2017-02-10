@@ -6,17 +6,29 @@ import (
 )
 
 var _ = Describe("World", func() {
-	Context("when created", func() {
-		It("it able to provide lore", func() {
-			seed := NewSeed("shroom", 0, 0, 0, nil)
-			world := NewWorld([]Entity{seed})
-			Expect(world.GetEntities()).NotTo(BeEmpty())
-			Expect(world.GetCreatures()).To(BeEmpty())
+	var (
+		world    World
+		creature Creature
+	)
 
-			creature := NewCreature("mouth", 2, 2, []Limb{})
-			world = NewWorld([]Entity{seed, creature})
+	BeforeSuite(func() {
+		seed := NewSeed("shroom", 0, 0, 0, nil)
+		creature = NewCreature("mouth", 2, 2, []Limb{})
+		world = NewWorld([]Entity{seed, creature})
+	})
+
+	Context("when created", func() {
+		It("can provide entities and creatures", func() {
 			Expect(len(world.GetEntities())).To(Equal(2))
 			Expect(len(world.GetCreatures())).To(Equal(1))
+		})
+
+		It("can feed lore to creatures", func() {
+			lore := world.GetLore(&creature)
+			Expect(lore.Radius()).To(Equal(creature.GetVision()))
+			//Case for shrooms
+			Expect(lore.Reduce("pepe")).To(Equal(0))
+			Expect(lore.Reduce("shroom")).To(Equal(1))
 		})
 	})
 })

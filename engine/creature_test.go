@@ -5,19 +5,13 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// ALlInOneLimb test limb
-type AllInOneLimb struct{}
-
-func (limb *AllInOneLimb) Process(lore Lore) []Signal {
-	return []Signal{Action{Type: "type", Params: []interface{}{"data"}}}
-}
-
 var _ = Describe("Creature", func() {
 	Context("After creation", func() {
 		It("should provide receptors and actors", func() {
-			creature := NewCreature("sample", 0, 0, []Limb{new(AllInOneLimb)})
+			creature := NewCreature("sample", 0, 0, []Limb{DummyLimb{666, "data"}})
 			Expect(len(creature.GetLimbs())).To(Equal(1))
 			Expect(len(creature.GetReceptors())).To(Equal(1))
+			Expect(creature.GetVision()).To(Equal(666))
 			actions := creature.Process(nil)
 			Expect(len(actions)).To(Equal(1))
 

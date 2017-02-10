@@ -2,7 +2,8 @@ package engine
 
 // Lore : information about surroundings
 type Lore interface {
+	GetX() int
+	GetY() int
 	Radius() int
-	GetProperty(kind string, dx, dy int) interface{}
-	MapAround(kind string) []interface{}
+	Reduce(kind string) int
 }
