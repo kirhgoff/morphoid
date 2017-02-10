@@ -27,6 +27,7 @@ func NewCreature(kind string, x, y int, limbs []Limb) *BaseCreature {
 			receptors = append(receptors, receptor)
 		}
 	}
+
 	return &BaseCreature{NewEntity(kind, x, y, 0, 0), limbs, receptors}
 }
 

@@ -8,7 +8,7 @@ import (
 // ALlInOneLimb test limb
 type AllInOneLimb struct{}
 
-func (limb *AllInOneLimb) Process(lore *Lore) []Signal {
+func (limb *AllInOneLimb) Process(lore Lore) []Signal {
 	return []Signal{Action{Type: "type", Params: []interface{}{"data"}}}
 }
 
