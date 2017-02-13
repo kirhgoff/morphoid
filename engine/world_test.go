@@ -24,7 +24,7 @@ var _ = Describe("World", func() {
 		})
 
 		It("can feed lore to creatures", func() {
-			lore := world.GetLore(&creature)
+			lore := world.GetLore(creature)
 			Expect(lore.Radius()).To(Equal(creature.GetVision()))
 			//Case for shrooms
 			Expect(lore.Reduce("pepe")).To(Equal(0))

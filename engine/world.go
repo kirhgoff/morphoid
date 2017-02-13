@@ -4,7 +4,7 @@ package engine
 type World interface {
 	GetEntities() []Entity
 	GetCreatures() []Creature
-	GetLore(creature *Creature) Lore
+	GetLore(creature Creature) Lore
 }
 
 // BasicWorld implementation
@@ -35,6 +35,10 @@ func (world *BasicWorld) GetCreatures() []Creature {
 }
 
 // GetLore returns surroundings for a creature
-func (world *BasicWorld) GetLore(creature *Creature) Lore {
+func (world *BasicWorld) GetLore(creature Creature) Lore {
+	id := creature.GetID()
+	x := creature.GetX()
+	y := creature.GetY()
+
 	return nil //TODO
 }

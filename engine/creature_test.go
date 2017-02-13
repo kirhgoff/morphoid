@@ -8,7 +8,9 @@ import (
 var _ = Describe("Creature", func() {
 	Context("After creation", func() {
 		It("should provide receptors and actors", func() {
-			creature := NewCreature("sample", 0, 0, []Limb{DummyLimb{666, "data"}})
+			creature := NewCreature("sample", 0, 1, []Limb{DummyLimb{666, "data"}})
+			Expect(creature.GetX()).To(Equal(0))
+			Expect(creature.GetY()).To(Equal(1))
 			Expect(len(creature.GetLimbs())).To(Equal(1))
 			Expect(len(creature.GetReceptors())).To(Equal(1))
 			Expect(creature.GetVision()).To(Equal(666))
