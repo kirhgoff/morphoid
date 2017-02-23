@@ -10,6 +10,7 @@ type Entity interface {
 	GetY() int
 	GetWidth() int
 	GetHeight() int
+	Intersects(x, y, width, height int) bool
 }
 
 // BaseEntity basic implementation
@@ -67,4 +68,9 @@ func (b *BaseEntity) GetWidth() int {
 // GetHeight return height
 func (b *BaseEntity) GetHeight() int {
 	return b.height
+}
+
+// Intersects checks whether entity intersects with rectangle
+func (b *BaseEntity) Intersects(x, y, width, height int) bool {
+	return !(x+width < b.x || x > b.x+b.width || y+height < b.y || y > b.y+b.height)
 }

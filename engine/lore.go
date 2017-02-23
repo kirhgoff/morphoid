@@ -10,6 +10,13 @@ type Lore interface {
 	Reduce(kind string) float64
 }
 
+// LoreCell
+type LoreCell struct {
+	x  int
+	y  int
+	id string
+}
+
 // BasicLore is implementation of basic storage of data per cell
 type BasicLore struct {
 	id     string

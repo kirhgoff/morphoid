@@ -37,8 +37,38 @@ func (world *BasicWorld) GetCreatures() []Creature {
 // GetLore returns surroundings for a creature
 func (world *BasicWorld) GetLore(creature Creature) Lore {
 	id := creature.GetID()
-	x := creature.GetX()
-	y := creature.GetY()
+	radius := creature.GetVision()
 
+	rx := creature.GetX() - radius
+	ry := creature.GetY() - radius
+	rw := 2*radius + creature.GetWidth()
+	rh := 2*radius + creature.GetHeight()
+
+	mom := make(map[int]map[int]string)
+
+	for _, entity := range world.GetEntities() {
+		if entity.Intersects(rx, ry, rw, rh) {
+			id = entity.GetID()
+			for i := entity.GetX(); i < entity.GetX()+entity.GetWidth(); i++ {
+				if _, present := mom[i]; !present {
+					mom[i] = make(map[int]string)
+				}
+				for j := entity.GetY(); j < entity.GetY()+entity.GetHeight(); j++ {
+					mom[i][j] = id
+				}
+			}
+		}
+	}
+
+	for i := rx; i < rx+rw; i++ {
+		if i < creature.GetX() || i > creature.GetX()+creature.GetWidth() {
+			for j := ry; j < ry+rh; j++ {
+				if j < creature.GetY() || j > creature.GetY()+creature.GetHeight() {
+
+				}
+			}
+		}
+	}
+	//	for i := x - radius; i < x + radius;
 	return nil //TODO
 }
