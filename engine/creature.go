@@ -24,7 +24,9 @@ func NewCreature(kind string, x, y int, limbs []Limb) *BaseCreature {
 	receptors := make([]Receptor, 0)
 	for _, limb := range limbs {
 		// Collect receptors
+		fmt.Printf("limb %+v", limb)
 		if receptor, ok := limb.(Receptor); ok {
+			fmt.Println("receptor!")
 			receptors = append(receptors, receptor)
 		}
 	}
