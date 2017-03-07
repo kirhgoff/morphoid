@@ -1,4 +1,5 @@
 GEM
+  remote: https://rubygems.org/
   specs:
     diff-lcs (1.2.5)
     ncurses-ruby (1.2.4)
@@ -25,4 +26,4 @@ DEPENDENCIES
   rspec-mocks
 
 BUNDLED WITH
-   1.13.6
+   1.14.5
