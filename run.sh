@@ -1,2 +1,2 @@
 #!/bin/bash
-ruby lib/morphoid.rb
+java -cp ./build/libs/*.jar org.kirhgoff.munchkin.Main
