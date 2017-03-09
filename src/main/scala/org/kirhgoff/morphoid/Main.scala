@@ -2,12 +2,14 @@ package org.kirhgoff.morphoid
 
 import scalafx.Includes._
 import scalafx.animation.{KeyFrame, Timeline}
-import scalafx.application.JFXApp
+import scalafx.application.{JFXApp, Platform}
 import scalafx.beans.property.DoubleProperty
 import scalafx.event.ActionEvent
+import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.paint.Color
-import scalafx.scene.text.Text
-import scalafx.scene.{Group, Scene}
+import scalafx.scene.text.{Font, Text}
+import scalafx.scene.{Cursor, Group, Scene}
+import scalafx.stage.Stage
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 8/3/17.
@@ -28,25 +30,51 @@ object Main extends JFXApp {
       x <== playerPositionX
       y <== playerPositionY
       fill = Color.Black
+      font = Font("Monospaced", 20)
     }
 
-    val keyFrame = KeyFrame(10 ms, onFinished = {
-      event: ActionEvent =>
-        playerPositionX() = playerPositionX.value + (0.5 - random.nextDouble())*10
-        playerPositionY() = playerPositionY.value + (0.5 - random.nextDouble())*10
-    })
+//    val keyFrame = KeyFrame(10 ms, onFinished = {
+//      _ =>
+//        playerPositionX() = playerPositionX.value + (0.5 - random.nextDouble())*10
+//        playerPositionY() = playerPositionY.value + (0.5 - random.nextDouble())*10
+//    })
+//
+//    val animation = new Timeline {
+//      keyFrames = Seq(keyFrame)
+//      cycleCount = Timeline.Indefinite
+//    }
 
-    val animation = new Timeline {
-      keyFrames = Seq(keyFrame)
-      cycleCount = Timeline.Indefinite
+    val rootPane = new Group {
+      children = List(player)
+      onKeyPressed = (k: KeyEvent) => k.code match {
+          case KeyCode.W =>
+            playerPositionY() = playerPositionY.value - 6
+          case KeyCode.S =>
+            playerPositionY() = playerPositionY.value + 6
+          case KeyCode.A =>
+            playerPositionX() = playerPositionX.value - 6
+          case KeyCode.D =>
+            playerPositionX() = playerPositionX.value + 6
+          case KeyCode.Escape =>
+            stage.close()
+          case _ =>
+        }
     }
-
-    val rootPane = new Group(player)
 
     scene = new Scene {
       content = rootPane
+      cursor = Cursor.None
     }
 
-    animation.playFromStart()
+//    animation.playFromStart()
+
+    onCloseRequest = {
+      _ =>
+        Platform.exit()
+        System.exit(0)
+    }
+
+    rootPane.requestFocus()
+
   }
 }
