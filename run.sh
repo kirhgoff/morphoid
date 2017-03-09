@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp ./build/libs/*.jar org.kirhgoff.munchkin.Main
+java -cp ./build/libs/*.jar org.kirhgoff.morphoid.Main
