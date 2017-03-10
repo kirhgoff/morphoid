@@ -1,5 +1,11 @@
 package org.kirhgoff.morphoid
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
+
+import org.kirhgoff.morphoid.engine.{Entity, Level}
+
+import scala.collection.mutable
 import scalafx.Includes._
 import scalafx.animation.{KeyFrame, Timeline}
 import scalafx.application.{JFXApp, Platform}
@@ -10,12 +16,15 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text}
 import scalafx.scene.{Cursor, Group, Scene}
 import scalafx.stage.Stage
+import scala.collection.mutable.Queue
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 8/3/17.
   */
 object Main extends JFXApp {
   val Human =" @ \n/|\\\n/\\"
+  val random = scala.util.Random
+  val last = new AtomicReference[Level]()
 
   stage = new JFXApp.PrimaryStage {
     fullScreen = true
@@ -24,7 +33,8 @@ object Main extends JFXApp {
     //val gc = canvas.graphicsContext2D
     val playerPositionX = DoubleProperty(300.0)
     val playerPositionY = DoubleProperty(200.0)
-    val random = scala.util.Random
+
+    val entities = new ConcurrentHashMap[String, Text]()
 
     val player = new Text (Human) {
       x <== playerPositionX
@@ -33,16 +43,24 @@ object Main extends JFXApp {
       font = Font("Monospaced", 20)
     }
 
-//    val keyFrame = KeyFrame(10 ms, onFinished = {
-//      _ =>
+    val keyFrame = KeyFrame(15 ms, onFinished = {
+      _ =>
+        val level:Level = last.get()
+        level.entities.map(entity => {
+          val id = entity.id
+          val render = entities.computeIfAbsent(id, id => new Text("@"))
+          render.x = entity.origin.x
+          render.y = entity.origin.y
+          render
+        })
 //        playerPositionX() = playerPositionX.value + (0.5 - random.nextDouble())*10
 //        playerPositionY() = playerPositionY.value + (0.5 - random.nextDouble())*10
-//    })
-//
-//    val animation = new Timeline {
-//      keyFrames = Seq(keyFrame)
-//      cycleCount = Timeline.Indefinite
-//    }
+    })
+
+    val animation = new Timeline {
+      keyFrames = Seq(keyFrame)
+      cycleCount = Timeline.Indefinite
+    }
 
     val rootPane = new Group {
       children = List(player)
@@ -66,8 +84,6 @@ object Main extends JFXApp {
       cursor = Cursor.None
     }
 
-//    animation.playFromStart()
-
     onCloseRequest = {
       _ =>
         Platform.exit()
@@ -75,6 +91,7 @@ object Main extends JFXApp {
     }
 
     rootPane.requestFocus()
+    animation.playFromStart()
 
   }
 }
