@@ -1,0 +1,13 @@
+ID player_stands
+   o
+  /|\
+  / \
+
+ID player_walks_left
+   o
+  /|\
+   |\
+
+   o
+  /|\
+  /|

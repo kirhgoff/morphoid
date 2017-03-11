@@ -21,7 +21,7 @@ import scala.collection.mutable.Queue
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 8/3/17.
   */
-object Main extends JFXApp {
+object OldMain extends JFXApp {
   val Human =" @ \n/|\\\n/\\"
   val random = scala.util.Random
   val last = new AtomicReference[Level]()
