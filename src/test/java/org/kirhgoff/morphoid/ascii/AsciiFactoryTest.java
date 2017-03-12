@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AsciiFactoryTest {
   @Test
   public void testLoadSimple() throws Exception {
-    AsciiFactory factory = AsciiFactory.load("ascii/simple.txt");
+    AsciiFactory factory = AsciiFactory.makeFor("ascii/simple.txt", width, height);
     assertThat(factory).isNotNull();
 
     String text = factory.getAsciiFrameString("simple");
@@ -23,7 +23,7 @@ public class AsciiFactoryTest {
 
   @Test
   public void testLoadComplex() throws Exception {
-    AsciiFactory factory = AsciiFactory.load("ascii/complex.txt");
+    AsciiFactory factory = AsciiFactory.makeFor("ascii/complex.txt", width, height);
     assertThat(factory).isNotNull();
     assertThat(factory.ids()).containsOnly("first", "second", "third");
 

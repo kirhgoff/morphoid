@@ -1,5 +1,9 @@
 package org.kirhgoff.morphoid.ascii;
 
+import org.kirhgoff.morphoid.engine.Entity;
+import org.kirhgoff.morphoid.render.GameGeometry;
+import javafx.scene.paint.Color;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +22,11 @@ public class AsciiFactory {
   private static final String START_TAG = "--- ID";
   private static final String END_TAG = "--- END";
 
+  private GameGeometry geometry;
   private Map<String, AsciiImage> map;
 
-  private AsciiFactory(Map<String, AsciiImage> map) {
+  private AsciiFactory(GameGeometry geometry, Map<String, AsciiImage> map) {
+    this.geometry = geometry;
     this.map = map;
   }
 
@@ -31,11 +37,12 @@ public class AsciiFactory {
   public String getAsciiFrameString(String id) {
     return map.get(id).getAsciiFrame(0);
   }
+
   public List<String> getAsciiFrames(String id) {
     return map.get(id).getAsciiFrames();
   }
 
-  public static AsciiFactory load(String filePath) throws IOException {
+  public static AsciiFactory makeFor(String filePath, GameGeometry geometry) throws IOException {
     InputStream inputStream = Thread
         .currentThread()
         .getContextClassLoader()
@@ -63,9 +70,18 @@ public class AsciiFactory {
       Map<String, AsciiImage> map = images.stream()
           .collect(Collectors.toMap(AsciiImage::getId, identity()));
 
-      return new AsciiFactory(new ConcurrentHashMap<>(map));
+      return new AsciiFactory(geometry, new ConcurrentHashMap<>(map));
     }
 
+  }
+
+  public AsciiSprite getSprite(Entity entity) {
+    String id = entity.kind();
+    String ascii = getAsciiFrameString(id);
+    int x = geometry.convertToScreenX(entity.origin().x());
+    int y = geometry.convertToScreenY(entity.origin().y());
+    //TODO rework sprite creation
+    return new AsciiSprite(x, y, ascii, Color.BLACK);
   }
 
   private static class AsciiImage {

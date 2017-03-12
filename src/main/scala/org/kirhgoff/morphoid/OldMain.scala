@@ -3,20 +3,16 @@ package org.kirhgoff.morphoid
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
-import org.kirhgoff.morphoid.engine.{Entity, Level}
+import org.kirhgoff.morphoid.engine.Level
 
-import scala.collection.mutable
 import scalafx.Includes._
 import scalafx.animation.{KeyFrame, Timeline}
 import scalafx.application.{JFXApp, Platform}
 import scalafx.beans.property.DoubleProperty
-import scalafx.event.ActionEvent
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text}
 import scalafx.scene.{Cursor, Group, Scene}
-import scalafx.stage.Stage
-import scala.collection.mutable.Queue
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 8/3/17.
