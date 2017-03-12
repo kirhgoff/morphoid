@@ -9,23 +9,29 @@ public class GameGeometry {
   private final int levelWidth;
   private final int levelHeight;
 
+  private final int cellWidth;
+  private final int cellHeight;
+
   public GameGeometry(int screenWidth, int screenHeight, int levelWidth, int levelHeight) {
     this.screenWidth = screenWidth;
     this.screenHeight = screenHeight;
     this.levelWidth = levelWidth;
     this.levelHeight = levelHeight;
+
+    this.cellWidth = screenWidth/levelWidth;
+    this.cellHeight = screenHeight/levelHeight;
   }
 
   public double getFontSize() {
-    return 20;
+    return cellWidth;
   }
 
   public int convertToScreenX(int x) {
-    return 0; //TODO
+    return cellWidth * x;
   }
 
   public int convertToScreenY(int y) {
-    return 0; //TODO
+    return cellHeight * y;
   }
 
 }

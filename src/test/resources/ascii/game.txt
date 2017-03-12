@@ -1,0 +1,7 @@
+--- ID player
+P
+--- END
+
+--- ID monster
+M
+--- END

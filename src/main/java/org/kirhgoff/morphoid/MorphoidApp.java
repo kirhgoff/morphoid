@@ -45,7 +45,7 @@ public class MorphoidApp extends Application {
 
     try {
       MorphoidEngine engine = MorphoidEngine.createSample();
-      AsciiFactory ascii = AsciiFactory.makeFor(ASCII_MAP_FILE, SCREEN_WIDTH, SCREEN_HEIGHT);
+      AsciiFactory ascii = AsciiFactory.makeFor(ASCII_MAP_FILE, geometry);
 
       Timeline gameLoop = new Timeline();
       gameLoop.setCycleCount(Timeline.INDEFINITE);

@@ -35,11 +35,19 @@ public class AsciiFactory {
   }
 
   public String getAsciiFrameString(String id) {
-    return map.get(id).getAsciiFrame(0);
+    return getImage(id).getAsciiFrame(0);
   }
 
   public List<String> getAsciiFrames(String id) {
-    return map.get(id).getAsciiFrames();
+    return getImage(id).getAsciiFrames();
+  }
+
+  private AsciiImage getImage(String id) {
+    if (!map.containsKey(id)) {
+      throw new IllegalArgumentException("Cannot find key "
+          + id + ", keys available " + ids());
+    }
+    return map.get(id);
   }
 
   public static AsciiFactory makeFor(String filePath, GameGeometry geometry) throws IOException {
