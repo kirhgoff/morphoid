@@ -20,6 +20,7 @@ public class GameGeometry {
 
     this.cellWidth = screenWidth/levelWidth;
     this.cellHeight = screenHeight/levelHeight;
+    System.out.println(this.toString());
   }
 
   public double getFontSize() {
@@ -34,4 +35,15 @@ public class GameGeometry {
     return cellHeight * y;
   }
 
+  @Override
+  public String toString() {
+    return "GameGeometry{" +
+        "screenWidth=" + screenWidth +
+        ", screenHeight=" + screenHeight +
+        ", levelWidth=" + levelWidth +
+        ", levelHeight=" + levelHeight +
+        ", cellWidth=" + cellWidth +
+        ", cellHeight=" + cellHeight +
+        '}';
+  }
 }

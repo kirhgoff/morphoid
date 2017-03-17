@@ -34,4 +34,13 @@ public class AsciiSprite {
     return color;
   }
 
+  @Override
+  public String toString() {
+    return "AsciiSprite{" +
+        "x=" + x +
+        ", y=" + y +
+        ", ascii='" + ascii + '\'' +
+        ", color=" + color +
+        '}';
+  }
 }

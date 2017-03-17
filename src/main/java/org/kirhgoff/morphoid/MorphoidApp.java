@@ -25,10 +25,10 @@ import java.util.List;
 public class MorphoidApp extends Application {
   //TODO create settings class
   private static final String FONT_NAME = "Monospaced";
-  private static final String ASCII_MAP_FILE = "ascii_map.txt";
+  private static final String ASCII_MAP_FILE = "sample_map.txt";
 
-  private static final int LEVEL_WIDTH = 200;
-  private static final int LEVEL_HEIGHT = 100;
+  private static final int LEVEL_WIDTH = 20;
+  private static final int LEVEL_HEIGHT = 20;
   private static final int SCREEN_WIDTH = 640;
   private static final int SCREEN_HEIGHT = 480;
   private static final double FPS_60 = 0.017;
@@ -39,12 +39,30 @@ public class MorphoidApp extends Application {
 
   @Override
   public void start(Stage stage) {
+    MorphoidEngine engine = MorphoidEngine.createSample();
+
+    Group root = new Group();
+    Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
+    stage.setScene(scene);
+
+    //TODO synchronize
+    scene.setOnKeyPressed(event -> {
+      switch (event.getCode()) {
+        case W:    engine.playerMovesNorth(); break;
+        case S:  engine.playerMovesSouth(); break;
+        case A:  engine.playerMovesWest(); break;
+        case D: engine.playerMovesEast(); break;
+      }
+    });
+
+    Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
+    root.getChildren().add(canvas);
+
+    GraphicsContext gc = canvas.getGraphicsContext2D();
     GameGeometry geometry = new GameGeometry(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_WIDTH, LEVEL_HEIGHT);
-    GraphicsContext gc = setupGraphics(stage);
     gc.setFont(Font.font(FONT_NAME, geometry.getFontSize()));
 
     try {
-      MorphoidEngine engine = MorphoidEngine.createSample();
       AsciiFactory ascii = AsciiFactory.makeFor(ASCII_MAP_FILE, geometry);
 
       Timeline gameLoop = new Timeline();
@@ -54,19 +72,24 @@ public class MorphoidApp extends Application {
           Duration.seconds(FPS_60),
           actionEvent -> {
             gc.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+            //TODO synchronize
             List<Entity> entities = engine.getEntitiesJava();
             for (Entity entity : entities) {
               AsciiSprite sprite = ascii.getSprite(entity);
 
+              gc.setStroke(sprite.getColor());
               gc.setFill(sprite.getColor());
               gc.fillText(sprite.getAscii(), sprite.getX(), sprite.getY());
+              gc.strokeText(sprite.getAscii(), sprite.getX(), sprite.getY());
             }
           });
 
       gameLoop.getKeyFrames().add(keyFrame);
       gameLoop.play();
 
+      stage.setTitle("Morphoid v0.4");
+      stage.setFullScreen(true);
+      stage.setFullScreenExitHint("");
       stage.show();
     } catch (IOException e) {
       //TODO gracefully exit
@@ -75,18 +98,4 @@ public class MorphoidApp extends Application {
     }
   }
 
-  private GraphicsContext setupGraphics(Stage stage) {
-    stage.setTitle("Morphoid v0.4");
-    stage.setFullScreen(true);
-    stage.setFullScreenExitHint("");
-
-    Group root = new Group();
-    Scene scene = new Scene(root);
-    stage.setScene(scene);
-
-    Canvas canvas = new Canvas(640, 480);
-    root.getChildren().add(canvas);
-
-    return canvas.getGraphicsContext2D();
-  }
 }
