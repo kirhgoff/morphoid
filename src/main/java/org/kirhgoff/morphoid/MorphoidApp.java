@@ -57,9 +57,11 @@ public class MorphoidApp extends Application {
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
     root.getChildren().add(canvas);
+    canvas.widthProperty().bind(stage.widthProperty());
+    canvas.heightProperty().bind(stage.heightProperty());
 
     GraphicsContext gc = canvas.getGraphicsContext2D();
-    GameGeometry geometry = new GameGeometry(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_WIDTH, LEVEL_HEIGHT);
+    GameGeometry geometry = new GameGeometry(stage.getWidth(), stage.getHeight(), LEVEL_WIDTH, LEVEL_HEIGHT);
     gc.setFont(Font.font(FONT_NAME, geometry.getFontSize()));
 
     try {
@@ -71,7 +73,7 @@ public class MorphoidApp extends Application {
       KeyFrame keyFrame = new KeyFrame(
           Duration.seconds(FPS_60),
           actionEvent -> {
-            gc.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
             //TODO synchronize
             List<Entity> entities = engine.getEntitiesJava();
             for (Entity entity : entities) {
@@ -88,9 +90,11 @@ public class MorphoidApp extends Application {
       gameLoop.play();
 
       stage.setTitle("Morphoid v0.4");
-      stage.setFullScreen(true);
       stage.setFullScreenExitHint("");
+
       stage.show();
+      stage.setFullScreen(true);
+
     } catch (IOException e) {
       //TODO gracefully exit
       e.printStackTrace();
