@@ -1,5 +1,6 @@
 package org.kirhgoff.morphoid.ascii;
 
+import javafx.geometry.Point2D;
 import org.kirhgoff.morphoid.engine.Entity;
 import org.kirhgoff.morphoid.render.GameGeometry;
 import javafx.scene.paint.Color;
@@ -86,10 +87,9 @@ public class AsciiFactory {
   public AsciiSprite getSprite(Entity entity) {
     String id = entity.kind();
     String ascii = getAsciiFrameString(id);
-    int x = geometry.convertToScreenX(entity.origin().x());
-    int y = geometry.convertToScreenY(entity.origin().y());
+    Point2D point = geometry.convertToScreen(entity.origin().x(), entity.origin().y());
     //TODO rework sprite creation
-    return new AsciiSprite(x, y, ascii, Color.BLACK);
+    return new AsciiSprite(point, ascii, Color.BLACK);
   }
 
   private static class AsciiImage {

@@ -1,45 +1,57 @@
 package org.kirhgoff.morphoid.render;
 
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.geometry.Point2D;
+
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
 public class GameGeometry {
-  private final double screenWidth;
-  private final double screenHeight;
+  private final ReadOnlyDoubleProperty screenWidth;
+  private final ReadOnlyDoubleProperty screenHeight;
   private final int levelWidth;
   private final int levelHeight;
 
-  private final double cellWidth;
-  private final double cellHeight;
+  private double cellWidth;
+  private double cellHeight;
 
-  public GameGeometry(double screenWidth, double screenHeight, int levelWidth, int levelHeight) {
+  public GameGeometry(ReadOnlyDoubleProperty screenWidth, ReadOnlyDoubleProperty screenHeight, int levelWidth, int levelHeight) {
     this.screenWidth = screenWidth;
     this.screenHeight = screenHeight;
     this.levelWidth = levelWidth;
     this.levelHeight = levelHeight;
 
-    this.cellWidth = screenWidth/levelWidth;
-    this.cellHeight = screenHeight/levelHeight;
+    updateRatio();
+    screenWidth.addListener(event -> updateRatio());
+    screenHeight.addListener(event -> updateRatio());
   }
 
-  public double getFontSize() {
+  private synchronized void updateRatio() {
+    double width = screenWidth.doubleValue();
+    double height = screenHeight.doubleValue();
+
+    //Some default values
+    if (Double.isNaN(width)) width = 640;
+    if (Double.isNaN(height)) height = 480;
+
+    this.cellWidth = width/levelWidth;
+    this.cellHeight = height/levelHeight;
+
+    System.out.println("Updated: " + toString());
+  }
+
+  public synchronized double getFontSize() {
     return cellWidth;
   }
 
-  public double convertToScreenX(int x) {
-    return cellWidth * x;
-  }
-
-  public double convertToScreenY(int y) {
-    return cellHeight * y;
+  public synchronized Point2D convertToScreen(int x, int y) {
+    return new Point2D(cellWidth * x, cellHeight * y);
   }
 
   @Override
   public String toString() {
     return "GameGeometry{" +
-        "screenWidth=" + screenWidth +
-        ", screenHeight=" + screenHeight +
-        ", levelWidth=" + levelWidth +
+        " levelWidth=" + levelWidth +
         ", levelHeight=" + levelHeight +
         ", cellWidth=" + cellWidth +
         ", cellHeight=" + cellHeight +

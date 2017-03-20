@@ -3,6 +3,7 @@ package org.kirhgoff.morphoid;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -61,7 +62,8 @@ public class MorphoidApp extends Application {
     canvas.heightProperty().bind(stage.heightProperty());
 
     GraphicsContext gc = canvas.getGraphicsContext2D();
-    GameGeometry geometry = new GameGeometry(stage.getWidth(), stage.getHeight(), LEVEL_WIDTH, LEVEL_HEIGHT);
+    GameGeometry geometry = new GameGeometry(stage.widthProperty(), stage.heightProperty(), LEVEL_WIDTH, LEVEL_HEIGHT);
+
     gc.setFont(Font.font(FONT_NAME, geometry.getFontSize()));
 
     try {
@@ -78,11 +80,12 @@ public class MorphoidApp extends Application {
             List<Entity> entities = engine.getEntitiesJava();
             for (Entity entity : entities) {
               AsciiSprite sprite = ascii.getSprite(entity);
+              Point2D origin = sprite.getOrigin();
 
               gc.setStroke(sprite.getColor());
               gc.setFill(sprite.getColor());
-              gc.fillText(sprite.getAscii(), sprite.getX(), sprite.getY());
-              gc.strokeText(sprite.getAscii(), sprite.getX(), sprite.getY());
+              gc.fillText(sprite.getAscii(), origin.getX(), origin.getY());
+              gc.strokeText(sprite.getAscii(), origin.getX(), origin.getY());
             }
           });
 
