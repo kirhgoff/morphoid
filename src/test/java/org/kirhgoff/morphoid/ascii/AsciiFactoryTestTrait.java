@@ -1,5 +1,6 @@
 package org.kirhgoff.morphoid.ascii;
 
+import org.kirhgoff.morphoid.TestUtilsTrait;
 import org.kirhgoff.morphoid.engine.Cell;
 import org.kirhgoff.morphoid.engine.Entity;
 import org.kirhgoff.morphoid.render.GameGeometry;
@@ -14,7 +15,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
-public class AsciiFactoryTest {
+public class AsciiFactoryTestTrait implements TestUtilsTrait {
   @Test
   public void testLoadSimple() throws Exception {
     AsciiFactory factory = AsciiFactory.makeFor("ascii/simple.txt", null);
@@ -48,17 +49,18 @@ public class AsciiFactoryTest {
 
   @Test
   public void testEntity() throws Exception {
-    GameGeometry geometry = new GameGeometry(100, 100, 10, 10);
+
+    GameGeometry geometry = new GameGeometry(wrap(100), wrap(100), 10, 10);
     AsciiFactory factory = AsciiFactory.makeFor("ascii/game.txt", geometry);
 
     AsciiSprite sprite = factory.getSprite(fake("player", 5, 5));
-    assertThat(sprite.getX()).isEqualTo(50);
-    assertThat(sprite.getY()).isEqualTo(50);
+    assertThat(sprite.getOrigin().getX()).isEqualTo(50);
+    assertThat(sprite.getOrigin().getY()).isEqualTo(50);
     assertThat(sprite.getAscii()).isEqualTo("P\n");
 
     sprite = factory.getSprite(fake("monster", -1, 15));
-    assertThat(sprite.getX()).isEqualTo(-10);
-    assertThat(sprite.getY()).isEqualTo(150);
+    assertThat(sprite.getOrigin().getX()).isEqualTo(-10);
+    assertThat(sprite.getOrigin().getY()).isEqualTo(150);
     assertThat(sprite.getAscii()).isEqualTo("M\n");
 
   }
@@ -69,4 +71,5 @@ public class AsciiFactoryTest {
     when(entity.origin()).thenReturn(new Cell(x, y));
     return entity;
   }
+
 }
