@@ -18,7 +18,7 @@ case class Cell(x:Int, y:Int) {
 }
 
 class Entity(val id:String, val kind:String, var cells:List[Cell]) {
-  def move(direction: Direction) = {
+  def move(direction: Direction):Unit = {
     cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
     println(s"cells=$cells")
   }
@@ -34,9 +34,7 @@ class Entity(val id:String, val kind:String, var cells:List[Cell]) {
 
 class Creature(id:String, kind:String, cells:List[Cell]) extends Entity(id, kind, cells)
 class Player(id:String, kind:String, cells:List[Cell]) extends Entity(id, kind, cells)
-
 class Projectile(id:String, kind:String, cells:List[Cell], direction:Direction) extends Entity(id, kind, cells)
-
 class Level(width:Int, height:Int, val entities:mutable.MutableList[Entity])
 
 

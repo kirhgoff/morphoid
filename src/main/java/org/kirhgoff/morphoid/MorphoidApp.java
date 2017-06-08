@@ -49,9 +49,9 @@ public class MorphoidApp extends Application {
     //TODO synchronize
     scene.setOnKeyPressed(event -> {
       switch (event.getCode()) {
-        case W:    engine.playerMovesNorth(); break;
-        case S:  engine.playerMovesSouth(); break;
-        case A:  engine.playerMovesWest(); break;
+        case W: engine.playerMovesNorth(); break;
+        case S: engine.playerMovesSouth(); break;
+        case A: engine.playerMovesWest(); break;
         case D: engine.playerMovesEast(); break;
       }
     });
