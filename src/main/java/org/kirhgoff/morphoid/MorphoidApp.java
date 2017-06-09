@@ -53,6 +53,10 @@ public class MorphoidApp extends Application {
         case S: engine.playerMovesSouth(); break;
         case A: engine.playerMovesWest(); break;
         case D: engine.playerMovesEast(); break;
+        case LEFT: engine.playerShootsLeft(); break;
+        case RIGHT: engine.playerShootsRight(); break;
+        case UP: engine.playerShootsUp(); break;
+        case DOWN: engine.playerShootsDown(); break;
       }
     });
 

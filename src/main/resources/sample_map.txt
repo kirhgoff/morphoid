@@ -5,3 +5,7 @@
 --- ID monster
 #
 --- END
+
+--- ID projectile
+.
+--- END

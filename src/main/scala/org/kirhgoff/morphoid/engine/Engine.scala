@@ -1,5 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
+import java.util.concurrent.atomic.AtomicLong
+
 import scala.collection.mutable
 
 abstract class Direction(val dx:Int, val dy:Int)
@@ -15,6 +17,7 @@ object Direction {
 
 case class Cell(x:Int, y:Int) {
   override def toString: String = s"Cell{x=$x, y=$y}"
+  def nextTo(direction: Direction) = Cell(x + direction.dx, y + direction.dy)
 }
 
 class Entity(val id:String, val kind:String, var cells:List[Cell]) {
@@ -37,4 +40,11 @@ class Player(id:String, kind:String, cells:List[Cell]) extends Entity(id, kind, 
 class Projectile(id:String, kind:String, cells:List[Cell], direction:Direction) extends Entity(id, kind, cells)
 class Level(width:Int, height:Int, val entities:mutable.MutableList[Entity])
 
+object Projectile {
+  val counter = new AtomicLong()
 
+  def make(origin: Cell, direction: Direction): Projectile = {
+    new Projectile(s"id${counter.incrementAndGet()}", "projectile",
+      List(origin.nextTo(direction)), direction)
+  }
+}
