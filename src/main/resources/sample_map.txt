@@ -9,3 +9,7 @@
 --- ID projectile
 .
 --- END
+
+--- ID ooze
+~
+--- END

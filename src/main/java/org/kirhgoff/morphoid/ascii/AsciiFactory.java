@@ -1,9 +1,9 @@
 package org.kirhgoff.morphoid.ascii;
 
 import javafx.geometry.Point2D;
-import org.kirhgoff.morphoid.engine.Entity;
-import org.kirhgoff.morphoid.render.GameGeometry;
 import javafx.scene.paint.Color;
+import org.kirhgoff.morphoid.engine.Creature;
+import org.kirhgoff.morphoid.render.GameGeometry;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,7 +84,7 @@ public class AsciiFactory {
 
   }
 
-  public AsciiSprite getSprite(Entity entity) {
+  public AsciiSprite getSprite(Creature entity) {
     String id = entity.kind();
     String ascii = getAsciiFrameString(id);
     Point2D point = geometry.convertToScreen(entity.origin().x(), entity.origin().y());

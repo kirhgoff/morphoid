@@ -15,13 +15,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiFactory;
 import org.kirhgoff.morphoid.ascii.AsciiSprite;
-import org.kirhgoff.morphoid.engine.Entity;
+import org.kirhgoff.morphoid.engine.Creature;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.render.GameGeometry;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
@@ -36,7 +35,6 @@ public class MorphoidApp extends Application {
   private static final int SCREEN_WIDTH = 640;
   private static final int SCREEN_HEIGHT = 480;
   private static final double FPS_60 = 0.017;
-  private EventHandler<KeyEvent> keyEventEventHandler;
 
   public static void main(String[] args) throws IOException {
     launch(args);
@@ -48,7 +46,7 @@ public class MorphoidApp extends Application {
     MorphoidEngine engine = MorphoidEngine.createSample();
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-    scene.setOnKeyPressed(keyEventEventHandler); //TODO synchronize
+    scene.setOnKeyPressed(new KeyEventHandler(engine));
     stage.setScene(scene);
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -104,8 +102,8 @@ public class MorphoidApp extends Application {
     gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
   }
 
-  private void drawEntities(GraphicsContext gc, AsciiFactory ascii, Collection<Entity> entities) {
-    for (Entity entity : entities) {
+  private void drawEntities(GraphicsContext gc, AsciiFactory ascii, Collection<Creature> entities) {
+    for (Creature entity : entities) {
       AsciiSprite sprite = ascii.getSprite(entity);
       Point2D origin = sprite.getOrigin();
 
