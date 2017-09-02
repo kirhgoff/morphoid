@@ -4,8 +4,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Point2D;
 
 /**
- * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
- */
+  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
+  */
 public class GameGeometry {
   private final ReadOnlyDoubleProperty screenWidth;
   private final ReadOnlyDoubleProperty screenHeight;
@@ -37,7 +37,7 @@ public class GameGeometry {
     this.cellWidth = width/levelWidth;
     this.cellHeight = height/levelHeight;
 
-    System.out.println("Updated: " + toString());
+    //System.out.println("Updated: " + toString());
   }
 
   public synchronized double getFontSize() {

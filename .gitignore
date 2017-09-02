@@ -20,3 +20,4 @@ project/plugins/project/
 .idea/
 .gradle/
 build/
+out/

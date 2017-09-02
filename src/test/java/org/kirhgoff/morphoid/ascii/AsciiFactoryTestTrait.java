@@ -24,7 +24,6 @@ public class AsciiFactoryTestTrait implements TestUtilsTrait {
     String text = factory.getAsciiFrameString("simple");
     assertThat(text).isNotNull();
     assertThat(text).isEqualTo(" 12\n  34\n");
-
   }
 
   @Test
