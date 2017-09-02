@@ -9,7 +9,8 @@ class MorphoidEngineTest extends FlatSpec with Matchers {
 
   "Monster" should "roam" in {
     val monster = new Creature("monster01", "monster", List(Cell(2, 5)), new PredatorSoul("x"))
-    val futureMonster = monster.next(List())
-    monster.origin shouldNot equal(futureMonster.origin)
+    val origin = monster.origin
+    val newOrigin = monster.next(List()).origin
+    origin shouldNot equal(newOrigin)
   }
 }

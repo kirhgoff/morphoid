@@ -1,8 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
-import scala.collection.mutable.ListBuffer
-import scala.util.Random
 import scala.collection.JavaConverters
+import scala.collection.mutable.ListBuffer
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
@@ -52,17 +51,5 @@ object MorphoidEngine {
   ))
 }
 
-class PredatorSoul(id:String) extends Psyche(id) {
-  override def next(surroundings: List[Cell], body: Creature) = {
-    body.move(Dice.randomDirection).asInstanceOf[Creature]
-  }
-}
 
-class PlantSoul(id:String) extends Psyche(id) {
-  override def next(surroundings: List[Cell], body: Creature) = body
-}
 
-object Dice {
-  val random = Random
-  def randomDirection = Direction.byIndex(random.nextInt(4))
-}
