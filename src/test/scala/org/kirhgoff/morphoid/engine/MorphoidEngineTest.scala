@@ -7,8 +7,13 @@ import org.scalatest._
   */
 class MorphoidEngineTest extends FlatSpec with Matchers {
 
+  "Creature" should "be able to calculate its origin point" in {
+    new Creature("", "", List(Cell(0, 0), Cell(2, 5)), null).origin should be(Cell(0, 5))
+    new Creature("", "", List(Cell(2, 5)), null).origin should be(Cell(2, 5))
+  }
+
   "Monster" should "roam" in {
-    val creature = new Creature("monster01", "monster", List(Cell(2, 5)), new HerbivoreSoul("x"))
+    val creature = new Creature("monster01", "monster", List(Cell(2, 5)), new HerbivoreSoul("x", 1))
     val origin = creature.origin
     val newOrigin = creature.next(List()).origin
     origin shouldNot equal(newOrigin)
@@ -20,4 +25,21 @@ class MorphoidEngineTest extends FlatSpec with Matchers {
     val newOrigin = creature.next(List()).origin
     origin should equal(newOrigin)
   }
+
+  "Moving creature" should "move in appropriate time" in {
+    val creature = new Creature("slime1", "slime", List(Cell(2, 5)), new HerbivoreSoul("x", 3))
+    val origin = creature.origin
+    val engine = MorphoidEngine(List(creature))
+    engine.tick()
+    origin should equal(creature.origin)
+    engine.tick()
+    origin should equal(creature.origin)
+    engine.tick() //Move here
+    origin shouldNot equal(creature.origin)
+    val newOrigin = creature.origin
+    engine.tick()
+    newOrigin should equal(creature.origin)
+
+  }
+
 }

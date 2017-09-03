@@ -2,7 +2,7 @@ package org.kirhgoff.morphoid.ascii;
 
 import org.kirhgoff.morphoid.TestUtilsTrait;
 import org.kirhgoff.morphoid.engine.Cell;
-import org.kirhgoff.morphoid.engine.Entity;
+import org.kirhgoff.morphoid.engine.Creature;
 import org.kirhgoff.morphoid.render.GameGeometry;
 import org.testng.annotations.Test;
 
@@ -64,8 +64,8 @@ public class AsciiFactoryTestTrait implements TestUtilsTrait {
 
   }
 
-  private Entity fake(String kind, int x, int y) {
-    Entity entity = mock(Entity.class);
+  private Creature fake(String kind, int x, int y) {
+    Creature entity = mock(Creature.class);
     when(entity.kind()).thenReturn(kind);
     when(entity.origin()).thenReturn(new Cell(x, y));
     return entity;

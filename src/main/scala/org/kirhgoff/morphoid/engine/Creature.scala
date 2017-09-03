@@ -4,6 +4,10 @@ package org.kirhgoff.morphoid.engine
 class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche: Psyche) {
   def velocity = 0.0
 
+  def tick = psyche.tick
+
+  def mayAct = psyche.mayAct
+
   def move(direction: Direction) = {
     cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
     this

@@ -86,7 +86,7 @@ public class MorphoidApp extends Application {
       gameLoop.play();
 
       stage.setTitle("Morphoid v0.4");
-      stage.setFullScreenExitHint("");
+      stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
       stage.setFullScreen(true);

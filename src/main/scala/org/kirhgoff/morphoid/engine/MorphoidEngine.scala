@@ -20,30 +20,32 @@ class MorphoidEngine (initialEntities:List[Creature]) {
   def playerMoveEast() = player.move(East)
 
   def playerShoot(direction: Direction) =
-    addEntity(Creature("projectile", new Projectile("projectile01", direction), player.origin))
+    addEntity(Creature("projectile", new Projectile("projectile01", direction, 5), player.origin))
   def playerShootDown() = playerShoot(South)
   def playerShootUp() = playerShoot(North)
   def playerShootLeft() = playerShoot(West)
   def playerShootRight() = playerShoot(East)
 
-  //TODO synchronize
   def tick() {
+    creatures.foreach(_.tick)
     //TODO add new & delete dead
-    creatures = creatures.map(c => c.next(surroundings(c)))
+    creatures = creatures.map(c => if (c.mayAct) c.next(surroundings(c)) else c)
   }
 
-  //TODO
+  //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
 }
 
 object MorphoidEngine {
   def createSample = new MorphoidEngine (List(
-    Creature("monster", new HerbivoreSoul("monster01"), 15, 17),
-    Creature("monster", new HerbivoreSoul("monster02"), 17, 15),
+    Creature("monster", new HerbivoreSoul("monster01", 40), 15, 17),
+    Creature("monster", new HerbivoreSoul("monster02", 40), 17, 15),
     Creature("ooze", new PlantSoul("ooze01"), 13, 19),
     Creature("ooze", new PlantSoul("ooze02"), 19, 13),
     Creature("ooze", new PlantSoul("ooze03"), 16, 12)
   ))
+
+  def apply(initialValues: List[Creature]) = new MorphoidEngine(initialValues)
 }
 
 
