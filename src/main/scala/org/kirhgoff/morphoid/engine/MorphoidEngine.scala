@@ -3,37 +3,44 @@ package org.kirhgoff.morphoid.engine
 import scala.collection.JavaConverters
 import scala.collection.mutable.ListBuffer
 
+abstract class GameEvent(sourceId:String)
+case class CreatureAttacks(sourceId:String, direction:Direction) extends GameEvent(sourceId)
+case class CreatureMoves(sourceId:String, direction:Direction) extends GameEvent(sourceId)
+case class CreatureObserve(sourceId:String, surroundings:List[Cell]) extends GameEvent(sourceId)
+
 /**
+  * Not thread safe
+  *
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
   */
 class MorphoidEngine (initialEntities:List[Creature]) {
+  val GOD_ENGINE = "GOD ENGINE v.01"
+
   val player = Creature("player", new PlantSoul("player01"), 10, 10)
   var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++= (player :: initialEntities)
 
-  def getEntities: List[Creature] = creatures.toList
-  def addEntity(creature:Creature): Unit = creatures += creature
-  def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)
-
-  def playerMoveSouth() = player.move(South)
-  def playerMoveNorth() = player.move(North)
-  def playerMoveWest() = player.move(West)
-  def playerMoveEast() = player.move(East)
-
-  def playerShoot(direction: Direction) =
-    addEntity(Creature("projectile", new Projectile("projectile01", direction, 5), player.origin))
-  def playerShootDown() = playerShoot(South)
-  def playerShootUp() = playerShoot(North)
-  def playerShootLeft() = playerShoot(West)
-  def playerShootRight() = playerShoot(East)
-
-  def tick() {
-    creatures.foreach(_.tick)
-    //TODO add new & delete dead
-    creatures = creatures.map(c => if (c.mayAct) c.next(surroundings(c)) else c)
-  }
-
   //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
+
+  // UI Interface
+  def getEntities: List[Creature] = creatures.toList
+  def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)
+  def addEntity(creature:Creature): Unit = creatures += creature
+  def tick() {
+    //TODO add new & delete dead
+    creatures = creatures.map(c => {
+      if (c.tick) c.act(surroundings(c)) else c
+    })
+  }
+
+  // User Input interface
+  def playerStartMoving(direction: Direction) =
+    player.receive(CreatureMoves(GOD_ENGINE, direction))
+
+  def playerShoot(direction: Direction) = {
+    player.receive(CreatureAttacks(GOD_ENGINE, direction))
+    addEntity(Creature("projectile", new Projectile(s"projectile${Dice.makeId}", direction, 5), player.origin))
+  }
 }
 
 object MorphoidEngine {

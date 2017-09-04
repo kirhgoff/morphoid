@@ -8,4 +8,5 @@ import scala.util.Random
 object Dice {
   val random = Random
   def randomDirection = Direction.byIndex(random.nextInt(4))
+  def makeId = random.nextString(16)
 }

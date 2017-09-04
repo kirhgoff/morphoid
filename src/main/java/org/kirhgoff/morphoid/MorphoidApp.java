@@ -3,13 +3,11 @@ package org.kirhgoff.morphoid;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -46,7 +44,8 @@ public class MorphoidApp extends Application {
     MorphoidEngine engine = MorphoidEngine.createSample();
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-    scene.setOnKeyPressed(new KeyEventHandler(engine));
+    scene.setOnKeyPressed(new PlayerController(engine));
+    scene.setOnKeyReleased(new PlayerController(engine));
     stage.setScene(scene);
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);

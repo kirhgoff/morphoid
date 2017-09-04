@@ -4,15 +4,6 @@ package org.kirhgoff.morphoid.engine
 class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche: Psyche) {
   def velocity = 0.0
 
-  def tick = psyche.tick
-
-  def mayAct = psyche.mayAct
-
-  def move(direction: Direction) = {
-    cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
-    this
-  }
-
   def origin:Cell = cells match {
     case head::Nil => head
     case head :: tail => tail.foldLeft(head)((cell, next) =>
@@ -20,7 +11,25 @@ class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche:
     case list if list.isEmpty => null
   }
 
-  def next(surroundings:List[Cell]): Creature = psyche.next(surroundings, this)
+  // Returns true if ready to act
+  def tick = psyche.tick
+  def act(surroundings:List[Cell]): Creature = psyche.act(surroundings, this)
+
+  def move(direction: Direction) = {
+    cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
+    this
+  }
+
+  def attack(direction: Direction) = {
+
+  }
+
+  def receive(event: GameEvent) = event match {
+    //TODO: move out to separate class
+    case CreatureMoves(_,direction) => move(direction)
+    case CreatureAttacks(_, _) => // TODO add State - change state to attacking here
+  }
+
 }
 
 object Creature {
