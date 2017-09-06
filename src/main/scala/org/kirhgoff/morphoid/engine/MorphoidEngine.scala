@@ -36,7 +36,7 @@ class MorphoidEngine (initialEntities:List[Creature]) {
   }
 
   // User Input interface
-  def playerStartMoving(direction: Direction) =
+  def playerMoves(direction: Direction) =
     player.receive(CreatureMoves(GOD_ENGINE, direction))
 
   def playerShoot(direction: Direction) = {

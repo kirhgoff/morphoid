@@ -20,10 +20,10 @@ public class PlayerController implements EventHandler<KeyEvent> {
   public void handle(KeyEvent event) {
     if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
       switch (event.getCode()) {
-        case W: engine.playerStartMoving(North$.MODULE$); break;
-        case S: engine.playerStartMoving(South$.MODULE$); break;
-        case A: engine.playerStartMoving(West$.MODULE$); break;
-        case D: engine.playerStartMoving(East$.MODULE$); break;
+        case W: engine.playerMoves(North$.MODULE$); break;
+        case S: engine.playerMoves(South$.MODULE$); break;
+        case A: engine.playerMoves(West$.MODULE$); break;
+        case D: engine.playerMoves(East$.MODULE$); break;
         case LEFT: engine.playerShoot(West$.MODULE$); break;
         case RIGHT: engine.playerShoot(East$.MODULE$); break;
         case UP: engine.playerShoot(North$.MODULE$); break;
