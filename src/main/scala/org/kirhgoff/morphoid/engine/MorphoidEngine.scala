@@ -1,5 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
+import org.kirhgoff.morphoid.PlayerInputState
+
 import scala.collection.JavaConverters
 import scala.collection.mutable.ListBuffer
 
@@ -16,8 +18,8 @@ case class CreatureObserve(sourceId:String, surroundings:List[Cell]) extends Gam
 class MorphoidEngine (initialEntities:List[Creature]) {
   val GOD_ENGINE = "GOD ENGINE v.01"
 
-  val player = Creature("player", new PlantSoul("player01"), 10, 10)
-  var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++= (player :: initialEntities)
+  val player = initialEntities.filter(e => "player".equals(e.kind)).head
+  var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++ initialEntities
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
@@ -44,7 +46,8 @@ class MorphoidEngine (initialEntities:List[Creature]) {
 }
 
 object MorphoidEngine {
-  def createSample = new MorphoidEngine (List(
+  def createSample(playerInputState: PlayerInputState) = new MorphoidEngine (List(
+    Creature("player", new PlayerSoul("player01", playerInputState, 10), 10, 10),
     Creature("monster", new HerbivoreSoul("monster01", 40), 15, 17),
     Creature("monster", new HerbivoreSoul("monster02", 40), 17, 15),
     Creature("ooze", new PlantSoul("ooze01"), 13, 19),

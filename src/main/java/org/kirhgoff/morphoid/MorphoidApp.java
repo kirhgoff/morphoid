@@ -41,11 +41,12 @@ public class MorphoidApp extends Application {
   @Override
   public void start(Stage stage) {
     // Model
-    MorphoidEngine engine = MorphoidEngine.createSample();
+    PlayerInputState playerInputState = new PlayerInputState();
+    MorphoidEngine engine = MorphoidEngine.createSample(playerInputState);
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-    scene.setOnKeyPressed(new PlayerController(engine));
-    scene.setOnKeyReleased(new PlayerController(engine));
+    scene.setOnKeyPressed(new PlayerController(engine, playerInputState));
+    scene.setOnKeyReleased(new PlayerController(engine, playerInputState));
     stage.setScene(scene);
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
