@@ -53,6 +53,6 @@ class Projectile(id:String, direction:Direction, velocity:Int) extends Psyche(id
 
 class PlayerSoul(id:String, playerInputState: PlayerInputState, velocity: Int) extends Psyche(id, velocity) {
   override def act(surroundings: List[Cell], body: Creature) = {
-
+    body
   }
 }

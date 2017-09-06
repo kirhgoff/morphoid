@@ -1,11 +1,11 @@
 package org.kirhgoff.morphoid.engine
 
 import org.scalatest._
-
+import org.scalamock.scalatest.MockFactory
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 2/9/17.
   */
-class MorphoidEngineTest extends FlatSpec with Matchers {
+class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
     new Creature("", "", List(Cell(0, 0), Cell(2, 5)), null).origin should be(Cell(0, 5))
@@ -40,5 +40,9 @@ class MorphoidEngineTest extends FlatSpec with Matchers {
     engine.tick()
     newOrigin should equal(creature.origin)
   }
+
+
+
+
 
 }

@@ -18,7 +18,7 @@ case class CreatureObserve(sourceId:String, surroundings:List[Cell]) extends Gam
 class MorphoidEngine (initialEntities:List[Creature]) {
   val GOD_ENGINE = "GOD ENGINE v.01"
 
-  val player = initialEntities.filter(e => "player".equals(e.kind)).head
+  val player = initialEntities.head
   var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++ initialEntities
 
   //TODO implement surroundings properly
