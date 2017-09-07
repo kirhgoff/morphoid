@@ -4,5 +4,4 @@ Engine -> Creature: act(surroundings)
 Creature -> Psyche: act(surroundings)
 Psyche   -> Creature: actions[]
 
-
 @enduml

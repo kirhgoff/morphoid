@@ -47,11 +47,11 @@ class MorphoidEngine (initialEntities:List[Creature]) {
 
 object MorphoidEngine {
   def createSample(playerInputState: PlayerInputState) = new MorphoidEngine (List(
-    Creature("player", new PlayerSoul("player01", playerInputState, 10), 10, 10),
-    Creature("monster", new HerbivoreSoul("monster01", 40), 15, 17),
-    Creature("monster", new HerbivoreSoul("monster02", 40), 17, 15),
-    Creature("ooze", new PlantSoul("ooze01"), 13, 19),
-    Creature("ooze", new PlantSoul("ooze02"), 19, 13),
+    Creature("player", new PlayerSoul("player01", playerInputState, 5), 10, 10),
+    Creature("monster", new HerbivoreSoul("monster01", 40), 3, 5),
+    Creature("monster", new HerbivoreSoul("monster02", 40), 15, 15),
+    Creature("ooze", new PlantSoul("ooze01"), 1, 8),
+    Creature("ooze", new PlantSoul("ooze02"), 6, 13),
     Creature("ooze", new PlantSoul("ooze03"), 16, 12)
   ))
 

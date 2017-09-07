@@ -2,36 +2,45 @@ package org.kirhgoff.morphoid;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
-import org.kirhgoff.morphoid.engine.*;
 
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 31/8/17.
  */
 public class PlayerController implements EventHandler<KeyEvent> {
-  private final PlayerInputState user;
-  private final MorphoidEngine engine; //TODO synchronize
+  private final PlayerInputState input;
 
-  public PlayerController(MorphoidEngine engine, PlayerInputState user) {
-    this.engine = engine;
-    this.user = user;
+  public PlayerController(PlayerInputState input) {
+    this.input = input;
   }
 
   @Override
   public void handle(KeyEvent event) {
     if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
+      //System.out.println("KeyPressed " + event.getCode());
       switch (event.getCode()) {
-        case W: engine.playerMoves(North$.MODULE$); break;
-        case S: engine.playerMoves(South$.MODULE$); break;
-        case A: engine.playerMoves(West$.MODULE$); break;
-        case D: engine.playerMoves(East$.MODULE$); break;
-        case LEFT: engine.playerShoot(West$.MODULE$); break;
-        case RIGHT: engine.playerShoot(East$.MODULE$); break;
-        case UP: engine.playerShoot(North$.MODULE$); break;
-        case DOWN: engine.playerShoot(South$.MODULE$); break;
+        case W: input.beginMovingUp(); break;
+        case S: input.beginMovingDown(); break;
+        case A: input.beginMovingLeft(); break;
+        case D: input.beginMovingRight(); break;
+        case LEFT: input.beginShootingLeft(); break;
+        case RIGHT: input.beginShootingRight(); break;
+        case UP: input.beginShootingUp(); break;
+        case DOWN: input.beginShootingDown(); break;
       }
     } else if (event.getEventType().equals(KeyEvent.KEY_RELEASED)) {
-      //TODO
+      //System.out.println("KeyReleased " + event.getCode());
+      switch (event.getCode()) {
+        case W: input.endMovingUp(); break;
+        case S: input.endMovingDown(); break;
+        case A: input.endMovingLeft(); break;
+        case D: input.endMovingRight(); break;
+        case LEFT: input.endShootingLeft(); break;
+        case RIGHT: input.endShootingRight(); break;
+        case UP: input.endShootingUp(); break;
+        case DOWN: input.endShootingDown(); break;
+      }
     }
-    event.consume();
+    event.consume(); //TODO consume only when ours
+    //System.out.println("PC set " + input);
   }
 }

@@ -52,15 +52,16 @@ class Projectile(id:String, direction:Direction, velocity:Int) extends Psyche(id
 
 class PlayerSoul(id:String, input: PlayerInputState, velocity: Int) extends Psyche(id, velocity) {
   override def act(surroundings: List[Cell], body: Creature) = {
-    if(input.movingLeft()) body.move(West)
-    if(input.movingRight()) body.move(East)
-    if(input.movingUp()) body.move(North)
-    if(input.movingDown()) body.move(South)
+    //println("PS read " + input)
+    if(input.isMovingLeft) body.move(West)
+    if(input.isMovingRight) body.move(East)
+    if(input.isMovingUp) body.move(North)
+    if(input.isMovingDown) body.move(South)
 
-    if(input.shootingUp()) body.attack(North)
-    if(input.shootingDown()) body.attack(South)
-    if(input.shootingLeft()) body.attack(West)
-    if(input.shootingRight()) body.attack(East)
+    if(input.isShootingUp) body.attack(North)
+    if(input.isShootingDown) body.attack(South)
+    if(input.isShootingLeft) body.attack(West)
+    if(input.isShootingRight) body.attack(East)
     body
   }
 }

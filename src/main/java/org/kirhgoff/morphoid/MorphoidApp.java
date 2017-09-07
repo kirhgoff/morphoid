@@ -45,14 +45,15 @@ public class MorphoidApp extends Application {
     MorphoidEngine engine = MorphoidEngine.createSample(playerInputState);
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-    scene.setOnKeyPressed(new PlayerController(engine, playerInputState));
-    scene.setOnKeyReleased(new PlayerController(engine, playerInputState));
+    PlayerController playerController = new PlayerController(playerInputState);
+    scene.setOnKeyPressed(playerController);
+    scene.setOnKeyReleased(playerController);
     stage.setScene(scene);
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
     root.getChildren().add(canvas);
 
-    //TODO what is this?
+    //TODO what is this? I knew that
     canvas.widthProperty().bind(stage.widthProperty());
     canvas.heightProperty().bind(stage.heightProperty());
 
@@ -72,7 +73,6 @@ public class MorphoidApp extends Application {
       KeyFrame keyFrame = new KeyFrame(
           Duration.seconds(FPS_60),
           actionEvent -> {
-
             engine.tick();
 
             cleanScreen(gc, stage);
@@ -89,7 +89,7 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      stage.setFullScreen(true);
+      //stage.setFullScreen(true);
 
     } catch (IOException e) {
       //TODO gracefully exit
