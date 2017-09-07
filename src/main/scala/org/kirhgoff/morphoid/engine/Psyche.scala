@@ -2,6 +2,8 @@ package org.kirhgoff.morphoid.engine
 
 import org.kirhgoff.morphoid.PlayerInputState
 
+import scala.collection.mutable.ListBuffer
+
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 2/9/17.
   */
@@ -28,40 +30,43 @@ trait Movable {
   }
 }
 
-abstract class Psyche (val id:String, val velocity: Int) extends Movable {
+abstract class Psyche (val id:String, val velocity: Int, val creature: Creature) extends Movable {
   def sight:Int = 0
-  def act(surroundings:List[Cell], body:Creature):Creature
+  def act(surroundings:List[Cell]):List[GameEvent]
 }
 
-class HerbivoreSoul(id:String, velocity:Int) extends Psyche(id, velocity) {
+class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def sight = 2
-  override def act(surroundings: List[Cell], body: Creature) = {
-    body.move(Dice.randomDirection)
+  override def act(surroundings: List[Cell]) = {
+    List(CreatureMoves(id, creature.id, Dice.randomDirection))
   }
 }
 
-class PlantSoul(id:String) extends Psyche(id, Movable.ZeroVelocity) {
-  override def act(surroundings: List[Cell], body: Creature) = body
+class PlantSoul(id:String, creature:Creature) extends Psyche(id, Movable.ZeroVelocity, creature) {
+  override def act(surroundings: List[Cell]) = List()
 }
 
-class Projectile(id:String, direction:Direction, velocity:Int) extends Psyche(id, velocity) {
-  override def act(surroundings: List[Cell], body: Creature): Creature = {
-    body.move(direction)
+class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
+  override def act(surroundings: List[Cell]) = {
+    List(CreatureMoves(id, creature.id, direction))
   }
 }
 
-class PlayerSoul(id:String, input: PlayerInputState, velocity: Int) extends Psyche(id, velocity) {
-  override def act(surroundings: List[Cell], body: Creature) = {
+class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Creature) extends Psyche(id, velocity, creature) {
+  override def act(surroundings: List[Cell]) = {
     //println("PS read " + input)
-    if(input.isMovingLeft) body.move(West)
-    if(input.isMovingRight) body.move(East)
-    if(input.isMovingUp) body.move(North)
-    if(input.isMovingDown) body.move(South)
+    var events = ListBuffer[GameEvent]()
 
-    if(input.isShootingUp) body.attack(North)
-    if(input.isShootingDown) body.attack(South)
-    if(input.isShootingLeft) body.attack(West)
-    if(input.isShootingRight) body.attack(East)
-    body
+    if(input.isMovingLeft) events += CreatureMoves(id, creature.id, West)
+    if(input.isMovingRight) events += CreatureMoves(id, creature.id, East)
+    if(input.isMovingUp) events += CreatureMoves(id, creature.id, North)
+    if(input.isMovingDown) events += CreatureMoves(id, creature.id, South)
+
+    if(input.isShootingUp) events += CreatureAttacks(id, creature.id, North)
+    if(input.isShootingDown) events += CreatureAttacks(id, creature.id, South)
+    if(input.isShootingLeft) events += CreatureAttacks(id, creature.id, West)
+    if(input.isShootingRight) events += CreatureAttacks(id, creature.id, East)
+
+    events.toList
   }
 }

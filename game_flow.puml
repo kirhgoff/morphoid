@@ -1,7 +1,8 @@
 @startuml
 MorphoidApp -> Engine: tick
-Engine -> Creature: act(surroundings)
-Creature -> Psyche: act(surroundings)
-Psyche   -> Creature: actions[]
+Engine -> Psyche: act(surroundings)
+Psyche -> Engine: actions[]
 
+Engine -> Engine: validate(actions[])
+Engine -> Creature: modifyState
 @enduml

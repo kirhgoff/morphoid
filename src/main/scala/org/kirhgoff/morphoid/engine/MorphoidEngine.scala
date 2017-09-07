@@ -2,13 +2,13 @@ package org.kirhgoff.morphoid.engine
 
 import org.kirhgoff.morphoid.PlayerInputState
 
-import scala.collection.JavaConverters
+import scala.collection.{JavaConverters, mutable}
 import scala.collection.mutable.ListBuffer
 
-abstract class GameEvent(sourceId:String)
-case class CreatureAttacks(sourceId:String, direction:Direction) extends GameEvent(sourceId)
-case class CreatureMoves(sourceId:String, direction:Direction) extends GameEvent(sourceId)
-case class CreatureObserve(sourceId:String, surroundings:List[Cell]) extends GameEvent(sourceId)
+abstract class GameEvent(sourceId:String, targetId:String)
+case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
+case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
+case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Cell]) extends GameEvent(sourceId, targetId)
 
 /**
   * Not thread safe
@@ -20,6 +20,9 @@ class MorphoidEngine (initialEntities:List[Creature]) {
 
   val player = initialEntities.head
   var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++ initialEntities
+  var souls:ListBuffer[Psyche] = creatures.map(_.psyche)
+
+  val creaturesIndex = mutable.Map[String, Creature]()
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
@@ -27,12 +30,28 @@ class MorphoidEngine (initialEntities:List[Creature]) {
   // UI Interface
   def getEntities: List[Creature] = creatures.toList
   def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)
-  def addEntity(creature:Creature): Unit = creatures += creature
+
+  def addEntity(creature:Creature) {
+    creatures += creature
+    creaturesIndex[creature.id] = creature
+  }
+
   def tick() {
-    //TODO add new & delete dead
-    creatures = creatures.map(c => {
-      if (c.tick) c.act(surroundings(c)) else c
-    })
+    val actions = souls.map(p => p.act(surroundings(p.creature)))
+    //val validated = validate(actions)
+    actions.foreach(execute(_))
+  }
+
+  def execute(events: List[GameEvent]) = events match {
+    case Nil => _
+    case List() => _
+    case event :: rest => event match {
+      case CreatureMoves(_, id, direction) => {
+        val creature = creaturesIndex[id]
+        
+      }
+    }
+
   }
 
   // User Input interface
