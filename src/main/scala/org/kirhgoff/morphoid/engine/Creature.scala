@@ -1,7 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
 // Something active
-class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche: Psyche) {
+class Creature(val id:String, val kind:String, var cells:List[Cell]) {
   def velocity = 0.0
 
   def origin:Cell = cells match {
@@ -12,9 +12,6 @@ class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche:
   }
 
   // Returns true if ready to act
-  def tick = psyche.tick
-  def act(surroundings:List[Cell]): Creature = psyche.act(surroundings, this)
-
   def move(direction: Direction) = {
     cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
     this
@@ -26,19 +23,19 @@ class Creature(val id:String, val kind:String, var cells:List[Cell], val psyche:
 
   def receive(event: GameEvent) = event match {
     //TODO: move out to separate class
-    case CreatureMoves(_,direction) => move(direction)
-    case CreatureAttacks(_, _) => // TODO add State - change state to attacking here
+    case CreatureMoves(_,_,direction) => move(direction)
+    case CreatureAttacks(_, _, _) => // TODO add State - change state to attacking here
   }
 
 }
 
 object Creature {
   def apply(kind:String, psyche:Psyche, origin:Cell) = {
-    new Creature(psyche.id, kind, List(origin), psyche)
+    new Creature(psyche.id, kind, List(origin))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {
-    new Creature(psyche.id, kind, List(Cell(x, y)), psyche)
+    new Creature(psyche.id, kind, List(Cell(x, y)))
   }
 }
 

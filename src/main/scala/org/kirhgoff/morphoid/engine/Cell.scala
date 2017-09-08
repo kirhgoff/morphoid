@@ -5,4 +5,6 @@ package org.kirhgoff.morphoid.engine
   */
 case class Cell(x:Int, y:Int) {
   override def toString: String = s"Cell{x=$x, y=$y}"
+
+  def nextTo(direction: Direction) = Cell(x + direction.dx, y + direction.dy)
 }

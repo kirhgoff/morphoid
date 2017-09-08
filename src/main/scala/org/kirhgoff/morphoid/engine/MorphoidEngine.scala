@@ -15,66 +15,63 @@ case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[C
   *
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
   */
-class MorphoidEngine (initialEntities:List[Creature]) {
+class MorphoidEngine (initialEntities:List[Psyche]) {
   val GOD_ENGINE = "GOD ENGINE v.01"
 
   val player = initialEntities.head
-  var creatures: ListBuffer[Creature] = ListBuffer[Creature]() ++ initialEntities
-  var souls:ListBuffer[Psyche] = creatures.map(_.psyche)
-
-  val creaturesIndex = mutable.Map[String, Creature]()
+  var creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
+  val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
 
   // UI Interface
-  def getEntities: List[Creature] = creatures.toList
+  def getEntities: List[Creature] = creatures.values.toList
   def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)
 
-  def addEntity(creature:Creature) {
-    creatures += creature
-    creaturesIndex[creature.id] = creature
+  private def addEntity(psyche: Psyche) = {
+    val creature = psyche.creature
+    creatures(creature.id) = creature
+    souls(psyche.id) = psyche
   }
 
   def tick() {
-    val actions = souls.map(p => p.act(surroundings(p.creature)))
+    val actions = souls.values.map(p => p.act(surroundings(p.creature)))
     //val validated = validate(actions)
-    actions.foreach(execute(_))
+    actions.foreach(execute)
   }
 
   def execute(events: List[GameEvent]) = events match {
-    case Nil => _
-    case List() => _
+    case Nil =>
+    case List() =>
     case event :: rest => event match {
       case CreatureMoves(_, id, direction) => {
-        val creature = creaturesIndex[id]
-        
+        creatures(id).move(direction)
+      }
+      case CreatureAttacks(_, id, direction) => {
+        val creature = creatures(id)
+        creature.attack(direction)
+        val newId = Dice.makeId("pew")
+        val projectileOrigin = creature.origin.nextTo(direction)
+        val projectile = new Creature(newId, "projectile", List(projectileOrigin))
+        addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }
 
-  }
-
-  // User Input interface
-  def playerMoves(direction: Direction) =
-    player.receive(CreatureMoves(GOD_ENGINE, direction))
-
-  def playerShoot(direction: Direction) = {
-    player.receive(CreatureAttacks(GOD_ENGINE, direction))
-    addEntity(Creature("projectile", new Projectile(s"projectile${Dice.makeId}", direction, 5), player.origin))
   }
 }
 
 object MorphoidEngine {
   def createSample(playerInputState: PlayerInputState) = new MorphoidEngine (List(
-    Creature("player", new PlayerSoul("player01", playerInputState, 5), 10, 10),
-    Creature("monster", new HerbivoreSoul("monster01", 40), 3, 5),
-    Creature("monster", new HerbivoreSoul("monster02", 40), 15, 15),
-    Creature("ooze", new PlantSoul("ooze01"), 1, 8),
-    Creature("ooze", new PlantSoul("ooze02"), 6, 13),
-    Creature("ooze", new PlantSoul("ooze03"), 16, 12)
+    PlayerSoul(playerInputState, 10, 10, 5),
+    Herbivore(3, 5, 40),
+    Herbivore(15, 15, 60),
+    Herbivore(9, 11, 10),
+    Plant(1, 8),
+    Plant(6, 13),
+    Plant(16, 12)
   ))
 
-  def apply(initialValues: List[Creature]) = new MorphoidEngine(initialValues)
 }
 
 

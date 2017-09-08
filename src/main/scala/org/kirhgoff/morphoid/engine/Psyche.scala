@@ -70,3 +70,24 @@ class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Cr
     events.toList
   }
 }
+
+object PlayerSoul {
+  def apply(playerInputState: PlayerInputState, x:Int, y:Int, velocity:Int) = {
+    val id: String = Dice.makeId("player")
+    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", List(Cell(x, y))))
+  }
+}
+
+object Plant {
+  def apply(x:Int, y:Int) = {
+    val id: String = Dice.makeId("ooze")
+    new PlantSoul(id, new Creature(id, "ooze", List(Cell(x, y))))
+  }
+}
+
+object Herbivore {
+  def apply(x:Int, y:Int, velocity:Int) = {
+    val id: String = Dice.makeId("monster")
+    new HerbivoreSoul(id, velocity, new Creature(id, "monster", List(Cell(x, y))))
+  }
+}
