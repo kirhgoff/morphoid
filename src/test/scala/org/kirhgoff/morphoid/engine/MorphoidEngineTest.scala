@@ -8,28 +8,29 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", List(Cell(0, 0), Cell(2, 5)), null).origin should be(Cell(0, 5))
-    new Creature("", "", List(Cell(2, 5)), null).origin should be(Cell(2, 5))
+    new Creature("", "", List(Cell(0, 0), Cell(2, 5))).origin should be(Cell(0, 5))
+    new Creature("", "", List(Cell(2, 5))).origin should be(Cell(2, 5))
   }
 
   "Monster" should "roam" in {
-    val creature = new Creature("monster01", "monster", List(Cell(2, 5)), new HerbivoreSoul("x", 1))
-    val origin = creature.origin
-    val newOrigin = creature.act(List()).origin
-    origin shouldNot equal(newOrigin)
+    val herbivore = Herbivore(2, 5, 1)
+    val origin = herbivore.creature.origin
+    new MorphoidEngine(List(herbivore)).tick()
+    origin shouldNot equal(herbivore.creature.origin)
   }
 
   "Ooze" should "stay" in {
-    val creature = new Creature("ooze01", "ooze", List(Cell(2, 5)), new PlantSoul("x"))
-    val origin = creature.origin
-    val newOrigin = creature.act(List()).origin
-    origin should equal(newOrigin)
+    val plant = Plant(2, 5)
+    val origin = plant.creature.origin
+    new MorphoidEngine(List(plant)).tick()
+    origin should equal(plant.creature.origin)
   }
 
   "Moving creature" should "move in appropriate time" in {
-    val creature = new Creature("slime1", "slime", List(Cell(2, 5)), new HerbivoreSoul("x", 3))
+    val entity = Herbivore(2, 5, 3)
+    val creature = entity.creature
     val origin = creature.origin
-    val engine = MorphoidEngine(List(creature))
+    val engine = new MorphoidEngine(List(entity))
     engine.tick()
     origin should equal(creature.origin)
     engine.tick()
@@ -40,6 +41,8 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick()
     newOrigin should equal(creature.origin)
   }
+
+
 
 
 
