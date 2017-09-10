@@ -42,12 +42,20 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     newOrigin should equal(creature.origin)
   }
 
+  "Creature" should "know its bounding rect" in {
+    checkBoundBox(Rect(2, 3, 2, 3), List(Cell(2, 3)))
+    checkBoundBox(Rect(1, 2, 2, 3), List(Cell(2, 3), Cell(1, 2)))
+    checkBoundBox(Rect(-1, -2, 2, 2), List(Cell(0, 0), Cell(-1, -2), Cell(2,2)))
+  }
+
+  "Rect" should "be possible to check if it is inside" in {
+    Rect(0, 0, 10, 10).includes(Rect(1,1, 2,2)) shouldBe true
+    Rect(0, 0, 10, 10).includes(Rect(1,1, 12,2)) shouldBe false
+    Rect(0, 0, 10, 10).includes(Rect(-10,-10, -2, -2)) shouldBe false
+  }
 
 
-
-
-
-
-
-
+  private def checkBoundBox(rect: Rect, cells: List[Cell]) = {
+    rect should equal(new Creature("01", "test", cells).boundingRect)
+  }
 }

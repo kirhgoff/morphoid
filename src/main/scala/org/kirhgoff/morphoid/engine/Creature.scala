@@ -11,6 +11,19 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
     case list if list.isEmpty => null
   }
 
+  def boundingRect = cells match {
+    case head::Nil => new Rect(head, head)
+    case head :: tail => tail.foldLeft(new Rect(head, head))((rect, next) =>
+      Rect(
+        Math.min(rect.x1, next.x),
+        Math.min(rect.y1, next.y),
+        Math.max(rect.x2, next.x),
+        Math.max(rect.y2, next.y)
+      ))
+    case list if list.isEmpty => null
+  }
+
+
   // Returns true if ready to act
   def move(direction: Direction) = {
     cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))

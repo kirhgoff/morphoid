@@ -3,7 +3,6 @@ package org.kirhgoff.morphoid.engine
 import org.kirhgoff.morphoid.PlayerInputState
 
 import scala.collection.{JavaConverters, mutable}
-import scala.collection.mutable.ListBuffer
 
 abstract class GameEvent(sourceId:String, targetId:String)
 case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
@@ -40,8 +39,15 @@ class MorphoidEngine (initialEntities:List[Psyche]) {
       if (p.tick) p.act(surroundings(p.creature))
       else List()
     })
-    //val validated = validate(actions)
-    actions.foreach(execute)
+
+    actions.foreach(batch => execute(validate(batch)))
+  }
+
+  def validate(events: List[GameEvent]) = events.foldLeft(List())((result:List[List[GameEvent]], batch:List[GameEvent]) => {
+    batch.filter(event:GameEvent => event match {
+      case CreatureMoves(_, _, _) => true
+      case _ => true
+    })
   }
 
   def execute(events: List[GameEvent]) = events match {
