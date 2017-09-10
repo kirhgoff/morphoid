@@ -36,7 +36,10 @@ class MorphoidEngine (initialEntities:List[Psyche]) {
   }
 
   def tick() {
-    val actions = souls.values.map(p => p.act(surroundings(p.creature)))
+    val actions = souls.values.map(p => {
+      if (p.tick) p.act(surroundings(p.creature))
+      else List()
+    })
     //val validated = validate(actions)
     actions.foreach(execute)
   }
@@ -66,7 +69,7 @@ object MorphoidEngine {
     PlayerSoul(playerInputState, 10, 10, 5),
     Herbivore(3, 5, 40),
     Herbivore(15, 15, 60),
-    Herbivore(9, 11, 10),
+    Herbivore(9, 11, 50),
     Plant(1, 8),
     Plant(6, 13),
     Plant(16, 12)

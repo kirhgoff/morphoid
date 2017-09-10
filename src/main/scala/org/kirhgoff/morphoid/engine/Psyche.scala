@@ -28,6 +28,7 @@ trait Movable {
     loops += 1
     velocity != 0 && loops % velocity == 0
   }
+
 }
 
 abstract class Psyche (val id:String, val velocity: Int, val creature: Creature) extends Movable {
