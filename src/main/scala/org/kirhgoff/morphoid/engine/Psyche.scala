@@ -16,6 +16,8 @@ import scala.collection.mutable.ListBuffer
 //  def isAlive = energy > 0
 //}
 
+// ---------------------
+
 object Movable {
   val ZeroVelocity:Int = 0
 }
@@ -31,10 +33,14 @@ trait Movable {
 
 }
 
+// ---------------------
+
 abstract class Psyche (val id:String, val velocity: Int, val creature: Creature) extends Movable {
   def sight:Int = 0
   def act(surroundings:List[Cell]):List[GameEvent]
 }
+
+// ---------------------
 
 class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def sight = 2
@@ -43,15 +49,21 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
   }
 }
 
+// ---------------------
+
 class PlantSoul(id:String, creature:Creature) extends Psyche(id, Movable.ZeroVelocity, creature) {
   override def act(surroundings: List[Cell]) = List()
 }
+
+// ---------------------
 
 class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def act(surroundings: List[Cell]) = {
     List(CreatureMoves(id, creature.id, direction))
   }
 }
+
+// ---------------------
 
 class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Creature) extends Psyche(id, velocity, creature) {
   override def act(surroundings: List[Cell]) = {

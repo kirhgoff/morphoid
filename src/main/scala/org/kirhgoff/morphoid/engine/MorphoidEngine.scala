@@ -36,6 +36,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
 
   def tick() {
     val actions = souls.values.map(p => {
+      // Makes sense to keep frequency information in the engine
       if (p.tick) p.act(surroundings(p.creature))
       else List()
     })

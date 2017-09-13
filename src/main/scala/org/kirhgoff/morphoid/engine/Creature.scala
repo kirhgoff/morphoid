@@ -1,6 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
 // Something active
+// TODO rename id to postfix and use kind in id
 class Creature(val id:String, val kind:String, var cells:List[Cell]) {
   def velocity = 0.0
 
@@ -23,7 +24,6 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
     case list if list.isEmpty => null
   }
 
-  // Returns true if ready to act
   def move(direction: Direction) = {
     cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
     this
@@ -50,5 +50,3 @@ object Creature {
     new Creature(psyche.id, kind, List(Cell(x, y)))
   }
 }
-
-
