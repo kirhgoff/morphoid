@@ -3,12 +3,7 @@ package org.kirhgoff.morphoid.engine
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 10/9/17.
   */
-case class Rect(topLeft:Cell, bottomRight:Cell) {
-  def x1 = topLeft.x
-  def y1 = topLeft.y
-  def x2 = bottomRight.x
-  def y2 = bottomRight.y
-
+case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
   def topRight = Cell(x1, y2)
   def bottomLeft = Cell(x2, y1)
 
@@ -23,17 +18,15 @@ case class Rect(topLeft:Cell, bottomRight:Cell) {
 
   def inside(x:Int, y:Int) = x1 <= x && x <= x2 && y1 <= y && y <= y2
 
-  def move(direction: Direction) = Rect(
+  def move(direction: Direction) = new Rect(
     x1 + direction.dx,
     y1 + direction.dy,
     x2 + direction.dx,
     y2 + direction.dy
   )
-
-
 }
 
 object Rect {
-  def apply (left:Int, top:Int, right:Int, bottom:Int) =
-    new Rect(Cell(left, top), Cell(right, bottom))
+  def apply(topLeft:Cell, bottomRight:Cell) =
+    new Rect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
 }

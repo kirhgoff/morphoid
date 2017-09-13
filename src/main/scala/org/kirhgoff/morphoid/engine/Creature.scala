@@ -12,8 +12,8 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
   }
 
   def boundingRect = cells match {
-    case head::Nil => new Rect(head, head)
-    case head :: tail => tail.foldLeft(new Rect(head, head))((rect, next) =>
+    case head::Nil => Rect(head, head)
+    case head :: tail => tail.foldLeft(Rect(head, head))((rect, next) =>
       Rect(
         Math.min(rect.x1, next.x),
         Math.min(rect.y1, next.y),
@@ -22,7 +22,6 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
       ))
     case list if list.isEmpty => null
   }
-
 
   // Returns true if ready to act
   def move(direction: Direction) = {
