@@ -14,7 +14,7 @@ case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[C
   *
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
   */
-class MorphoidEngine (initialEntities:List[Psyche]) {
+class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
   val GOD_ENGINE = "GOD ENGINE v.01"
 
   val player = initialEntities.head
@@ -41,11 +41,17 @@ class MorphoidEngine (initialEntities:List[Psyche]) {
     })
 
     actions.foreach(batch => execute(validate(batch)))
+    //actions.foreach(batch => execute(batch))
   }
 
-  def validate(events: List[GameEvent]) = events.foldLeft(List())((result:List[List[GameEvent]], batch:List[GameEvent]) => {
-    batch.filter(event:GameEvent => event match {
-      case CreatureMoves(_, _, _) => true
+  def validate(events: List[GameEvent]):List[GameEvent] = {
+    events.filter(event => event match {
+      case CreatureMoves(_, id, direction) => {
+        val rect = creatures(id).boundingRect.move(direction)
+        val intersectsWithSomething = creatures.values.map(_.boundingRect).exists(_.intersects(rect))
+        val insideBorders = levelRect.includes(rect)
+        !intersectsWithSomething && insideBorders
+      }
       case _ => true
     })
   }
@@ -71,16 +77,19 @@ class MorphoidEngine (initialEntities:List[Psyche]) {
 }
 
 object MorphoidEngine {
-  def createSample(playerInputState: PlayerInputState) = new MorphoidEngine (List(
-    PlayerSoul(playerInputState, 10, 10, 5),
-    Herbivore(3, 5, 40),
-    Herbivore(15, 15, 60),
-    Herbivore(9, 11, 50),
-    Plant(1, 8),
-    Plant(6, 13),
-    Plant(16, 12)
-  ))
-
+  def apply(psyche: Psyche) = new MorphoidEngine(Rect(0, 0, 10, 10), List(psyche))
+  def createSample(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
+    Rect(0, 0, width, height),
+    List(
+      PlayerSoul(playerInputState, 10, 10, 5),
+      Herbivore(3, 5, 40),
+      Herbivore(15, 15, 60),
+      Herbivore(9, 11, 50),
+      Plant(1, 8),
+      Plant(6, 13),
+      Plant(16, 12)
+    )
+  )
 }
 
 

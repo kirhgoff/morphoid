@@ -15,14 +15,14 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   "Monster" should "roam" in {
     val herbivore = Herbivore(2, 5, 1)
     val origin = herbivore.creature.origin
-    new MorphoidEngine(List(herbivore)).tick()
+    MorphoidEngine(herbivore).tick()
     origin shouldNot equal(herbivore.creature.origin)
   }
 
   "Ooze" should "stay" in {
     val plant = Plant(2, 5)
     val origin = plant.creature.origin
-    new MorphoidEngine(List(plant)).tick()
+    MorphoidEngine(plant).tick()
     origin should equal(plant.creature.origin)
   }
 
@@ -30,7 +30,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     val entity = Herbivore(2, 5, 3)
     val creature = entity.creature
     val origin = creature.origin
-    val engine = new MorphoidEngine(List(entity))
+    val engine = MorphoidEngine(entity)
     engine.tick()
     origin should equal(creature.origin)
     engine.tick()
@@ -53,6 +53,18 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     Rect(0, 0, 10, 10).includes(Rect(1,1, 12,2)) shouldBe false
     Rect(0, 0, 10, 10).includes(Rect(-10,-10, -2, -2)) shouldBe false
   }
+
+  "Rect" should "be able to detect intersects" in {
+    // include examples
+    Rect(0, 0, 10, 10).intersects(Rect(1,1, 2,2)) shouldBe true
+    Rect(0, 0, 10, 10).intersects(Rect(1,1, 12,2)) shouldBe true
+    Rect(0, 0, 10, 10).intersects(Rect(-10,-10, -2, -2)) shouldBe false
+
+    Rect(0, 0, 1, 1).intersects(Rect(1,1, 2,2)) shouldBe true
+    Rect(0, 0, 10, 10).intersects(Rect(1,1, 12,12)) shouldBe true
+    Rect(0, 0, 10, 10).intersects(Rect(-1,-1, 0,0)) shouldBe true
+  }
+
 
 
   private def checkBoundBox(rect: Rect, cells: List[Cell]) = {

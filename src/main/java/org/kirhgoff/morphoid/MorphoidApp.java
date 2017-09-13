@@ -42,7 +42,7 @@ public class MorphoidApp extends Application {
   public void start(Stage stage) {
     // Model
     PlayerInputState playerInputState = new PlayerInputState();
-    MorphoidEngine engine = MorphoidEngine.createSample(playerInputState);
+    MorphoidEngine engine = MorphoidEngine.createSample(LEVEL_WIDTH, LEVEL_HEIGHT, playerInputState);
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
     PlayerController playerController = new PlayerController(playerInputState);
@@ -89,7 +89,7 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      //stage.setFullScreen(true);
+      stage.setFullScreen(true);
 
     } catch (IOException e) {
       //TODO gracefully exit
