@@ -78,7 +78,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
 }
 
 object MorphoidEngine {
-  def apply(psyche: Psyche) = new MorphoidEngine(Rect(0, 0, 10, 10), List(psyche))
+  def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList)
   def createSample(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
     Rect(0, 0, width, height),
     List(

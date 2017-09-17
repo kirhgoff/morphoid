@@ -42,8 +42,8 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
 }
 
 object Creature {
-  def apply(kind:String, psyche:Psyche, origin:Cell) = {
-    new Creature(psyche.id, kind, List(origin))
+  def apply(kind:String, origin:Cell) = {
+    new Creature(Dice.makeId(kind), kind, List(origin))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {

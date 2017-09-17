@@ -65,6 +65,16 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     Rect(0, 0, 10, 10).intersects(Rect(-1,-1, 0,0)) shouldBe true
   }
 
+  "Ooze" should "move towards shrooms" in {
+    val engine = MorphoidEngine(
+      Plant(0, 0),
+      Herbivore(0, 3, 1)
+    )
+    engine.tick()
+    val ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
+    ooze.origin shouldBe Cell(0, 2) // Moves towards shroom
+  }
+
 
 
   private def checkBoundBox(rect: Rect, cells: List[Cell]) = {

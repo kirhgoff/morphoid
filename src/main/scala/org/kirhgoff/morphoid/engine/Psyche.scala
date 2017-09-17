@@ -45,6 +45,7 @@ abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
 class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def sight = 2
   override def act(surroundings: List[Cell]) = {
+    surroundings.filter(c => "shroom".equals(c.kind))
     List(CreatureMoves(id, creature.id, Dice.randomDirection))
   }
 }
@@ -93,14 +94,14 @@ object PlayerSoul {
 
 object Plant {
   def apply(x:Int, y:Int) = {
-    val id: String = Dice.makeId("ooze")
-    new PlantSoul(id, new Creature(id, "ooze", List(Cell(x, y))))
+    val id: String = Dice.makeId("shroom")
+    new PlantSoul(id, new Creature(id, "shroom", List(Cell(x, y))))
   }
 }
 
 object Herbivore {
   def apply(x:Int, y:Int, velocity:Int) = {
-    val id: String = Dice.makeId("monster")
-    new HerbivoreSoul(id, velocity, new Creature(id, "monster", List(Cell(x, y))))
+    val id: String = Dice.makeId("ooze")
+    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", List(Cell(x, y))))
   }
 }
