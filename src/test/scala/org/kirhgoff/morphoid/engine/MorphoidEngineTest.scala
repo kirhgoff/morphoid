@@ -75,6 +75,22 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     ooze.origin shouldBe Cell(0, 2) // Moves towards shroom
   }
 
+  "HerbivoreSoul" should "find best direction" in {
+    //One cell
+    def checkBestDirection(dx:Int, dy:Int, result:Direction) = {
+      val herbivore = Herbivore(0, 0, 1)
+      herbivore.bestDirection(Cell(dx, dy)) shouldBe result
+    }
+
+    checkBestDirection(1, 0, East)
+    checkBestDirection(2, 1, East)
+    checkBestDirection(2, 3, South)
+    checkBestDirection(-3, 0, West)
+    checkBestDirection(-3, -6, North)
+
+    //TODO add more tests for multi-cells
+  }
+
 
 
   private def checkBoundBox(rect: Rect, cells: List[Cell]) = {

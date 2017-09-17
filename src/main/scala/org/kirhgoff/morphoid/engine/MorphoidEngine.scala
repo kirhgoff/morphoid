@@ -9,17 +9,23 @@ case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) 
 case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
 case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Cell]) extends GameEvent(sourceId, targetId)
 
+// Information Psyche can ask about
+trait Lore {
+  def kindsInside(cell:Cell):List[String]
+}
+
 /**
   * Not thread safe
   *
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
   */
-class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
+class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
+  extends Lore {
   val GOD_ENGINE = "GOD ENGINE v.01"
 
-  val player = initialEntities.head
-  var creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
-  val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
+  private val player = initialEntities.head
+  private var creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
+  private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature):List[Cell] = List()
@@ -32,17 +38,22 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
     val creature = psyche.creature
     creatures(creature.id) = creature
     souls(psyche.id) = psyche
+    psyche.setEngine(this)
+  }
+
+  def init() = {
+    initialEntities.foreach(_.setEngine(this))
+    this
   }
 
   def tick() {
     val actions = souls.values.map(p => {
       // Makes sense to keep frequency information in the engine
       if (p.tick) p.act(surroundings(p.creature))
-      else List()
+      else List() // make it better
     })
 
     actions.foreach(batch => execute(validate(batch)))
-    //actions.foreach(batch => execute(batch))
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
@@ -75,10 +86,15 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche]) {
     }
 
   }
+
+  override def kindsInside(cell: Cell) = {
+    //Naive implementation
+    List() //TODO implement Table class
+  }
 }
 
 object MorphoidEngine {
-  def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList)
+  def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init
   def createSample(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
     Rect(0, 0, width, height),
     List(

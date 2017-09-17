@@ -33,9 +33,14 @@ trait Movable {
 
 }
 
+trait EngineAware {
+  var engine:Lore = null
+  def setEngine(engine:Lore) = this.engine = engine
+}
 // ---------------------
 
-abstract class Psyche (val id:String, val velocity: Int, val creature: Creature) extends Movable {
+abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
+  extends Movable with EngineAware {
   def sight:Int = 0
   def act(surroundings:List[Cell]):List[GameEvent]
 }
@@ -44,9 +49,21 @@ abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
 
 class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def sight = 2
+
   override def act(surroundings: List[Cell]) = {
-    surroundings.filter(c => "shroom".equals(c.kind))
-    List(CreatureMoves(id, creature.id, Dice.randomDirection))
+    val direction = surroundings.find(shroom) match {
+      case Some(cell) => bestDirection(cell)
+      case None => Dice.randomDirection
+    }
+    List(CreatureMoves(id, creature.id, direction))
+  }
+
+  def shroom(cell:Cell):Boolean =
+    engine.kindsInside(cell).contains("shroom")
+
+  def bestDirection(cell: Cell) = {
+    val origin = creature.origin
+    Direction.byDelta(cell.x - origin.x, cell.y - origin.y)
   }
 }
 
