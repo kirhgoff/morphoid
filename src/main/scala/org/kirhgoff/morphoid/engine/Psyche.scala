@@ -26,7 +26,7 @@ trait Movable {
   var loops:Long = 0
   def velocity:Int //How many loops needed to act
 
-  def tick:Boolean = {
+  def readyToAct:Boolean = {
     loops += 1
     velocity != 0 && loops % velocity == 0
   }

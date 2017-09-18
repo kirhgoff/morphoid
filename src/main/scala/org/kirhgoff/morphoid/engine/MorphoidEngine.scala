@@ -46,15 +46,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
-  def tick() {
-    val actions = souls.values.map(p => {
-      // Makes sense to keep frequency information in the engine
-      if (p.tick) p.act(surroundings(p.creature))
-      else List() // make it better
+  def tick() = souls.values.filter(_.readyToAct).map(p => {
+      val batch = p.act(surroundings(p.creature))
+      execute(validate(batch))
     })
-
-    actions.foreach(batch => execute(validate(batch)))
-  }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
     events.filter(event => event match {
