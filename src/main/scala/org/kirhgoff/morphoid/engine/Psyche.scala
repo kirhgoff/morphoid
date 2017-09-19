@@ -110,7 +110,7 @@ object PlayerSoul {
 }
 
 object Plant {
-  def apply(x:Int, y:Int) = {
+  def apply(x:Int, y:Int):Psyche = {
     val id: String = Dice.makeId("shroom")
     new PlantSoul(id, new Creature(id, "shroom", List(Cell(x, y))))
   }

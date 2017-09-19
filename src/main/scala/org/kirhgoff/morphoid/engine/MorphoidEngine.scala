@@ -1,6 +1,7 @@
 package org.kirhgoff.morphoid.engine
 
 import org.kirhgoff.morphoid.PlayerInputState
+import org.kirhgoff.morphoid.engine.Dice._
 
 import scala.collection.{JavaConverters, mutable}
 
@@ -11,7 +12,13 @@ case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[C
 
 // Information Psyche can ask about
 trait Lore {
-  def kindsInside(cell:Cell):List[String]
+  //TODO think about how to keep information about the world
+  private val lore = mutable.Map[String, String]()
+
+  def kindsInside(cell:Cell):String = lore.getOrElse(cell.toString, null)
+  def registerCreature(creature:Creature) = creature.cells.foreach(cell => {
+    lore(cell.toString) = creature.kind
+  })
 }
 
 /**
@@ -21,10 +28,11 @@ trait Lore {
   */
 class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   extends Lore {
-  val GOD_ENGINE = "GOD ENGINE v.01"
+  //val GOD_ENGINE = "GOD ENGINE v.01" //-> prototype
+  val GOD_ENGINE = "GOD ENGINE v.02" //-> multi-cell organisms
 
   private val player = initialEntities.head
-  private var creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
+  private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
 
   //TODO implement surroundings properly
@@ -82,15 +90,12 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   }
 
-  override def kindsInside(cell: Cell) = {
-    //Naive implementation
-    List() //TODO implement Table class
-  }
 }
 
 object MorphoidEngine {
-  def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init
-  def createSample(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
+  def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init()
+
+  def createSimple(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
     Rect(0, 0, width, height),
     List(
       PlayerSoul(playerInputState, 10, 10, 5),
@@ -102,6 +107,20 @@ object MorphoidEngine {
       Plant(16, 12)
     )
   )
+
+  def createProduction(playerInputState: PlayerInputState) = {
+    val width = 30
+    val height = 30
+
+    val plantsCount = 10
+    val cowsCount = 200
+
+    val plants:List[Psyche] = (1 to plantsCount).map(_ => Plant(randomInt(width - 1), randomInt(height - 1))).toList
+    val cows:List[Psyche] = (1 to cowsCount).map(_ => Herbivore(randomInt(width - 1), randomInt(height - 1), 40 * randomInt(10))).toList
+
+    val creatures:List[Psyche] = List(PlayerSoul(playerInputState, width/2, height/2, 5))  ++ plants ++ cows
+    new MorphoidEngine (Rect(0, 0, width, height), creatures)
+  }
 }
 
 

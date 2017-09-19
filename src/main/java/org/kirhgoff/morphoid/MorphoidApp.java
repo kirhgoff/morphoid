@@ -28,11 +28,11 @@ public class MorphoidApp extends Application {
   private static final String FONT_NAME = "Monospaced";
   private static final String ASCII_MAP_FILE = "sample_map.txt";
 
-  private static final int LEVEL_WIDTH = 20;
-  private static final int LEVEL_HEIGHT = 20;
   private static final int SCREEN_WIDTH = 640;
   private static final int SCREEN_HEIGHT = 480;
   private static final double FPS_60 = 0.017;
+  private static final int LEVEL_HEIGHT = 30;
+  private static final int LEVEL_WIDTH = 30;
 
   public static void main(String[] args) throws IOException {
     launch(args);
@@ -42,7 +42,7 @@ public class MorphoidApp extends Application {
   public void start(Stage stage) {
     // Model
     PlayerInputState playerInputState = new PlayerInputState();
-    MorphoidEngine engine = MorphoidEngine.createSample(LEVEL_WIDTH, LEVEL_HEIGHT, playerInputState);
+    MorphoidEngine engine = MorphoidEngine.createProduction(playerInputState);
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
     PlayerController playerController = new PlayerController(playerInputState);

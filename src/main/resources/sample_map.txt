@@ -11,5 +11,9 @@
 --- END
 
 --- ID ooze
+W
+--- END
+
+--- ID shroom
 ~
 --- END
