@@ -4,6 +4,7 @@ package org.kirhgoff.morphoid.engine
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 10/9/17.
   */
 case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
+
   def topRight = Cell(x1, y2)
   def bottomLeft = Cell(x2, y1)
 
@@ -24,9 +25,16 @@ case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
     x2 + direction.dx,
     y2 + direction.dy
   )
+
+  def inflate(d: Int) = Rect(x1 - d, y1 - d, x2 + d, y2 + d)
+
+  def decompose = for (x -> x1 to x2)
+
 }
 
 object Rect {
   def apply(topLeft:Cell, bottomRight:Cell) =
     new Rect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
+
+  def inflate(c:Cell, d:Int) = Rect(c.x - d, c.y - d, c.x + d, c.y + d)
 }

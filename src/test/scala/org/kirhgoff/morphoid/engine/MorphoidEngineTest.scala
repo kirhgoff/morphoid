@@ -69,6 +69,23 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     Rect(0, 0, 10, 10).intersects(Rect(-1,-1, 0,0)) shouldBe true
   }
 
+  "Rect" should "be able to inflate" in {
+    Rect(0, 0, 10, 10).inflate(2) shouldBe Rect(-2, -2, 12, 12)
+    Rect(0, 0, 0, 0).inflate(1) shouldBe Rect(-1, -1, 1, 1)
+  }
+
+  "MorphoidEngine" should "provide surroundings" in {
+    val engine = MorphoidEngine.empty()
+    val creature = mock[Creature]
+    (creature.cells _).expects().returns(List(Cell(5, 5)))
+
+    engine.surroundings(creature, 1) shouldBe List(
+      Cell(4, 4), Cell(5, 4), Cell(6, 4),
+      Cell(4, 5), Cell(5, 5), Cell(6, 5),
+      Cell(4, 6), Cell(5, 6), Cell(6, 6)
+    )
+  }
+
   "Ooze" should "move towards shrooms" in {
     val engine = MorphoidEngine(
       Plant(0, 0),

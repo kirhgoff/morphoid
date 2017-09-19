@@ -31,12 +31,14 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //val GOD_ENGINE = "GOD ENGINE v.01" //-> prototype
   val GOD_ENGINE = "GOD ENGINE v.02" //-> multi-cell organisms
 
-  private val player = initialEntities.head
+  //private val player = initialEntities.head
   private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
 
   //TODO implement surroundings properly
-  def surroundings(creature: Creature):List[Cell] = List()
+  def surroundings(creature: Creature, sight:Int):List[Cell] = {
+    creature.cells.map(c => Rect.inflate(c, sight)).
+  }
 
   // UI Interface
   def getEntities: List[Creature] = creatures.values.toList
@@ -57,7 +59,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def str(cell:Cell) = s"${kindsInside(cell)}$cell"
 
   def tick() = souls.values.filter(_.readyToAct).map(p => {
-    val sur = surroundings(p.creature)
+    val sur = surroundings(p.creature, p.sight)
     val batch = p.act(sur)
       println(s"creature ${p.creature}" +
         s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
@@ -99,6 +101,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 }
 
 object MorphoidEngine {
+  def empty() = new MorphoidEngine(Rect(0,0, 10, 10), List())
   def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init()
 
   def createSimple(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
@@ -133,7 +136,7 @@ object MorphoidEngine {
         minSpeed * randomInt(speedDiff))).toList
 
     val creatures:List[Psyche] = List(PlayerSoul(playerInputState, width/2, height/2, 5))  ++ plants ++ cows
-    new MorphoidEngine (Rect(0, 0, width, height), creatures)
+    new MorphoidEngine (Rect(0, 0, width, height), creatures).init()
   }
 }
 
