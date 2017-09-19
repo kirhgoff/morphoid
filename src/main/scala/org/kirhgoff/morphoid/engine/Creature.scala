@@ -39,6 +39,8 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
     case CreatureAttacks(_, _, _) => // TODO add State - change state to attacking here
   }
 
+  override def toString = s"Creature $id $kind cells=$cells"
+
 }
 
 object Creature {

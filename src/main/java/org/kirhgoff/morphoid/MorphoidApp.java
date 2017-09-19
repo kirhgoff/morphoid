@@ -89,7 +89,7 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      stage.setFullScreen(true);
+      //stage.setFullScreen(true);
 
     } catch (IOException e) {
       //TODO gracefully exit

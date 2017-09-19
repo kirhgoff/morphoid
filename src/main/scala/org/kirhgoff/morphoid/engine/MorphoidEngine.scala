@@ -54,8 +54,14 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
+  def str(cell:Cell) = s"${kindsInside(cell)}$cell"
+
   def tick() = souls.values.filter(_.readyToAct).map(p => {
-      val batch = p.act(surroundings(p.creature))
+    val sur = surroundings(p.creature)
+    val batch = p.act(sur)
+      println(s"creature ${p.creature}" +
+        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
+        s"\n\tbatch=$batch")
       execute(validate(batch))
     })
 
@@ -113,10 +119,18 @@ object MorphoidEngine {
     val height = 30
 
     val plantsCount = 10
-    val cowsCount = 200
+    val cowsCount = 5
 
-    val plants:List[Psyche] = (1 to plantsCount).map(_ => Plant(randomInt(width - 1), randomInt(height - 1))).toList
-    val cows:List[Psyche] = (1 to cowsCount).map(_ => Herbivore(randomInt(width - 1), randomInt(height - 1), 40 * randomInt(10))).toList
+    val minSpeed = 20
+    val speedDiff = 10
+
+    val plants:List[Psyche] = (1 to plantsCount)
+      .map(_ => Plant(randomInt(width - 1), randomInt(height - 1))).toList
+    val cows:List[Psyche] = (1 to cowsCount)
+      .map(_ => Herbivore(
+        randomInt(width - 1),
+        randomInt(height - 1),
+        minSpeed * randomInt(speedDiff))).toList
 
     val creatures:List[Psyche] = List(PlayerSoul(playerInputState, width/2, height/2, 5))  ++ plants ++ cows
     new MorphoidEngine (Rect(0, 0, width, height), creatures)
