@@ -48,7 +48,7 @@ abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
 // ---------------------
 
 class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
-  override def sight = 2
+  override def sight = 3
 
   override def act(surroundings: List[Cell]) = {
     val direction = surroundings.find(shroom) match {
@@ -58,8 +58,9 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
     List(CreatureMoves(id, creature.id, direction))
   }
 
-  def shroom(cell:Cell):Boolean =
+  def shroom(cell:Cell):Boolean = {
     engine.kindsInside(cell).contains("shroom")
+  }
 
   def bestDirection(cell: Cell) = {
     val origin = creature.origin

@@ -90,7 +90,10 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     val engine = MorphoidEngine(
       Plant(0, 0),
       Herbivore(0, 3, 1)
-    )
+    ).init()
+
+    engine.kindsInside(Cell(0, 0)) shouldEqual "shroom"
+
     def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
 
     println("-------- Step 1 ------------")

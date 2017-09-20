@@ -15,7 +15,7 @@ trait Lore {
   //TODO think about how to keep information about the world
   private val lore = mutable.Map[String, String]()
 
-  def kindsInside(cell:Cell):String = lore.getOrElse(cell.toString, null)
+  def kindsInside(cell:Cell):String = lore.getOrElse(cell.toString, "")
   def registerCreature(creature:Creature) = creature.cells.foreach(cell => {
     lore(cell.toString) = creature.kind
   })
@@ -37,7 +37,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature, sight:Int):List[Cell] = {
-    creature.cells.map(c => Rect.inflate(c, sight)).
+    creature.cells.flatMap(c => Rect.inflate(c, sight).decompose)
   }
 
   // UI Interface
@@ -52,7 +52,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   }
 
   def init() = {
-    initialEntities.foreach(_.setEngine(this))
+    initialEntities.foreach(p => {
+      p.setEngine(this)
+      registerCreature(p.creature)
+    })
     this
   }
 
@@ -61,11 +64,11 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def tick() = souls.values.filter(_.readyToAct).map(p => {
     val sur = surroundings(p.creature, p.sight)
     val batch = p.act(sur)
-      println(s"creature ${p.creature}" +
-        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
-        s"\n\tbatch=$batch")
-      execute(validate(batch))
-    })
+//      println(s"creature ${p.creature}" +
+//        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
+//        s"\n\tbatch=$batch")
+    execute(validate(batch))
+  })
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
     events.filter(event => event match {
@@ -121,8 +124,8 @@ object MorphoidEngine {
     val width = 30
     val height = 30
 
-    val plantsCount = 10
-    val cowsCount = 5
+    val plantsCount = 20
+    val cowsCount = 50
 
     val minSpeed = 20
     val speedDiff = 10

@@ -28,8 +28,7 @@ case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
 
   def inflate(d: Int) = Rect(x1 - d, y1 - d, x2 + d, y2 + d)
 
-  def decompose = for (x -> x1 to x2)
-
+  def decompose = for (x <- x1 to x2; y <- y1 to y2) yield Cell(x, y)
 }
 
 object Rect {
