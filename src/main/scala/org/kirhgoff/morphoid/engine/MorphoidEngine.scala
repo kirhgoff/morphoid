@@ -8,28 +8,39 @@ import scala.collection.{JavaConverters, mutable}
 abstract class GameEvent(sourceId:String, targetId:String)
 case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
 case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
-case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Cell]) extends GameEvent(sourceId, targetId)
+case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Physical]) extends GameEvent(sourceId, targetId)
 
-// TODO find proper names
-case class CellData(kind:String, cellType:String)
+class Cell(var kind:String, var cellType:String)
 
 // Information Psyche can ask about
 trait Lore {
-  private val lore = mutable.Map[String, CellData]()
+  // Key is Physical.toString
+  private val creatureIndex = mutable.Map[String, Creature]()
+  // Key is Physical.toString
+  private val lore = mutable.Map[String, Cell]()
 
-  private def get(cell: Cell, lambda: (CellData) => String) = {
-    lore.get(cell.toString).fold("")(lambda)
+  private def get(physical: Physical, lambda: (Cell) => String) = lore.get(physical.toString).fold("")(lambda)
+  private def find(physical: Physical):Cell = lore(physical.toString)
+
+  def kindsInside(cell: Physical): String = get(cell, d => d.kind)
+
+  def cellType(cell: Physical): String = get(cell, d => d.cellType)
+
+  def registerCreature(creature: Creature) = {
+    creature.cells.foreach(physical => {
+      var cell = find(physical)
+      val hash = physical.toString
+      creatureIndex(hash) = creature
+      cell.kind = creature.kind
+      cell.cellType
+    })
+
+  //    .map(physical:Cell => {
+  //    lore(physical.physical.toString) = Cell(creature.kind, physical.cellType)
+  //  }
   }
 
-  def kindsInside(cell:Cell):String = get(cell, d => d.kind)
-  def cellType(cell:Cell):String = get(cell, d => d.cellType)
-
-  def registerCreature(creature:Creature) = creature.cells.foreach(cell => {
-    lore(cell.toString) = CellData(creature.kind, cell.cellType)
-  })
-  def unregisterCreature(creature:Creature) = creature.cells.foreach(cell => {
-    lore.remove(cell.toString)
-  })
+  def unregisterCreature(creature:Creature) = creature.cells.foreach(cell => lore.remove(cell.toString))
 }
 
 /**
@@ -40,14 +51,14 @@ trait Lore {
 class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   extends Lore {
   //val GOD_ENGINE = "GOD ENGINE v.01" //-> prototype
-  val GOD_ENGINE = "GOD ENGINE v.02" //-> multi-cell organisms
+  val GOD_ENGINE = "GOD ENGINE v.03" //-> multi-cell organisms
 
   //private val player = initialEntities.head
   private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
 
   //TODO implement surroundings properly
-  def surroundings(creature: Creature, sight:Int):List[Cell] = {
+  def surroundings(creature: Creature, sight:Int):List[Physical] = {
     creature.cells.flatMap(c => Rect.inflate(c, sight).decompose)
   }
 
@@ -70,15 +81,13 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
-  def str(cell:Cell) = s"${kindsInside(cell)}$cell"
+  def str(cell:Physical) = s"${kindsInside(cell)}$cell"
 
   def tick() = {
-    updateEnergy()
-
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)
-      .map(p => {
+      .foreach(p => {
         val sur = surroundings(p.creature, p.sight)
         val batch = p.act(sur)
         //      println(s"creature ${p.creature}" +
@@ -86,17 +95,20 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         //        s"\n\tbatch=$batch")
         execute(validate(batch))
     })
-  }
 
-  def updateEnergy() = {
+    //TODO ask Michal how to rewrite functionally
     creatures.values.foreach(creature => {
       creature.updateEnergy(creature.cells.foldLeft(0)((a, c) => {
         cellType(c) match {
-          case "seed" => a + 1
+          case "seed" => a + 1 //TODO create case object
           case _ => a - 1
         }
       }))
+      registerCreature(creature)
     })
+
+
+
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {

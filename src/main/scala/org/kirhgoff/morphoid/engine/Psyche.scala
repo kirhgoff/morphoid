@@ -31,7 +31,7 @@ trait EngineAware {
 abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
   extends Movable with EngineAware {
   def sight:Int = 0
-  def act(surroundings:List[Cell]):List[GameEvent]
+  def act(surroundings:List[Physical]):List[GameEvent]
 }
 
 // ---------------------
@@ -39,7 +39,7 @@ abstract class Psyche (val id:String, val velocity: Int, val creature: Creature)
 class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
   override def sight = 3
 
-  override def act(surroundings: List[Cell]) = {
+  override def act(surroundings: List[Physical]) = {
     val direction = surroundings.find(shroom) match {
       case Some(cell) => bestDirection(cell)
       case None => Dice.randomDirection
@@ -47,11 +47,11 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
     List(CreatureMoves(id, creature.id, direction))
   }
 
-  def shroom(cell:Cell):Boolean = {
+  def shroom(cell:Physical):Boolean = {
     engine.kindsInside(cell).contains("shroom")
   }
 
-  def bestDirection(cell: Cell) = {
+  def bestDirection(cell: Physical) = {
     val origin = creature.origin
     Direction.byDelta(cell.x - origin.x, cell.y - origin.y)
   }
@@ -60,13 +60,13 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
 // ---------------------
 
 class PlantSoul(id:String, creature:Creature) extends Psyche(id, Movable.ZeroVelocity, creature) {
-  override def act(surroundings: List[Cell]) = List()
+  override def act(surroundings: List[Physical]) = List()
 }
 
 // ---------------------
 
 class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature) extends Psyche(id, velocity, creature) {
-  override def act(surroundings: List[Cell]) = {
+  override def act(surroundings: List[Physical]) = {
     List(CreatureMoves(id, creature.id, direction))
   }
 }
@@ -74,7 +74,7 @@ class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature
 // ---------------------
 
 class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Creature) extends Psyche(id, velocity, creature) {
-  override def act(surroundings: List[Cell]) = {
+  override def act(surroundings: List[Physical]) = {
     //println("PS read " + input)
     var events = ListBuffer[GameEvent]()
 
@@ -95,20 +95,20 @@ class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Cr
 object PlayerSoul {
   def apply(playerInputState: PlayerInputState, x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("player")
-    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", 100, List(Cell(x, y))))
+    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", 100, List(Physical(x, y))))
   }
 }
 
 object Plant {
   def apply(x:Int, y:Int):Psyche = {
     val id: String = Dice.makeId("shroom")
-    new PlantSoul(id, new Creature(id, "shroom", 5, List(Cell(x, y))))
+    new PlantSoul(id, new Creature(id, "shroom", 5, List(Physical(x, y))))
   }
 }
 
 object Herbivore {
   def apply(x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("ooze")
-    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, List(Cell(x, y))))
+    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, List(Physical(x, y))))
   }
 }

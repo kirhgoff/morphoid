@@ -8,8 +8,8 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", 10, List(Cell(0, 0), Cell(2, 5))).origin should be(Cell(0, 5))
-    new Creature("", "", 5, List(Cell(2, 5))).origin should be(Cell(2, 5))
+    new Creature("", "", 10, List(Physical(0, 0), Physical(2, 5))).origin should be(Physical(0, 5))
+    new Creature("", "", 5, List(Physical(2, 5))).origin should be(Physical(2, 5))
   }
 
   "Monster" should "roam" in {
@@ -43,13 +43,13 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   }
 
   "Creature" should "know its bounding rect" in {
-    def checkBoundBox(rect: Rect, cells: List[Cell]) = {
+    def checkBoundBox(rect: Rect, cells: List[Physical]) = {
       rect should equal(new Creature("01", "test", 10, cells).boundingRect)
     }
 
-    checkBoundBox(Rect(2, 3, 2, 3), List(Cell(2, 3)))
-    checkBoundBox(Rect(1, 2, 2, 3), List(Cell(2, 3), Cell(1, 2)))
-    checkBoundBox(Rect(-1, -2, 2, 2), List(Cell(0, 0), Cell(-1, -2), Cell(2,2)))
+    checkBoundBox(Rect(2, 3, 2, 3), List(Physical(2, 3)))
+    checkBoundBox(Rect(1, 2, 2, 3), List(Physical(2, 3), Physical(1, 2)))
+    checkBoundBox(Rect(-1, -2, 2, 2), List(Physical(0, 0), Physical(-1, -2), Physical(2,2)))
   }
 
   "Rect" should "be possible to check if it is inside" in {
@@ -77,12 +77,12 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   "MorphoidEngine" should "provide surroundings" in {
     val engine = MorphoidEngine.empty()
     val creature = mock[Creature]
-    (creature.cells _).expects().returns(List(Cell(5, 5)))
+    (creature.cells _).expects().returns(List(Physical(5, 5)))
 
     engine.surroundings(creature, 1) shouldBe List(
-      Cell(4, 4), Cell(5, 4), Cell(6, 4),
-      Cell(4, 5), Cell(5, 5), Cell(6, 5),
-      Cell(4, 6), Cell(5, 6), Cell(6, 6)
+      Physical(4, 4), Physical(5, 4), Physical(6, 4),
+      Physical(4, 5), Physical(5, 5), Physical(6, 5),
+      Physical(4, 6), Physical(5, 6), Physical(6, 6)
     )
   }
 
@@ -92,22 +92,22 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
       Herbivore(0, 3, 1)
     ).init()
 
-    engine.kindsInside(Cell(0, 0)) shouldEqual "shroom"
+    engine.kindsInside(Physical(0, 0)) shouldEqual "shroom"
 
     def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
 
     engine.tick()
-    ooze.origin shouldBe Cell(0, 2) // Moves towards shroom
+    ooze.origin shouldBe Physical(0, 2) // Moves towards shroom
 
     engine.tick()
-    ooze.origin shouldBe Cell(0, 1) // Moves towards shroom
+    ooze.origin shouldBe Physical(0, 1) // Moves towards shroom
   }
 
   "HerbivoreSoul" should "find best direction" in {
     //One cell
     def checkBestDirection(dx:Int, dy:Int, result:Direction) = {
       val herbivore = Herbivore(0, 0, 1)
-      herbivore.bestDirection(Cell(dx, dy)) shouldBe result
+      herbivore.bestDirection(Physical(dx, dy)) shouldBe result
     }
 
     checkBestDirection(1, 0, East)

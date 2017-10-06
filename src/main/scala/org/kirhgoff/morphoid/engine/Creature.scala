@@ -7,13 +7,13 @@ trait Live {
 
 // Something active
 // TODO rename id to postfix and use kind in id
-class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Cell]) extends Live {
+class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Physical]) extends Live {
   def velocity = 0.0
 
-  def origin:Cell = cells match {
+  def origin:Physical = cells match {
     case head::Nil => head
     case head :: tail => tail.foldLeft(head)((cell, next) =>
-      Cell(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
+      Physical(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
     case list if list.isEmpty => null
   }
 
@@ -30,7 +30,7 @@ class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Ce
   }
 
   def move(direction: Direction) = {
-    cells = cells.map(c => Cell(c.x + direction.dx, c.y + direction.dy))
+    cells = cells.map(c => Physical(c.x + direction.dx, c.y + direction.dy))
     this
   }
 
@@ -51,11 +51,11 @@ class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Ce
 }
 
 object Creature {
-  def apply(kind:String, origin:Cell) = {
+  def apply(kind:String, origin:Physical) = {
     new Creature(Dice.makeId(kind), kind, 10, List(origin))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {
-    new Creature(psyche.id, kind, 10, List(Cell(x, y)))
+    new Creature(psyche.id, kind, 10, List(Physical(x, y)))
   }
 }
