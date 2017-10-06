@@ -1,8 +1,13 @@
 package org.kirhgoff.morphoid.engine
 
+trait Live {
+  def energy:Int
+  def isAlive = energy > 0
+}
+
 // Something active
 // TODO rename id to postfix and use kind in id
-class Creature(val id:String, val kind:String, var cells:List[Cell]) {
+class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Cell]) extends Live {
   def velocity = 0.0
 
   def origin:Cell = cells match {
@@ -33,6 +38,8 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
 
   }
 
+  def updateEnergy(value:Int) = energy -= value
+
   def receive(event: GameEvent) = event match {
     //TODO: move out to separate class
     case CreatureMoves(_,_,direction) => move(direction)
@@ -45,10 +52,10 @@ class Creature(val id:String, val kind:String, var cells:List[Cell]) {
 
 object Creature {
   def apply(kind:String, origin:Cell) = {
-    new Creature(Dice.makeId(kind), kind, List(origin))
+    new Creature(Dice.makeId(kind), kind, 10, List(origin))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {
-    new Creature(psyche.id, kind, List(Cell(x, y)))
+    new Creature(psyche.id, kind, 10, List(Cell(x, y)))
   }
 }

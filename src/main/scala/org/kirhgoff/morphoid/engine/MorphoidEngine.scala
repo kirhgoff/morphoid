@@ -10,14 +10,25 @@ case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) 
 case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
 case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Cell]) extends GameEvent(sourceId, targetId)
 
+// TODO find proper names
+case class CellData(kind:String, cellType:String)
+
 // Information Psyche can ask about
 trait Lore {
-  //TODO think about how to keep information about the world
-  private val lore = mutable.Map[String, String]()
+  private val lore = mutable.Map[String, CellData]()
 
-  def kindsInside(cell:Cell):String = lore.getOrElse(cell.toString, "")
+  private def get(cell: Cell, lambda: (CellData) => String) = {
+    lore.get(cell.toString).fold("")(lambda)
+  }
+
+  def kindsInside(cell:Cell):String = get(cell, d => d.kind)
+  def cellType(cell:Cell):String = get(cell, d => d.cellType)
+
   def registerCreature(creature:Creature) = creature.cells.foreach(cell => {
-    lore(cell.toString) = creature.kind
+    lore(cell.toString) = CellData(creature.kind, cell.cellType)
+  })
+  def unregisterCreature(creature:Creature) = creature.cells.foreach(cell => {
+    lore.remove(cell.toString)
   })
 }
 
@@ -61,14 +72,32 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   def str(cell:Cell) = s"${kindsInside(cell)}$cell"
 
-  def tick() = souls.values.filter(_.readyToAct).map(p => {
-    val sur = surroundings(p.creature, p.sight)
-    val batch = p.act(sur)
-//      println(s"creature ${p.creature}" +
-//        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
-//        s"\n\tbatch=$batch")
-    execute(validate(batch))
-  })
+  def tick() = {
+    updateEnergy()
+
+    souls.values
+      .filter(_.creature.isAlive)
+      .filter(_.readyToAct)
+      .map(p => {
+        val sur = surroundings(p.creature, p.sight)
+        val batch = p.act(sur)
+        //      println(s"creature ${p.creature}" +
+        //        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
+        //        s"\n\tbatch=$batch")
+        execute(validate(batch))
+    })
+  }
+
+  def updateEnergy() = {
+    creatures.values.foreach(creature => {
+      creature.updateEnergy(creature.cells.foldLeft(0)((a, c) => {
+        cellType(c) match {
+          case "seed" => a + 1
+          case _ => a - 1
+        }
+      }))
+    })
+  }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
     events.filter(event => event match {
@@ -87,14 +116,16 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case List() =>
     case event :: rest => event match {
       case CreatureMoves(_, id, direction) => {
-        creatures(id).move(direction)
+        val creature = creatures(id)
+        unregisterCreature(creature)
+        registerCreature(creature.move(direction))
       }
       case CreatureAttacks(_, id, direction) => {
         val creature = creatures(id)
         creature.attack(direction)
         val newId = Dice.makeId("pew")
         val projectileOrigin = creature.origin.nextTo(direction)
-        val projectile = new Creature(newId, "projectile", List(projectileOrigin))
+        val projectile = new Creature(newId, "projectile", 5, List(projectileOrigin))
         addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }

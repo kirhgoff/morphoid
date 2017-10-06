@@ -8,8 +8,8 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", List(Cell(0, 0), Cell(2, 5))).origin should be(Cell(0, 5))
-    new Creature("", "", List(Cell(2, 5))).origin should be(Cell(2, 5))
+    new Creature("", "", 10, List(Cell(0, 0), Cell(2, 5))).origin should be(Cell(0, 5))
+    new Creature("", "", 5, List(Cell(2, 5))).origin should be(Cell(2, 5))
   }
 
   "Monster" should "roam" in {
@@ -44,7 +44,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "know its bounding rect" in {
     def checkBoundBox(rect: Rect, cells: List[Cell]) = {
-      rect should equal(new Creature("01", "test", cells).boundingRect)
+      rect should equal(new Creature("01", "test", 10, cells).boundingRect)
     }
 
     checkBoundBox(Rect(2, 3, 2, 3), List(Cell(2, 3)))
@@ -96,11 +96,9 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
     def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
 
-    println("-------- Step 1 ------------")
     engine.tick()
     ooze.origin shouldBe Cell(0, 2) // Moves towards shroom
 
-    println("-------- Step 1 ------------")
     engine.tick()
     ooze.origin shouldBe Cell(0, 1) // Moves towards shroom
   }
@@ -122,6 +120,17 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     //TODO add more tests for multi-cells
   }
 
+  "Ooze" should "die without food" in {
+    val engine = MorphoidEngine(
+      Herbivore(0, 0, 1)
+    ).init()
+
+    def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
+    val initialEnergy = ooze.energy
+
+    engine.tick()
+    ooze.energy should be < initialEnergy
+  }
 
 
 }
