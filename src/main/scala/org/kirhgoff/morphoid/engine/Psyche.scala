@@ -95,20 +95,20 @@ class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Cr
 object PlayerSoul {
   def apply(playerInputState: PlayerInputState, x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("player")
-    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", 100, List(Physical(x, y))))
+    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", 100, Map(Physical(x, y) -> "seed")))
   }
 }
 
 object Plant {
   def apply(x:Int, y:Int):Psyche = {
     val id: String = Dice.makeId("shroom")
-    new PlantSoul(id, new Creature(id, "shroom", 5, List(Physical(x, y))))
+    new PlantSoul(id, new Creature(id, "shroom", 5, Map(Physical(x, y) -> "seed")))
   }
 }
 
 object Herbivore {
   def apply(x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("ooze")
-    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, List(Physical(x, y))))
+    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, Map(Physical(x, y) -> "seed")))
   }
 }

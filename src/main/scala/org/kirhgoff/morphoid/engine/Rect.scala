@@ -5,8 +5,8 @@ package org.kirhgoff.morphoid.engine
   */
 case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
 
-  def topRight = Physical(x1, y2)
-  def bottomLeft = Physical(x2, y1)
+  def topRight = new Physical(x1, y2)
+  def bottomLeft = new Physical(x2, y1)
 
   def includes(rect: Rect) =
     x1 <= rect.x1 && y1 <= rect.y1 && x2 >= rect.x2 && y2 >= rect.y2
@@ -28,7 +28,7 @@ case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
 
   def inflate(d: Int) = Rect(x1 - d, y1 - d, x2 + d, y2 + d)
 
-  def decompose = for (x <- x1 to x2; y <- y1 to y2) yield Physical(x, y)
+  def decompose = for (x <- x1 to x2; y <- y1 to y2) yield new Physical(x, y)
 }
 
 object Rect {

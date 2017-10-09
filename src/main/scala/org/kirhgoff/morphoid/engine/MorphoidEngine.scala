@@ -26,21 +26,23 @@ trait Lore {
 
   def cellType(cell: Physical): String = get(cell, d => d.cellType)
 
-  def registerCreature(creature: Creature) = {
+  def unregisterCreature(creature:Creature) = {
     creature.cells.foreach(physical => {
-      var cell = find(physical)
-      val hash = physical.toString
-      creatureIndex(hash) = creature
-      cell.kind = creature.kind
-      cell.cellType
+      val cell = find(physical)
+      creatureIndex(physical.toString) = null
+      cell.kind = ""
+      cell.cellType = ""
     })
-
-  //    .map(physical:Cell => {
-  //    lore(physical.physical.toString) = Cell(creature.kind, physical.cellType)
-  //  }
   }
 
-  def unregisterCreature(creature:Creature) = creature.cells.foreach(cell => lore.remove(cell.toString))
+  def registerCreature(creature: Creature) = {
+    creature.cells.foreach(physical => {
+      val cell = find(physical)
+      creatureIndex(physical.toString) = creature
+      cell.kind = creature.kind
+      cell.cellType = creature.cellType(physical)
+    })
+  }
 }
 
 /**
@@ -59,7 +61,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature, sight:Int):List[Physical] = {
-    creature.cells.flatMap(c => Rect.inflate(c, sight).decompose)
+    creature.cells.flatMap(c => Rect.inflate(c, sight).decompose).toList
   }
 
   // UI Interface
@@ -104,11 +106,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
           case _ => a - 1
         }
       }))
-      registerCreature(creature)
     })
-
-
-
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
@@ -137,7 +135,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         creature.attack(direction)
         val newId = Dice.makeId("pew")
         val projectileOrigin = creature.origin.nextTo(direction)
-        val projectile = new Creature(newId, "projectile", 5, List(projectileOrigin))
+        val projectile = new Creature(newId, "projectile", 5, Map(projectileOrigin -> "seed"))
         addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }

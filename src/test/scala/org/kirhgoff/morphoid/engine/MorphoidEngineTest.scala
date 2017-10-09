@@ -8,8 +8,9 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", 10, List(Physical(0, 0), Physical(2, 5))).origin should be(Physical(0, 5))
-    new Creature("", "", 5, List(Physical(2, 5))).origin should be(Physical(2, 5))
+    new Creature("", "", 10, Map(Physical(0, 0) -> "seed", Physical(2, 5) -> "smth"))
+      .origin should be(Physical(0, 5))
+    new Creature("", "", 5, Map(Physical(2, 5) -> "seed")).origin should be(Physical(2, 5))
   }
 
   "Monster" should "roam" in {
@@ -43,13 +44,14 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   }
 
   "Creature" should "know its bounding rect" in {
-    def checkBoundBox(rect: Rect, cells: List[Physical]) = {
+    def checkBoundBox(rect: Rect, cells: Map[Physical, String]) = {
       rect should equal(new Creature("01", "test", 10, cells).boundingRect)
     }
 
-    checkBoundBox(Rect(2, 3, 2, 3), List(Physical(2, 3)))
-    checkBoundBox(Rect(1, 2, 2, 3), List(Physical(2, 3), Physical(1, 2)))
-    checkBoundBox(Rect(-1, -2, 2, 2), List(Physical(0, 0), Physical(-1, -2), Physical(2,2)))
+    checkBoundBox(Rect(2, 3, 2, 3), Map(Physical(2, 3) -> "seed"))
+    checkBoundBox(Rect(1, 2, 2, 3), Map(Physical(2, 3) -> "seed", Physical(1, 2) -> "move"))
+    checkBoundBox(Rect(-1, -2, 2, 2), Map(
+      Physical(0, 0) -> "seed", Physical(-1, -2) -> "move", Physical(2,2) -> "mouth"))
   }
 
   "Rect" should "be possible to check if it is inside" in {

@@ -7,18 +7,22 @@ trait Live {
 
 // Something active
 // TODO rename id to postfix and use kind in id
-class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Physical]) extends Live {
+class Creature(val id:String, val kind:String, var energy:Int, val cellsMap:Map[Physical, String]) extends Live {
   def velocity = 0.0
 
+  def cells = cellsMap.keys
+
+  def cellType(physical:Physical) = cellsMap(physical)
+
   def origin:Physical = cells match {
-    case head::Nil => head
-    case head :: tail => tail.foldLeft(head)((cell, next) =>
-      Physical(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
+    case head :: Nil => head
+    case head :: tail => tail.foldLeft(new Physical(head))((cell, next) =>
+      cell.moveTo(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
     case list if list.isEmpty => null
   }
 
   def boundingRect = cells match {
-    case head::Nil => Rect(head, head)
+    case head :: Nil => Rect(head, head)
     case head :: tail => tail.foldLeft(Rect(head, head))((rect, next) =>
       Rect(
         Math.min(rect.x1, next.x),
@@ -30,7 +34,7 @@ class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Ph
   }
 
   def move(direction: Direction) = {
-    cells = cells.map(c => Physical(c.x + direction.dx, c.y + direction.dy))
+    cellsMap.keys.foreach(_.move(direction))
     this
   }
 
@@ -52,10 +56,10 @@ class Creature(val id:String, val kind:String, var energy:Int, var cells:List[Ph
 
 object Creature {
   def apply(kind:String, origin:Physical) = {
-    new Creature(Dice.makeId(kind), kind, 10, List(origin))
+    new Creature(Dice.makeId(kind), kind, 10, Map(origin -> "seed"))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {
-    new Creature(psyche.id, kind, 10, List(Physical(x, y)))
+    new Creature(psyche.id, kind, 10, Map(new Physical(x, y) -> "seed"))
   }
 }
