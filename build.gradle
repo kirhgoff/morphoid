@@ -1,15 +1,21 @@
 plugins {
-    id "com.github.maiflai.scalatest" version "0.15"
+    //id "com.github.maiflai.scalatest" version "0.15"
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
 apply plugin: 'scala'
-
-version = '0.3'
+apply plugin: 'application'
 
 repositories {
     mavenCentral()
 }
+
+// TODO add description
+
+version = '0.3'
+
+mainClassName = "org.kirhgoff.morphoid.MorphoidApp"
+applicationDefaultJvmArgs = ["-Dgreeting.language=en"]
 
 sourceSets {
     main {
@@ -32,7 +38,7 @@ dependencies {
     testCompile group: 'org.testng', name: 'testng', version: '6.11'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.7.15'
-    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
+    //testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
     testRuntime group: 'org.pegdown', name: 'pegdown', version: '1.6.0'
     // https://mvnrepository.com/artifact/org.scalamock/scalamock-scalatest-support_2.12
     testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'

@@ -9,10 +9,12 @@ import scala.util.Random
   */
 object Dice {
   val idCounter = new AtomicLong()
+  val tickCounter = new AtomicLong()
   val random = Random
 
+  def randomInt(maxInclusive:Int) = random.nextInt(maxInclusive)
   def randomDirection = Direction.byIndex(random.nextInt(4))
   //TODO format with zeros
   def makeId(prefix:String = "") = prefix + idCounter.incrementAndGet().toString
-  def randomInt(maxInclusive:Int) = random.nextInt(maxInclusive)
+  def nextTickNumber = tickCounter.getAndIncrement()
 }

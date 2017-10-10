@@ -34,7 +34,10 @@ public class MorphoidApp extends Application {
   private static final int LEVEL_HEIGHT = 30;
   private static final int LEVEL_WIDTH = 30;
 
+  private static String initialScenario = "production";
+
   public static void main(String[] args) throws IOException {
+    if (args.length == 1) initialScenario = args[0];
     launch(args);
   }
 
@@ -42,7 +45,7 @@ public class MorphoidApp extends Application {
   public void start(Stage stage) {
     // Model
     PlayerInputState playerInputState = new PlayerInputState();
-    MorphoidEngine engine = MorphoidEngine.createProduction(playerInputState);
+    MorphoidEngine engine = MorphoidEngine.create(initialScenario, playerInputState);
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
     PlayerController playerController = new PlayerController(playerInputState);
@@ -85,7 +88,7 @@ public class MorphoidApp extends Application {
       gameLoop.getKeyFrames().add(keyFrame);
       gameLoop.play();
 
-      stage.setTitle("Morphoid v0.4");
+      stage.setTitle("MorphoidApp v0.3");
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
