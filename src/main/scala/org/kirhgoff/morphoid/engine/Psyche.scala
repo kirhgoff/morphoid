@@ -55,6 +55,8 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
     val origin = creature.origin
     Direction.byDelta(cell.x - origin.x, cell.y - origin.y)
   }
+
+  override def toString = s"Herbivory $id v=$velocity c=$creature"
 }
 
 // ---------------------

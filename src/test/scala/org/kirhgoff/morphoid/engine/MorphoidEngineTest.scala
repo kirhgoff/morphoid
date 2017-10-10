@@ -81,7 +81,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     val creature = mock[Creature]
     (creature.cells _).expects().returns(List(Physical(5, 5)))
 
-    engine.surroundings(creature, 1) shouldBe List(
+    engine.surroundings(creature, 1) == List(
       Physical(4, 4), Physical(5, 4), Physical(6, 4),
       Physical(4, 5), Physical(5, 5), Physical(6, 5),
       Physical(4, 6), Physical(5, 6), Physical(6, 6)

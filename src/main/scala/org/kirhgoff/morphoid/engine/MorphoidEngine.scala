@@ -17,30 +17,29 @@ trait Lore {
   // Key is Physical.toString
   private val creatureIndex = mutable.Map[String, Creature]()
   // Key is Physical.toString
-  private val lore = mutable.Map[String, Cell]()
+  private val lore = mutable.Map[String, Cell]().withDefault(_ => new Cell("", ""))
 
   private def get(physical: Physical, lambda: (Cell) => String) = lore.get(physical.toString).fold("")(lambda)
-  private def find(physical: Physical):Cell = lore(physical.toString)
-
   def kindsInside(cell: Physical): String = get(cell, d => d.kind)
-
   def cellType(cell: Physical): String = get(cell, d => d.cellType)
+
+  private def find(physical: Physical):Cell = lore(physical.toString)
 
   def unregisterCreature(creature:Creature) = {
     creature.cells.foreach(physical => {
       val cell = find(physical)
-      creatureIndex(physical.toString) = null
       cell.kind = ""
       cell.cellType = ""
+      creatureIndex(physical.toString) = null
     })
   }
 
   def registerCreature(creature: Creature) = {
     creature.cells.foreach(physical => {
       val cell = find(physical)
-      creatureIndex(physical.toString) = creature
       cell.kind = creature.kind
       cell.cellType = creature.cellType(physical)
+      creatureIndex(physical.toString) = creature
     })
   }
 }
@@ -61,7 +60,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature, sight:Int):List[Physical] = {
-    creature.cells.flatMap(c => Rect.inflate(c, sight).decompose).toList
+    creature.cells.flatMap(c => Rect.inflate(c, sight).decompose)
   }
 
   // UI Interface
@@ -86,6 +85,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def str(cell:Physical) = s"${kindsInside(cell)}$cell"
 
   def tick() = {
+    println(s"Souls before: $souls")
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)
@@ -107,6 +107,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         }
       }))
     })
+
+    println(s"Souls after: $souls")
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
@@ -127,8 +129,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case event :: rest => event match {
       case CreatureMoves(_, id, direction) => {
         val creature = creatures(id)
+        println(s"Creature before $creature")
         unregisterCreature(creature)
         registerCreature(creature.move(direction))
+        println(s"Creature after $creature")
       }
       case CreatureAttacks(_, id, direction) => {
         val creature = creatures(id)

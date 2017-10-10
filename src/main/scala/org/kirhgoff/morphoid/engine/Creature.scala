@@ -10,12 +10,12 @@ trait Live {
 class Creature(val id:String, val kind:String, var energy:Int, val cellsMap:Map[Physical, String]) extends Live {
   def velocity = 0.0
 
-  def cells = cellsMap.keys
+  def cells = cellsMap.keys.toList
 
   def cellType(physical:Physical) = cellsMap(physical)
 
   def origin:Physical = cells match {
-    case head :: Nil => head
+    case head :: Nil => head.copy
     case head :: tail => tail.foldLeft(new Physical(head))((cell, next) =>
       cell.moveTo(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
     case list if list.isEmpty => null
