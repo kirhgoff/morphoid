@@ -17,22 +17,14 @@ trait Lore {
   // Key is Physical.toString
   private val creatureIndex = mutable.Map[String, Creature]()
   // Key is Physical.toString
-  private val lore = mutable.Map[String, Cell]().withDefault(_ => new Cell("", ""))
+  private val lore = mutable.Map[String, Cell]()
 
   private def get(physical: Physical, lambda: (Cell) => String) = lore.get(physical.toString).fold("")(lambda)
   def kindsInside(cell: Physical): String = get(cell, d => d.kind)
   def cellType(cell: Physical): String = get(cell, d => d.cellType)
 
-  private def find(physical: Physical):Cell = lore(physical.toString)
-
-  def unregisterCreature(creature:Creature) = {
-    creature.cells.foreach(physical => {
-      val cell = find(physical)
-      cell.kind = ""
-      cell.cellType = ""
-      creatureIndex(physical.toString) = null
-    })
-  }
+  private def find(physical: Physical):Cell =
+    lore.getOrElseUpdate(physical.toString, new Cell("", ""))
 
   def registerCreature(creature: Creature) = {
     creature.cells.foreach(physical => {
@@ -40,6 +32,15 @@ trait Lore {
       cell.kind = creature.kind
       cell.cellType = creature.cellType(physical)
       creatureIndex(physical.toString) = creature
+    })
+  }
+
+  def unregisterCreature(creature:Creature) = {
+    creature.cells.foreach(physical => {
+      val cell = find(physical)
+      cell.kind = ""
+      cell.cellType = ""
+      creatureIndex(physical.toString) = null
     })
   }
 }
@@ -85,7 +86,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def str(cell:Physical) = s"${kindsInside(cell)}$cell"
 
   def tick() = {
-    println(s"Souls before: $souls")
+    //println(s"MEngine.tick() begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)
@@ -108,7 +109,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       }))
     })
 
-    println(s"Souls after: $souls")
+    //println(s"MEngine.tick() end: $souls")
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
@@ -129,10 +130,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case event :: rest => event match {
       case CreatureMoves(_, id, direction) => {
         val creature = creatures(id)
-        println(s"Creature before $creature")
         unregisterCreature(creature)
         registerCreature(creature.move(direction))
-        println(s"Creature after $creature")
       }
       case CreatureAttacks(_, id, direction) => {
         val creature = creatures(id)
@@ -143,9 +142,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }
-
   }
-
 }
 
 object MorphoidEngine {
