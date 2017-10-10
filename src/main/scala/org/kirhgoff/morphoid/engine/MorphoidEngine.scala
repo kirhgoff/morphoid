@@ -19,12 +19,11 @@ trait Lore {
   // Key is Physical.toString
   private val lore = mutable.Map[String, Cell]()
 
-  private def get(physical: Physical, lambda: (Cell) => String) = lore.get(physical.toString).fold("")(lambda)
-  def kindsInside(cell: Physical): String = get(cell, d => d.kind)
-  def cellType(cell: Physical): String = get(cell, d => d.cellType)
-
   private def find(physical: Physical):Cell =
     lore.getOrElseUpdate(physical.toString, new Cell("", ""))
+
+  def kindsInside(cell: Physical) = find(cell).kind
+  def cellType(cell: Physical) = find(cell).cellType
 
   def registerCreature(creature: Creature) = {
     creature.cells.foreach(physical => {

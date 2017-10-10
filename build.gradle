@@ -17,6 +17,12 @@ version = '0.3'
 mainClassName = "org.kirhgoff.morphoid.MorphoidApp"
 applicationDefaultJvmArgs = ["-Dgreeting.language=en"]
 
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
+}
+
 sourceSets {
     main {
         scala {
