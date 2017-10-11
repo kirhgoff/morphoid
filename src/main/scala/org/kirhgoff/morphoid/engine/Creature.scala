@@ -1,13 +1,13 @@
 package org.kirhgoff.morphoid.engine
 
 trait Live {
-  def energy:Int
+  def energy:Double
   def isAlive = energy > 0
 }
 
 // Something active
 // TODO rename id to postfix and use kind in id
-class Creature(val id:String, val kind:String, var energy:Int, val cellsMap:Map[Physical, String]) extends Live {
+class Creature(val id:String, val kind:String, var energy:Double, val cellsMap:Map[Physical, String]) extends Live {
   def velocity = 0.0
 
   def cells = cellsMap.keys.toList
@@ -42,6 +42,7 @@ class Creature(val id:String, val kind:String, var energy:Int, val cellsMap:Map[
 
   }
 
+  // TODO figure out what to do with energy
   def updateEnergy(value:Int) = energy -= value
 
   def receive(event: GameEvent) = event match {
@@ -50,7 +51,7 @@ class Creature(val id:String, val kind:String, var energy:Int, val cellsMap:Map[
     case CreatureAttacks(_, _, _) => // TODO add State - change state to attacking here
   }
 
-  override def toString = s"Creature $id $kind cells=$cells"
+  override def toString = s"Creature $id $kind cells=$cells life=$energy"
 
 }
 

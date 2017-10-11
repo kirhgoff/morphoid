@@ -89,7 +89,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def str(cell:Physical) = s"${creatureType(cell)}$cell"
 
   def tick() = {
-    println(s"Tick ${Dice.nextTickNumber}")
+    println(s"Tick ${Dice.nextTickNumber} ${souls}")
     //println(s"MEngine.tick() begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
@@ -150,13 +150,26 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 }
 
 object MorphoidEngine {
-  def empty() = new MorphoidEngine(Rect(0,0, 10, 10), List())
   def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init()
 
   def create(scenario:String, playerInputState: PlayerInputState) = scenario match {
     case "simple" => createSimple(20, 20, playerInputState)
+    case "empty" => createEmpty(20, 20, playerInputState)
     case _ => createProduction(playerInputState)
   }
+
+  // TODO extract method
+  def createEmpty(width:Int, height:Int):MorphoidEngine =
+    createEmpty(width, height, new PlayerInputState)
+
+  def createEmpty(width:Int, height:Int, playerInputState: PlayerInputState)
+  = new MorphoidEngine(
+    Rect(0,0, width, height),
+    List(
+      PlayerSoul(playerInputState, 10, 10, 5)
+    )
+  ).init()
+
 
   def createSimple(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
     Rect(0, 0, width, height),

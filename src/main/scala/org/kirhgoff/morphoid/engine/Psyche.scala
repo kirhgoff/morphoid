@@ -77,7 +77,7 @@ class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature
 
 class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Creature) extends Psyche(id, velocity, creature) {
   override def act(surroundings: List[Physical]) = {
-    //println("PS read " + input)
+    println("PS read " + input)
     var events = ListBuffer[GameEvent]()
 
     if(input.isMovingLeft) events += CreatureMoves(id, creature.id, West)
@@ -92,18 +92,20 @@ class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Cr
 
     events.toList
   }
+
+  override def toString: String = s"Player($creature)"
 }
 
 object PlayerSoul {
   def apply(playerInputState: PlayerInputState, x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("player")
-    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", 100, Map(Physical(x, y) -> "seed")))
+    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", Double.MaxValue, Map(Physical(x, y) -> "seed")))
   }
 }
 
 object Plant {
   def apply(id:String, x:Int, y:Int) =
-    new PlantSoul(id, new Creature(id, "shroom", 5, Map(Physical(x, y) -> "seed")))
+    new PlantSoul(id, new Creature(id, "shroom", Double.MaxValue/100, Map(Physical(x, y) -> "seed")))
 
   def apply(x:Int, y:Int):PlantSoul =
     this(Dice.makeId("shroom"), x, y)
@@ -111,7 +113,7 @@ object Plant {
 
 object Herbivore {
   def apply(id:String, x:Int, y:Int, velocity:Int) =
-    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, Map(Physical(x, y) -> "seed")))
+    new HerbivoreSoul(id, velocity, new Creature(id, "ooze", Double.MaxValue/2, Map(Physical(x, y) -> "seed")))
 
   def apply(x:Int, y:Int, velocity:Int):HerbivoreSoul =
     this(Dice.makeId("ooze"), x, y, velocity)

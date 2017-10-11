@@ -77,7 +77,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   }
 
   "MorphoidEngine" should "provide surroundings" in {
-    val engine = MorphoidEngine.empty()
+    val engine = MorphoidEngine.createEmpty(10, 10)
     val creature = mock[Creature]
     (creature.cells _).expects().returns(List(Physical(5, 5)))
 

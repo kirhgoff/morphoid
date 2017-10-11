@@ -22,6 +22,8 @@ public class PlayerController implements EventHandler<KeyEvent> {
   public void handle(KeyEvent event) {
     inputLock.lock();
     try {
+      System.out.println("KeyEvent " + event + " => " + input);
+
       if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
         //System.out.println("KeyPressed " + event.getCode());
         switch (event.getCode()) {
