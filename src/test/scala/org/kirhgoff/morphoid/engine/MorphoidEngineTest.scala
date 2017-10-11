@@ -88,15 +88,18 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     )
   }
 
+  private def findCreatureByType(engine: MorphoidEngine, creature: String) =
+    engine.getEntities.find(c => c.kind.equals(creature)).get
+
   "Ooze" should "move towards shrooms" in {
     val engine = MorphoidEngine(
       Plant(0, 0),
       Herbivore(0, 3, 1)
     ).init()
 
-    engine.kindsInside(Physical(0, 0)) shouldEqual "shroom"
+    engine.creatureType(Physical(0, 0)) shouldEqual "shroom"
 
-    def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
+    def ooze = findCreatureByType(engine, "ooze")
 
     engine.tick()
     ooze.origin shouldBe Physical(0, 2) // Moves towards shroom
@@ -127,12 +130,31 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
       Herbivore(0, 0, 1)
     ).init()
 
-    def ooze = engine.getEntities.find(c => c.kind.equals("ooze")).get
+    val ooze = findCreatureByType(engine, "ooze")
     val initialEnergy = ooze.energy
 
     engine.tick()
     ooze.energy should be < initialEnergy
   }
 
+  "MorphoidEngine" should "see shrooms without exceptions" in {
+    val size = 3
 
+    // Is that all?
+    for (
+      ox <- 0 to size;
+      oy <- 0 to size;
+      shx <- 0 to size;
+      shy <- 0 to size
+    )
+    {
+      val engine = MorphoidEngine(
+        Herbivore("ooze", ox, oy, 1), Plant("shrm", shx, shy)
+      ).init()
+
+      val ooze = engine.soulById("ooze")
+      val creature = ooze.creature
+      ooze.act(engine.surroundings(creature, size))
+    }
+  }
 }

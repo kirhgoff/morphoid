@@ -49,7 +49,7 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
 
   def shroom(cell:Physical):Boolean = {
     //engine.kindsInside(cell).contains("shroom")
-    engine.kindsInside(cell).contains("shroom")
+    engine.creatureType(cell).contains("shroom")
   }
 
   def bestDirection(cell: Physical) = {
@@ -103,15 +103,17 @@ object PlayerSoul {
 }
 
 object Plant {
-  def apply(x:Int, y:Int):Psyche = {
-    val id: String = Dice.makeId("shroom")
+  def apply(id:String, x:Int, y:Int) =
     new PlantSoul(id, new Creature(id, "shroom", 5, Map(Physical(x, y) -> "seed")))
-  }
+
+  def apply(x:Int, y:Int):PlantSoul =
+    this(Dice.makeId("shroom"), x, y)
 }
 
 object Herbivore {
-  def apply(x:Int, y:Int, velocity:Int) = {
-    val id: String = Dice.makeId("ooze")
+  def apply(id:String, x:Int, y:Int, velocity:Int) =
     new HerbivoreSoul(id, velocity, new Creature(id, "ooze", 50, Map(Physical(x, y) -> "seed")))
-  }
+
+  def apply(x:Int, y:Int, velocity:Int):HerbivoreSoul =
+    this(Dice.makeId("ooze"), x, y, velocity)
 }

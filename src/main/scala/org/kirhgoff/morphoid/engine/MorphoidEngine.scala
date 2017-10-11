@@ -22,8 +22,8 @@ trait Lore {
   private def find(physical: Physical):Cell =
     lore.getOrElseUpdate(physical.toString, new Cell("", ""))
 
-  def kindsInside(cell: Physical) = find(cell).kind
-  def cellType(cell: Physical) = find(cell).cellType
+  def creatureType(physical: Physical) = find(physical).kind
+  def cellType(physical: Physical) = find(physical).cellType
 
   def registerCreature(creature: Creature) = {
     creature.cells.foreach(physical => {
@@ -46,6 +46,7 @@ trait Lore {
 
 /**
   * Not thread safe
+  * Mutable
   *
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
   */
@@ -62,6 +63,9 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def surroundings(creature: Creature, sight:Int):List[Physical] = {
     creature.cells.flatMap(c => Rect.inflate(c, sight).decompose)
   }
+
+  //Test interface
+  def soulById(id:String) = souls(id)
 
   // UI Interface
   def getEntities: List[Creature] = creatures.values.toList
@@ -82,7 +86,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
-  def str(cell:Physical) = s"${kindsInside(cell)}$cell"
+  def str(cell:Physical) = s"${creatureType(cell)}$cell"
 
   def tick() = {
     println(s"Tick ${Dice.nextTickNumber}")
