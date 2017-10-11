@@ -19,6 +19,8 @@ import org.kirhgoff.morphoid.render.GameGeometry;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
@@ -34,23 +36,39 @@ public class MorphoidApp extends Application {
   private static final int LEVEL_HEIGHT = 30;
   private static final int LEVEL_WIDTH = 30;
 
-  private static String initialScenario = "production";
+  private static String initialScenario = "simple"; //"production";
 
   public static void main(String[] args) throws IOException {
     if (args.length == 1) initialScenario = args[0];
     launch(args);
   }
 
+  private Lock inputLock = new ReentrantLock();
+  private Lock engineLock = new ReentrantLock();
+
   @Override
   public void start(Stage stage) {
     // Model
+    MorphoidEngine engine;
+    PlayerController playerController;
     PlayerInputState playerInputState = new PlayerInputState();
-    MorphoidEngine engine = MorphoidEngine.create(initialScenario, playerInputState);
+
     Group root = new Group();
     Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-    PlayerController playerController = new PlayerController(playerInputState);
-    scene.setOnKeyPressed(playerController);
-    scene.setOnKeyReleased(playerController);
+
+    inputLock.lock();
+    try {
+      engine = MorphoidEngine.create(initialScenario, playerInputState);
+      playerController = new PlayerController(playerInputState, inputLock);
+      // TODO split in two sync blocks
+
+      scene.setOnKeyPressed(playerController);
+      scene.setOnKeyReleased(playerController);
+
+    } finally {
+      inputLock.unlock();
+    }
+
     stage.setScene(scene);
 
     Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -76,12 +94,17 @@ public class MorphoidApp extends Application {
       KeyFrame keyFrame = new KeyFrame(
           Duration.seconds(FPS_60),
           actionEvent -> {
-            engine.tick();
+            engineLock.lock();
+            try {
+              engine.tick();
 
-            cleanScreen(gc, stage);
+              cleanScreen(gc, stage);
 
-            //TODO synchronize
-            drawEntities(gc, ascii, engine.getEntitiesJava());
+              //TODO synchronize
+              drawEntities(gc, ascii, engine.getEntitiesJava());
+            } finally {
+              engineLock.unlock();
+            }
           }
       );
 

@@ -169,7 +169,7 @@ object MorphoidEngine {
       Plant(6, 13),
       Plant(16, 12)
     )
-  )
+  ).init()
 
   def createProduction(playerInputState: PlayerInputState) = {
     val width = 30

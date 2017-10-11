@@ -48,7 +48,6 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
   }
 
   def shroom(cell:Physical):Boolean = {
-    //engine.kindsInside(cell).contains("shroom")
     engine.creatureType(cell).contains("shroom")
   }
 

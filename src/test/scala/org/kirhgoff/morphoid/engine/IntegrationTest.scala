@@ -12,7 +12,7 @@ class IntegrationTest extends FlatSpec with Matchers with MockFactory {
     val scenariosToCheck = List("production", "simple")
     scenariosToCheck.foreach(scenario => {
       val playerInputState = new PlayerInputState
-      val engine = MorphoidEngine.create(scenario, playerInputState)
+      val engine = MorphoidEngine.create(scenario, playerInputState).init()
       //val playerController = new PlayerController(playerInputState)
       try {
         for (_ <- 0 to 100) {
