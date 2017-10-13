@@ -10,7 +10,7 @@ case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) 
 case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
 case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Physical]) extends GameEvent(sourceId, targetId)
 
-class Cell(var kind:String, var cellType:String)
+class Cell(var kind:String, var cellType:CellType)
 
 // Information Psyche can ask about
 trait Lore {
@@ -20,7 +20,7 @@ trait Lore {
   private val lore = mutable.Map[String, Cell]()
 
   private def find(physical: Physical):Cell =
-    lore.getOrElseUpdate(physical.toString, new Cell("", ""))
+    lore.getOrElseUpdate(physical.toString, new Cell("", Dummy))
 
   def creatureType(physical: Physical) = find(physical).kind
   def cellType(physical: Physical) = find(physical).cellType
@@ -38,7 +38,7 @@ trait Lore {
     creature.cells.foreach(physical => {
       val cell = find(physical)
       cell.kind = ""
-      cell.cellType = ""
+      cell.cellType = Dummy
       creatureIndex(physical.toString) = null
     })
   }
@@ -86,10 +86,11 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
-  def str(cell:Physical) = s"${creatureType(cell)}$cell"
+  def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
+  def fullEnergy = creatures.values.map(_.energy).sum // Including player
 
   def tick() = {
-    println(s"Tick ${Dice.nextTickNumber} ${souls}")
+    //println(s"Tick ${Dice.nextTickNumber} ${souls}")
     //println(s"MEngine.tick() begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
@@ -105,15 +106,13 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
     //TODO ask Michal how to rewrite functionally
     creatures.values.foreach(creature => {
-      creature.updateEnergy(creature.cells.foldLeft(0)((a, c) => {
-        cellType(c) match {
-          case "seed" => a + 1 //TODO create case object
-          case _ => a - 1
-        }
-      }))
+      creature.updateEnergy(creature.cells.foldLeft(0.0)(
+        (a, c) => a + cellType(c).energyGrowth
+      ))
     })
 
     //println(s"MEngine.tick() end: $souls")
+    this
   }
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
@@ -142,7 +141,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         creature.attack(direction)
         val newId = Dice.makeId("pew")
         val projectileOrigin = creature.origin.nextTo(direction)
-        val projectile = new Creature(newId, "projectile", 5, Map(projectileOrigin -> "seed"))
+        val projectile = new Creature(newId, "projectile", 50, Map(projectileOrigin -> new Seed))
         addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }
@@ -175,12 +174,12 @@ object MorphoidEngine {
     Rect(0, 0, width, height),
     List(
       PlayerSoul(playerInputState, 10, 10, 5),
-      Herbivore(3, 5, 40),
-      Herbivore(15, 15, 60),
-      Herbivore(9, 11, 50),
-      Plant(1, 8),
-      Plant(6, 13),
-      Plant(16, 12)
+      Ooze(3, 5, 40),
+      Ooze(15, 15, 60),
+      Ooze(9, 11, 50),
+      Shroom(1, 8),
+      Shroom(6, 13),
+      Shroom(16, 12)
     )
   ).init()
 
@@ -195,9 +194,9 @@ object MorphoidEngine {
     val speedDiff = 10
 
     val plants:List[Psyche] = (1 to plantsCount)
-      .map(_ => Plant(randomInt(width - 1), randomInt(height - 1))).toList
+      .map(_ => Shroom(randomInt(width - 1), randomInt(height - 1))).toList
     val cows:List[Psyche] = (1 to cowsCount)
-      .map(_ => Herbivore(
+      .map(_ => Ooze(
         randomInt(width - 1),
         randomInt(height - 1),
         minSpeed * randomInt(speedDiff))).toList

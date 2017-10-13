@@ -36,7 +36,7 @@ public class MorphoidApp extends Application {
   private static final int LEVEL_HEIGHT = 30;
   private static final int LEVEL_WIDTH = 30;
 
-  private static String initialScenario = "empty";//"simple"; //"production";
+  private static String initialScenario = "simple";//"simple"; //"production";
 
   public static void main(String[] args) throws IOException {
     if (args.length == 1) initialScenario = args[0];

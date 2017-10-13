@@ -5,9 +5,48 @@ trait Live {
   def isAlive = energy > 0
 }
 
+trait CellType {
+  def energyGrowth:Double = EnergyBalance.cellDecay
+}
+
+object Dummy extends CellType
+
+class Seed extends CellType {
+  override def energyGrowth:Double = 0
+}
+
+class ShroomSeed extends Seed {
+  override def energyGrowth: Double = EnergyBalance.shroomIncrease
+}
+
+class Mover extends CellType
+class Feeder extends CellType
+
+//TODO use objects instead of classes
+
+object Seed {
+  def apply(x:Int, y:Int) = Physical(x, y) -> new Seed
+}
+
+object Mover {
+  def apply(x:Int, y:Int) = Physical(x, y) -> new Mover
+}
+
+object Feeder {
+  def apply(x:Int, y:Int) = Physical(x, y) -> new Feeder
+}
+
+object ShroomSeed {
+  def apply(x:Int, y:Int) = Physical(x, y) -> new ShroomSeed
+}
+
 // Something active
 // TODO rename id to postfix and use kind in id
-class Creature(val id:String, val kind:String, var energy:Double, val cellsMap:Map[Physical, String]) extends Live {
+class Creature(
+                val id:String,
+                val kind:String,
+                var energy:Double,
+                val cellsMap:Map[Physical, CellType]) extends Live {
   def velocity = 0.0
 
   def cells = cellsMap.keys.toList
@@ -43,7 +82,10 @@ class Creature(val id:String, val kind:String, var energy:Double, val cellsMap:M
   }
 
   // TODO figure out what to do with energy
-  def updateEnergy(value:Int) = energy -= value
+  def updateEnergy(value:Double) = {
+    //println(s"Energy changed by $value")
+    energy += value
+  }
 
   def receive(event: GameEvent) = event match {
     //TODO: move out to separate class
@@ -57,10 +99,10 @@ class Creature(val id:String, val kind:String, var energy:Double, val cellsMap:M
 
 object Creature {
   def apply(kind:String, origin:Physical) = {
-    new Creature(Dice.makeId(kind), kind, 10, Map(origin -> "seed"))
+    new Creature(Dice.makeId(kind), kind, 10, Map(origin -> new Seed))
   }
 
   def apply(kind:String, psyche:Psyche, x:Int, y:Int) = {
-    new Creature(psyche.id, kind, 10, Map(new Physical(x, y) -> "seed"))
+    new Creature(psyche.id, kind, 10, Map(new Physical(x, y) -> new Seed))
   }
 }

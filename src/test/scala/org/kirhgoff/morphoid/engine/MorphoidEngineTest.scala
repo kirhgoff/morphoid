@@ -8,27 +8,28 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", 10, Map(Physical(0, 0) -> "seed", Physical(2, 5) -> "smth"))
+    // TODO extract method for Ph -> Seed
+    new Creature("", "", 10, Map(Physical(0, 0) -> new Seed, Physical(2, 5) -> new Mover))
       .origin should be(Physical(0, 5))
-    new Creature("", "", 5, Map(Physical(2, 5) -> "seed")).origin should be(Physical(2, 5))
+    new Creature("", "", 5, Map(Physical(2, 5) -> new Seed)).origin should be(Physical(2, 5))
   }
 
   "Monster" should "roam" in {
-    val herbivore = Herbivore(2, 5, 1)
+    val herbivore = Ooze(2, 5, 1)
     val origin = herbivore.creature.origin
     MorphoidEngine(herbivore).tick()
     origin shouldNot equal(herbivore.creature.origin)
   }
 
   "Ooze" should "stay" in {
-    val plant = Plant(2, 5)
+    val plant = Shroom(2, 5)
     val origin = plant.creature.origin
     MorphoidEngine(plant).tick()
     origin should equal(plant.creature.origin)
   }
 
   "Moving creature" should "move in appropriate time" in {
-    val entity = Herbivore(2, 5, 3)
+    val entity = Ooze(2, 5, 3)
     val creature = entity.creature
     val origin = creature.origin
     val engine = MorphoidEngine(entity)
@@ -44,14 +45,14 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   }
 
   "Creature" should "know its bounding rect" in {
-    def checkBoundBox(rect: Rect, cells: Map[Physical, String]) = {
+    def checkBoundBox(rect: Rect, cells: Map[Physical, CellType]) = {
       rect should equal(new Creature("01", "test", 10, cells).boundingRect)
     }
 
-    checkBoundBox(Rect(2, 3, 2, 3), Map(Physical(2, 3) -> "seed"))
-    checkBoundBox(Rect(1, 2, 2, 3), Map(Physical(2, 3) -> "seed", Physical(1, 2) -> "move"))
+    checkBoundBox(Rect(2, 3, 2, 3), Map(Seed(2, 3)))
+    checkBoundBox(Rect(1, 2, 2, 3), Map(Seed(2, 3), Mover(1, 2)))
     checkBoundBox(Rect(-1, -2, 2, 2), Map(
-      Physical(0, 0) -> "seed", Physical(-1, -2) -> "move", Physical(2,2) -> "mouth"))
+      Seed(0, 0), Mover(-1, -2), Feeder(2,2)))
   }
 
   "Rect" should "be possible to check if it is inside" in {
@@ -93,8 +94,8 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Ooze" should "move towards shrooms" in {
     val engine = MorphoidEngine(
-      Plant(0, 0),
-      Herbivore(0, 3, 1)
+      Shroom(0, 0),
+      Ooze(0, 3, 1)
     ).init()
 
     engine.creatureType(Physical(0, 0)) shouldEqual "shroom"
@@ -111,7 +112,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   "HerbivoreSoul" should "find best direction" in {
     //One cell
     def checkBestDirection(dx:Int, dy:Int, result:Direction) = {
-      val herbivore = Herbivore(0, 0, 1)
+      val herbivore = Ooze(0, 0, 1)
       herbivore.bestDirection(Physical(dx, dy)) shouldBe result
     }
 
@@ -125,16 +126,27 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     //TODO add more tests for multi-cells
   }
 
+  // TODO decide how to split tests
+  "Shroom" should "produce energy" in {
+      val engine = MorphoidEngine(Shroom(0, 0)).init()
+      val initialEnergy = engine.fullEnergy
+
+      engine.tick().fullEnergy should be > initialEnergy
+  }
+
+  // TODO ask Michal
   "Ooze" should "die without food" in {
-    val engine = MorphoidEngine(
-      Herbivore(0, 0, 1)
-    ).init()
+    val engine = MorphoidEngine(Ooze(0, 0, 1)).init()
+    val initialEnergy = engine.fullEnergy
 
-    val ooze = findCreatureByType(engine, "ooze")
-    val initialEnergy = ooze.energy
+    engine.tick().fullEnergy should be < initialEnergy
+  }
 
-    engine.tick()
-    ooze.energy should be < initialEnergy
+  "Ooze" should "live near shroom" in {
+    val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
+    val initialEnergy = engine.fullEnergy
+
+    engine.tick().fullEnergy should be > initialEnergy
   }
 
   "MorphoidEngine" should "see shrooms without exceptions" in {
@@ -149,7 +161,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     )
     {
       val engine = MorphoidEngine(
-        Herbivore("ooze", ox, oy, 1), Plant("shrm", shx, shy)
+        Ooze("ooze", ox, oy, 1), Shroom("shrm", shx, shy)
       ).init()
 
       val ooze = engine.soulById("ooze")
