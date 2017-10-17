@@ -90,13 +90,15 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def fullEnergy = creatures.values.map(_.energy).sum // Including player
 
   def tick() = {
-    //println(s"Tick ${Dice.nextTickNumber} ${souls}")
-    //println(s"MEngine.tick() begin: $souls")
+    println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)
       .foreach(p => {
         val sur = surroundings(p.creature, p.sight)
+
+        // TODO understand how act works with multicellulars
+
         val batch = p.act(sur)
         //      println(s"creature ${p.creature}" +
         //        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
@@ -111,7 +113,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       ))
     })
 
-    //println(s"MEngine.tick() end: $souls")
+    println(s"MEngine.tick() end: $souls")
     this
   }
 

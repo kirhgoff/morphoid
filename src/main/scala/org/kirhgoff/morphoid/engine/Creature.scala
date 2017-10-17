@@ -53,11 +53,15 @@ class Creature(
 
   def cellType(physical:Physical) = cellsMap(physical)
 
-  def origin:Physical = cells match {
-    case head :: Nil => head.copy
-    case head :: tail => tail.foldLeft(new Physical(head))((cell, next) =>
-      cell.moveTo(Math.min(cell.x, next.x), Math.max(cell.y, next.y)))
-    case list if list.isEmpty => null
+  def origin:Physical = {
+    val result = cells match {
+      case head :: Nil => head.copy
+      case head :: tail => tail.foldLeft(new Physical(head))((cell, next) =>
+        cell.moveTo(Math.min(cell.x, next.x), Math.min(cell.y, next.y)))
+      case list if list.isEmpty => null
+    }
+    //println(s"Origin creature=$result")
+    result
   }
 
   def boundingRect = cells match {

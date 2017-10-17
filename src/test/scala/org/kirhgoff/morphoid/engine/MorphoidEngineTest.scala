@@ -8,16 +8,24 @@ import org.scalamock.scalatest.MockFactory
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   "Creature" should "be able to calculate its origin point" in {
-    // TODO extract method for Ph -> Seed
-    new Creature("", "", 10, Map(Physical(0, 0) -> new Seed, Physical(2, 5) -> new Mover))
-      .origin should be(Physical(0, 5))
-    new Creature("", "", 5, Map(Physical(2, 5) -> new Seed)).origin should be(Physical(2, 5))
+    new Creature("", "", 10,
+      Map(Seed(0, 0), Mover(2, 5))).origin should be(Physical(0, 0))
+    new Creature("", "", 10,
+      Map(Mover(2, 5), Seed(0, 0))).origin should be(Physical(0, 0))
+
+    new Creature("", "", 10,
+      Map(Mover(0, 1), Seed(1, 0))).origin should be(Physical(0, 0))
+
+    new Creature("", "", 5, Map(Seed(2, 5))).origin should be(Physical(2, 5))
   }
 
+  // TODO flaky
   "Monster" should "roam" in {
     val herbivore = Ooze(2, 5, 1)
     val origin = herbivore.creature.origin
+    //println("Before ----------------->")
     MorphoidEngine(herbivore).tick()
+    //println("After ----------------------------------->")
     origin shouldNot equal(herbivore.creature.origin)
   }
 
@@ -28,6 +36,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     origin should equal(plant.creature.origin)
   }
 
+  // TODO flaky
   "Moving creature" should "move in appropriate time" in {
     val entity = Ooze(2, 5, 3)
     val creature = entity.creature
@@ -92,6 +101,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   private def findCreatureByType(engine: MorphoidEngine, creature: String) =
     engine.getEntities.find(c => c.kind.equals(creature)).get
 
+  // TODO flaky
   "Ooze" should "move towards shrooms" in {
     val engine = MorphoidEngine(
       Shroom(0, 0),
@@ -109,17 +119,18 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     ooze.origin shouldBe Physical(0, 1) // Moves towards shroom
   }
 
-  "HerbivoreSoul" should "find best direction" in {
+  "Ooze" should "find best direction" in {
     //One cell
     def checkBestDirection(dx:Int, dy:Int, result:Direction) = {
-      val herbivore = Ooze(0, 0, 1)
-      herbivore.bestDirection(Physical(dx, dy)) shouldBe result
+      val ooze = Ooze(0, 0, 1)
+      ooze.bestDirection(Physical(dx, dy)) shouldBe result
     }
+
+    checkBestDirection(-3, 0, West)
+    checkBestDirection(2, 3, South)
 
     checkBestDirection(1, 0, East)
     checkBestDirection(2, 1, East)
-    checkBestDirection(2, 3, South)
-    checkBestDirection(-3, 0, West)
     checkBestDirection(-3, -6, North)
     checkBestDirection(0, -3, North)
 
@@ -142,6 +153,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick().fullEnergy should be < initialEnergy
   }
 
+  // TODO broken
   "Ooze" should "live near shroom" in {
     val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
     val initialEnergy = engine.fullEnergy

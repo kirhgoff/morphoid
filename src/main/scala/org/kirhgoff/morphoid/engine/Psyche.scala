@@ -53,6 +53,7 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
 
   def bestDirection(cell: Physical) = {
     val origin = creature.origin
+    println(s"Origin: $origin")
     Direction.byDelta(cell.x - origin.x, cell.y - origin.y)
   }
 
@@ -118,7 +119,7 @@ object Ooze {
   def apply(id:String, x:Int, y:Int, velocity:Int) =
     new HerbivoreSoul(id, velocity,
       new Creature(id, "ooze", EnergyBalance.oozeLife, Map(
-        Seed(x, y), Mover(x + Dice.randomOne, y + Dice.randomOne)
+        Seed(x, y), Mover(x + 1, y)
       ))
     )
 
