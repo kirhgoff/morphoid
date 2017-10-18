@@ -34,7 +34,7 @@ class Physical(var x:Int, var y:Int) {
     case _ => false
   }
 
-  def copy = new Physical(this)
+  def makeCopy = new Physical(this)
 
 }
 

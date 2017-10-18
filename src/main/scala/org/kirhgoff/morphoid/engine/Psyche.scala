@@ -53,11 +53,10 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
 
   def bestDirection(cell: Physical) = {
     val origin = creature.origin
-    println(s"Origin: $origin")
     Direction.byDelta(cell.x - origin.x, cell.y - origin.y)
   }
 
-  override def toString = s"Herbivory $id v=$velocity c=$creature"
+  override def toString = s"Herbivore $id v=$velocity c=$creature"
 }
 
 // ---------------------

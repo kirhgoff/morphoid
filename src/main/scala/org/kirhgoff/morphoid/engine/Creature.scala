@@ -55,7 +55,7 @@ class Creature(
 
   def origin:Physical = {
     val result = cells match {
-      case head :: Nil => head.copy
+      case head :: Nil => head.makeCopy
       case head :: tail => tail.foldLeft(new Physical(head))((cell, next) =>
         cell.moveTo(Math.min(cell.x, next.x), Math.min(cell.y, next.y)))
       case list if list.isEmpty => null
