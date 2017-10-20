@@ -90,7 +90,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def fullEnergy = creatures.values.map(_.energy).sum // Including player
 
   def tick() = {
-    println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
+    //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)

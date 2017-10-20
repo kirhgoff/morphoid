@@ -56,6 +56,39 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     Rect(0, 0, 0, 0).inflate(1) shouldBe Rect(-1, -1, 1, 1)
   }
 
+  "MorphoidEngine" should "provide surroundings" in {
+    val engine = MorphoidEngine.createEmpty(10, 10)
+    val creature = mock[Creature]
+    (creature.cells _).expects().returns(List(Physical(5, 5)))
+
+    engine.surroundings(creature, 1) == List(
+      Physical(4, 4), Physical(5, 4), Physical(6, 4),
+      Physical(4, 5), Physical(5, 5), Physical(6, 5),
+      Physical(4, 6), Physical(5, 6), Physical(6, 6)
+    )
+  }
+
+  "MorphoidEngine" should "see shrooms without exceptions" in {
+    val size = 3
+
+    // Is that all?
+    for (
+      ox <- 0 to size;
+      oy <- 0 to size;
+      shx <- 0 to size;
+      shy <- 0 to size
+    )
+    {
+      val engine = MorphoidEngine(
+        Ooze("ooze", ox, oy, 1), Shroom("shrm", shx, shy)
+      ).init()
+
+      val ooze = engine.soulById("ooze")
+      val creature = ooze.creature
+      ooze.act(engine.surroundings(creature, size))
+    }
+  }
+
   // --------------------- Shroom
 
   "Shroom" should "stay" in {
@@ -76,7 +109,6 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   // ----------------------- Ooze
 
-  // TODO flaky
   "Ooze" should "roam" in {
     val herbivore = Ooze(2, 5, 1)
     MorphoidEngine(herbivore).tick()
@@ -84,7 +116,6 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     Physical(2, 5) shouldNot equal(herbivore.creature.origin)
   }
 
-  // TODO flaky
   "Ooze" should "move in appropriate time" in {
     val entity = Ooze(2, 5, 3)
     val creature = entity.creature
@@ -147,45 +178,12 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick().fullEnergy should be < initialEnergy
   }
 
-  //  TODO Not implemented yet
-  //  "Ooze" should "live near shroom" in {
-  //    val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
-  //    val initialEnergy = engine.fullEnergy
-  //
-  //    engine.tick().fullEnergy should be > initialEnergy
-  //  }
+    "Ooze" should "live near shroom" in {
+      val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
+      val initialEnergy = engine.fullEnergy
 
-
-  "MorphoidEngine" should "provide surroundings" in {
-    val engine = MorphoidEngine.createEmpty(10, 10)
-    val creature = mock[Creature]
-    (creature.cells _).expects().returns(List(Physical(5, 5)))
-
-    engine.surroundings(creature, 1) == List(
-      Physical(4, 4), Physical(5, 4), Physical(6, 4),
-      Physical(4, 5), Physical(5, 5), Physical(6, 5),
-      Physical(4, 6), Physical(5, 6), Physical(6, 6)
-    )
-  }
-
-  "MorphoidEngine" should "see shrooms without exceptions" in {
-    val size = 3
-
-    // Is that all?
-    for (
-      ox <- 0 to size;
-      oy <- 0 to size;
-      shx <- 0 to size;
-      shy <- 0 to size
-    )
-    {
-      val engine = MorphoidEngine(
-        Ooze("ooze", ox, oy, 1), Shroom("shrm", shx, shy)
-      ).init()
-
-      val ooze = engine.soulById("ooze")
-      val creature = ooze.creature
-      ooze.act(engine.surroundings(creature, size))
+      engine.tick().fullEnergy should be > initialEnergy
     }
-  }
+
+
 }
