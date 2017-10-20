@@ -90,7 +90,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def fullEnergy = creatures.values.map(_.energy).sum // Including player
 
   def tick() = {
-    //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
+    println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
     souls.values
       .filter(_.creature.isAlive)
       .filter(_.readyToAct)
@@ -120,9 +120,11 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def validate(events: List[GameEvent]):List[GameEvent] = {
     events.filter(event => event match {
       case CreatureMoves(_, id, direction) => {
-        val rect = creatures(id).boundingRect.move(direction)
-        val intersectsWithSomething = creatures.values.map(_.boundingRect).exists(_.intersects(rect))
+        val creature = creatures(id)
+        val rect = creature.boundingRect.move(direction)
+        val intersectsWithSomething = creatures.values.filter(creature != _).map(_.boundingRect).exists(_.intersects(rect))
         val insideBorders = levelRect.includes(rect)
+        //println(s"Validating creature $creatures(id) direction=$direction iws=$intersectsWithSomething ib=$insideBorders")
         !intersectsWithSomething && insideBorders
       }
       case _ => true
@@ -135,6 +137,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case event :: rest => event match {
       case CreatureMoves(_, id, direction) => {
         val creature = creatures(id)
+        //println(s"execute creatureMoves=$creature direction=$direction")
+
         unregisterCreature(creature)
         registerCreature(creature.move(direction))
       }
