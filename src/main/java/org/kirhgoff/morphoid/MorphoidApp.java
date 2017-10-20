@@ -19,6 +19,7 @@ import org.kirhgoff.morphoid.render.GameGeometry;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,7 +37,7 @@ public class MorphoidApp extends Application {
   private static final int LEVEL_HEIGHT = 30;
   private static final int LEVEL_WIDTH = 30;
 
-  private static String initialScenario = "simple";//"simple"; //"production";
+  private static String initialScenario = "production";
 
   public static void main(String[] args) throws IOException {
     if (args.length == 1) initialScenario = args[0];
@@ -48,6 +49,7 @@ public class MorphoidApp extends Application {
 
   @Override
   public void start(Stage stage) {
+    AtomicLong rate = new AtomicLong();
     // Model
     MorphoidEngine engine;
     PlayerController playerController;
@@ -94,6 +96,7 @@ public class MorphoidApp extends Application {
       KeyFrame keyFrame = new KeyFrame(
           Duration.seconds(FPS_60),
           actionEvent -> {
+            long start = System.currentTimeMillis();
             engineLock.lock();
             try {
               engine.tick();
@@ -102,6 +105,7 @@ public class MorphoidApp extends Application {
 
               //TODO synchronize
               drawEntities(gc, ascii, engine.getEntitiesJava());
+              drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
             } finally {
               engineLock.unlock();
             }
@@ -122,6 +126,10 @@ public class MorphoidApp extends Application {
       e.printStackTrace();
       System.exit(-1);
     }
+  }
+
+  private void drawRate(GraphicsContext gc, long rate) {
+    gc.fillText("Framerate: " + rate + " ms", 20, 20);
   }
 
   private void cleanScreen(GraphicsContext gc, Stage stage) {
