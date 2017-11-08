@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,6 +12,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
@@ -88,7 +90,8 @@ public class MorphoidApp extends Application {
         LEVEL_WIDTH, LEVEL_HEIGHT);
 
     GraphicsContext gc = canvas.getGraphicsContext2D();
-    gc.setFont(Font.font(FONT_NAME, geometry.getFontSize()));
+    gc.setTextAlign(TextAlignment.CENTER);
+    gc.setTextBaseline(VPos.CENTER);
 
     try {
       AsciiRenderer ascii = AsciiRenderer.makeFor(ASCII_MAP_FILE, geometry);
@@ -133,7 +136,7 @@ public class MorphoidApp extends Application {
   private void drawRate(GraphicsContext gc, long rate) {
     gc.setStroke(Color.BLACK);
     gc.setFill(Color.BLACK);
-    gc.fillText("Framerate: " + rate + " ms", 20, 20);
+    gc.fillText("Framerate: " + rate + " ms", 120, 20);
   }
 
   private void cleanScreen(GraphicsContext gc, Stage stage) {
@@ -148,7 +151,7 @@ public class MorphoidApp extends Application {
     double fontSize = geometry.getFontSize();
 
     Font cellFont = Font.font(FONT_NAME, fontSize);
-    Font energyFontFont = Font.font(FONT_NAME, fontSize/2);
+    Font energyFont = Font.font(FONT_NAME, fontSize/3);
 
     // TODO permutations : could be optimized
     // TODO drawing : could be optimized
@@ -165,25 +168,20 @@ public class MorphoidApp extends Application {
         gc.setFill(color);
         gc.setStroke(color.darker());
 
-        gc.strokeText(chr, origin.getX(), origin.getY());
         gc.fillRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
+        gc.strokeText(chr, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
         gc.strokeRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
       }
 
-      gc.setFont(energyFontFont);
+      gc.setFont(energyFont);
       Point2D origin = geometry.convertToScreen(entity.origin());
       String energy = String.format("%4.0f", entity.getEnergy());
-      Color color = Color.GREEN;
 
-      gc.setStroke(color);
-      gc.setFill(color);
+      gc.setStroke(Color.YELLOW);
+      gc.setFill(Color.YELLOW);
 
-      gc.fillText(energy, origin.getX(), origin.getY());
-      gc.strokeText(energy, origin.getX(), origin.getY());
+      gc.fillText(energy, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+      gc.strokeText(energy, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
     }
   }
-
-  private void drawText(GraphicsContext gc, Point2D origin, String text, Paint color, double fontSize) {
-  }
-
 }
