@@ -15,10 +15,10 @@ import static org.mockito.Mockito.when;
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
-public class AsciiFactoryTestTrait implements TestUtilsTrait {
+public class AsciiRendererTestTrait implements TestUtilsTrait {
   @Test
   public void testLoadSimple() throws Exception {
-    AsciiFactory factory = AsciiFactory.makeFor("ascii/simple.txt", null);
+    AsciiRenderer factory = AsciiRenderer.makeFor("ascii/simple.txt", null);
     assertThat(factory).isNotNull();
 
     String text = factory.getAsciiFrameString("simple");
@@ -28,7 +28,7 @@ public class AsciiFactoryTestTrait implements TestUtilsTrait {
 
   @Test
   public void testLoadComplex() throws Exception {
-    AsciiFactory factory = AsciiFactory.makeFor("ascii/complex.txt", null);
+    AsciiRenderer factory = AsciiRenderer.makeFor("ascii/complex.txt", null);
     assertThat(factory).isNotNull();
     assertThat(factory.ids()).containsOnly("first", "second", "third");
 
@@ -50,7 +50,7 @@ public class AsciiFactoryTestTrait implements TestUtilsTrait {
   public void testEntity() throws Exception {
 
     GameGeometry geometry = new GameGeometry(wrap(100), wrap(100), 10, 10);
-    AsciiFactory factory = AsciiFactory.makeFor("ascii/game.txt", geometry);
+    AsciiRenderer factory = AsciiRenderer.makeFor("ascii/game.txt", geometry);
 
     AsciiSprite sprite = factory.getSprite(fake("player", 5, 5));
     assertThat(sprite.getOrigin().getX()).isEqualTo(50);

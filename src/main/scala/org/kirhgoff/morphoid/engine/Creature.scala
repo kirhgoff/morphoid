@@ -1,5 +1,9 @@
 package org.kirhgoff.morphoid.engine
 
+import java.util
+
+import scala.collection.JavaConverters
+
 trait Live {
   def energy:Double
   def isAlive = energy > 0
@@ -7,12 +11,14 @@ trait Live {
 
 trait CellType {
   def energyGrowth:Double = EnergyBalance.cellDecay
+
+  override def toString: String = getClass.getSimpleName.toLowerCase
 }
 
 object Dummy extends CellType
-
 class Seed extends CellType {
   override def energyGrowth:Double = 0
+  override def toString: String = "seed"
 }
 
 class ShroomSeed extends Seed {
@@ -22,7 +28,7 @@ class ShroomSeed extends Seed {
 class Mover extends CellType
 class Feeder extends CellType
 
-//TODO use objects instead of classes
+//TODO use objects instead of classes + DSL
 
 object Seed {
   def apply(x:Int, y:Int) = Physical(x, y) -> new Seed
@@ -52,6 +58,9 @@ class Creature(
   def cells = cellsMap.keys.toList
 
   def cellType(physical:Physical) = cellsMap(physical)
+
+  def getEnergy = energy
+  def getCellsJava:util.Collection[Physical] = JavaConverters.asJavaCollection(cells)
 
   def origin:Physical = {
     val result = cells match {

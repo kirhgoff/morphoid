@@ -67,6 +67,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //Test interface
   def soulById(id:String) = souls(id)
 
+  // TODO Rename to getCreatures()
   // UI Interface
   def getEntities: List[Creature] = creatures.values.toList
   def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)

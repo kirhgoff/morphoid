@@ -2,6 +2,7 @@ package org.kirhgoff.morphoid.ascii;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import org.kirhgoff.morphoid.engine.Creature;
 import org.kirhgoff.morphoid.render.GameGeometry;
 
@@ -19,14 +20,14 @@ import static java.util.function.Function.identity;
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
-public class AsciiFactory {
+public class AsciiRenderer {
   private static final String START_TAG = "--- ID";
   private static final String END_TAG = "--- END";
 
-  private GameGeometry geometry;
-  private Map<String, AsciiImage> map;
+  private final GameGeometry geometry;
+  private final Map<String, AsciiImage> map;
 
-  private AsciiFactory(GameGeometry geometry, Map<String, AsciiImage> map) {
+  private AsciiRenderer(GameGeometry geometry, Map<String, AsciiImage> map) {
     this.geometry = geometry;
     this.map = map;
   }
@@ -51,7 +52,11 @@ public class AsciiFactory {
     return map.get(id);
   }
 
-  public static AsciiFactory makeFor(String filePath, GameGeometry geometry) throws IOException {
+  public GameGeometry getGeometry() {
+    return geometry;
+  }
+
+  public static AsciiRenderer makeFor(String filePath, GameGeometry geometry) throws IOException {
     InputStream inputStream = Thread
         .currentThread()
         .getContextClassLoader()
@@ -79,7 +84,7 @@ public class AsciiFactory {
       Map<String, AsciiImage> map = images.stream()
           .collect(Collectors.toMap(AsciiImage::getId, identity()));
 
-      return new AsciiFactory(geometry, new ConcurrentHashMap<>(map));
+      return new AsciiRenderer(geometry, new ConcurrentHashMap<>(map));
     }
 
   }
@@ -89,7 +94,29 @@ public class AsciiFactory {
     String ascii = getAsciiFrameString(id);
     Point2D point = geometry.convertToScreen(entity.origin().x(), entity.origin().y());
     //TODO rework sprite creation
-    return new AsciiSprite(point, ascii, Color.BLACK);
+    return new AsciiSprite(point, ascii, getPalette(id));
+  }
+
+  public String getCell(String cellType) {
+    switch (cellType) {
+      case "seed": return "o";
+      case "shroomseed": return "*";
+      case "mover": return "m";
+      case "feeder": return ">";
+      case "player": return "&";
+      case "projectile": return ".";
+      default: return "?";
+    }
+  }
+
+  public Color getPalette(String id) {
+    switch (id) {
+      case "ooze": return Color.GREEN;
+      case "shroom": return Color.BLUE;
+      case "player": return Color.RED;
+      case "projectile": return Color.YELLOW;
+      default: return Color.BLACK;
+    }
   }
 
   private static class AsciiImage {

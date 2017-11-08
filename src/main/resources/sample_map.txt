@@ -11,9 +11,9 @@
 --- END
 
 --- ID ooze
-W
+oxw
 --- END
 
 --- ID shroom
-~
+*
 --- END

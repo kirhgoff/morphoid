@@ -2,6 +2,7 @@ package org.kirhgoff.morphoid.render;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Point2D;
+import org.kirhgoff.morphoid.engine.Physical;
 
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
@@ -26,6 +27,8 @@ public class GameGeometry {
     screenHeight.addListener(event -> updateRatio());
   }
 
+  // TODO reimplement with atomics
+
   private synchronized void updateRatio() {
     double width = screenWidth.doubleValue();
     double height = screenHeight.doubleValue();
@@ -44,8 +47,20 @@ public class GameGeometry {
     return cellWidth;
   }
 
+  public synchronized double getCellWidth() {
+    return cellWidth;
+  }
+
+  public synchronized double getCellHeight() {
+    return cellHeight;
+  }
+
   public synchronized Point2D convertToScreen(int x, int y) {
     return new Point2D(cellWidth * x, cellHeight * y);
+  }
+
+  public synchronized Point2D convertToScreen(Physical origin) {
+    return convertToScreen(origin.x(), origin.y());
   }
 
   @Override

@@ -8,13 +8,16 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.kirhgoff.morphoid.ascii.AsciiFactory;
-import org.kirhgoff.morphoid.ascii.AsciiSprite;
+import org.kirhgoff.morphoid.ascii.AsciiRenderer;
+import org.kirhgoff.morphoid.engine.CellType;
 import org.kirhgoff.morphoid.engine.Creature;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
+import org.kirhgoff.morphoid.engine.Physical;
 import org.kirhgoff.morphoid.render.GameGeometry;
 
 import java.io.IOException;
@@ -88,7 +91,7 @@ public class MorphoidApp extends Application {
     gc.setFont(Font.font(FONT_NAME, geometry.getFontSize()));
 
     try {
-      AsciiFactory ascii = AsciiFactory.makeFor(ASCII_MAP_FILE, geometry);
+      AsciiRenderer ascii = AsciiRenderer.makeFor(ASCII_MAP_FILE, geometry);
 
       Timeline gameLoop = new Timeline();
       gameLoop.setCycleCount(Timeline.INDEFINITE);
@@ -103,8 +106,7 @@ public class MorphoidApp extends Application {
 
               cleanScreen(gc, stage);
 
-              //TODO synchronize
-              drawEntities(gc, ascii, engine.getEntitiesJava());
+              drawEntities(gc, ascii, engine);
               drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
             } finally {
               engineLock.unlock();
@@ -129,6 +131,8 @@ public class MorphoidApp extends Application {
   }
 
   private void drawRate(GraphicsContext gc, long rate) {
+    gc.setStroke(Color.BLACK);
+    gc.setFill(Color.BLACK);
     gc.fillText("Framerate: " + rate + " ms", 20, 20);
   }
 
@@ -136,16 +140,50 @@ public class MorphoidApp extends Application {
     gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
   }
 
-  private void drawEntities(GraphicsContext gc, AsciiFactory ascii, Collection<Creature> entities) {
-    for (Creature entity : entities) {
-      AsciiSprite sprite = ascii.getSprite(entity);
-      Point2D origin = sprite.getOrigin();
+  private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
+    Collection<Creature> entities = engine.getEntitiesJava();
+    GameGeometry geometry = ascii.getGeometry();
+    double cellWidth = geometry.getCellWidth();
+    double cellHeight = geometry.getCellHeight();
+    double fontSize = geometry.getFontSize();
 
-      gc.setStroke(sprite.getColor());
-      gc.setFill(sprite.getColor());
-      gc.fillText(sprite.getAscii(), origin.getX(), origin.getY());
-      gc.strokeText(sprite.getAscii(), origin.getX(), origin.getY());
+    Font cellFont = Font.font(FONT_NAME, fontSize);
+    Font energyFontFont = Font.font(FONT_NAME, fontSize/2);
+
+    // TODO permutations : could be optimized
+    // TODO drawing : could be optimized
+    for (Creature entity : entities) {
+      gc.setFont(cellFont);
+      for (Physical cell : entity.getCellsJava()) {
+        Point2D origin = geometry.convertToScreen(cell);
+
+        String kind = engine.creatureType(cell);
+        String cellType = engine.cellType(cell).toString();
+
+        Color color = ascii.getPalette(kind);
+        String chr = ascii.getCell(cellType);
+        gc.setFill(color);
+        gc.setStroke(color.darker());
+
+        gc.strokeText(chr, origin.getX(), origin.getY());
+        gc.fillRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
+        gc.strokeRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
+      }
+
+      gc.setFont(energyFontFont);
+      Point2D origin = geometry.convertToScreen(entity.origin());
+      String energy = String.format("%4.0f", entity.getEnergy());
+      Color color = Color.GREEN;
+
+      gc.setStroke(color);
+      gc.setFill(color);
+
+      gc.fillText(energy, origin.getX(), origin.getY());
+      gc.strokeText(energy, origin.getX(), origin.getY());
     }
+  }
+
+  private void drawText(GraphicsContext gc, Point2D origin, String text, Paint color, double fontSize) {
   }
 
 }
