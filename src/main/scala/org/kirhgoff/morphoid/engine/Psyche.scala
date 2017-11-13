@@ -99,15 +99,13 @@ class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Cr
 object PlayerSoul {
   def apply(playerInputState: PlayerInputState, x:Int, y:Int, velocity:Int) = {
     val id: String = Dice.makeId("player")
-    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", EnergyBalance.playerLife, Map(Seed(x, y))))
+    new PlayerSoul(id, playerInputState, velocity, new Creature(id, "player", Map(Seed(x, y))))
   }
 }
 
 object Shroom {
   def apply(id:String, x:Int, y:Int) = new PlantSoul(id,
-    new Creature(id, "shroom", EnergyBalance.shroomLife, Map(
-      ShroomSeed(x, y)
-    ))
+    new Creature(id, "shroom", Map(ShroomSeed(x, y)))
   )
 
   def apply(x:Int, y:Int):PlantSoul =
@@ -117,9 +115,7 @@ object Shroom {
 object Ooze {
   def apply(id:String, x:Int, y:Int, velocity:Int) =
     new HerbivoreSoul(id, velocity,
-      new Creature(id, "ooze", EnergyBalance.oozeLife, Map(
-        Seed(x, y), Mover(x + 1, y)
-      ))
+      new Creature(id, "ooze", Map(Seed(x, y), Mover(x + 1, y)))
     )
 
   def apply(x:Int, y:Int, velocity:Int):HerbivoreSoul =

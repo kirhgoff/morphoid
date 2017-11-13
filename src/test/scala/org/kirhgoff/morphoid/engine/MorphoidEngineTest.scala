@@ -10,20 +10,15 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
    // ------------------ Creature
 
   "Creature" should "be able to calculate its origin point" in {
-    new Creature("", "", 10,
-      Map(Seed(0, 0), Mover(2, 5))).origin should be(Physical(0, 0))
-    new Creature("", "", 10,
-      Map(Mover(2, 5), Seed(0, 0))).origin should be(Physical(0, 0))
-
-    new Creature("", "", 10,
-      Map(Mover(0, 1), Seed(1, 0))).origin should be(Physical(0, 0))
-
-    new Creature("", "", 5, Map(Seed(2, 5))).origin should be(Physical(2, 5))
+    new Creature("", "", Map(Seed(0, 0), Mover(2, 5))).origin should be(Physical(0, 0))
+    new Creature("", "", Map(Mover(2, 5), Seed(0, 0))).origin should be(Physical(0, 0))
+    new Creature("", "", Map(Mover(0, 1), Seed(1, 0))).origin should be(Physical(0, 0))
+    new Creature("", "", Map(Seed(2, 5))).origin should be(Physical(2, 5))
   }
 
   "Creature" should "know its bounding rect" in {
     def checkBoundBox(rect: Rect, cells: Map[Physical, CellType]) = {
-      rect should equal(new Creature("01", "test", 10, cells).boundingRect)
+      rect should equal(new Creature("01", "test", cells).boundingRect)
     }
 
     checkBoundBox(Rect(2, 3, 2, 3), Map(Seed(2, 3)))
@@ -133,7 +128,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
   }
 
   private def findCreatureByType(engine: MorphoidEngine, creature: String) =
-    engine.getEntities.find(c => c.kind.equals(creature)).get
+    engine.getCreatures.find(c => c.kind.equals(creature)).get
 
   "Ooze" should "move towards shrooms" in {
     val engine = MorphoidEngine(
@@ -178,12 +173,35 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick().fullEnergy should be < initialEnergy
   }
 
-    "Ooze" should "live near shroom" in {
-      val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
-      val initialEnergy = engine.fullEnergy
+  "Ooze" should "live near shroom" in {
+    val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
+    val initialEnergy = engine.fullEnergy
 
-      engine.tick().fullEnergy should be > initialEnergy
-    }
+    engine.tick().fullEnergy should be > initialEnergy
+  }
+
+  "Decoy" should "appear if ooze has died" in {
+    val engine = MorphoidEngine(Ooze(0, 0, 1)).init()
+    engine.setEnergyBalanceController(new EnergyBalanceController {
+      override def oozeLife = 2
+      override def cellDecay = 1
+    })
+
+    // Energy decreased at the end of the tick
+    engine.tick().tick()
+
+    engine.getCreatures should not be empty
+    engine.getDecoy shouldBe empty
+
+    // Creature killed on the third when energy is zero
+    engine.tick()
+
+    engine.getCreatures shouldBe empty
+    engine.getDecoy should not be empty
+  }
+
+  "Decoy" should "decay with time" in {}
+  "Ooze" should "finally decay to 0" in {}
 
 
 }

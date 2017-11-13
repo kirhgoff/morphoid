@@ -10,13 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
-import org.kirhgoff.morphoid.engine.CellType;
 import org.kirhgoff.morphoid.engine.Creature;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.engine.Physical;
@@ -108,7 +106,7 @@ public class MorphoidApp extends Application {
               engine.tick();
 
               cleanScreen(gc, stage);
-
+              drawLayer(gc, ascii, engine, "decoy");
               drawEntities(gc, ascii, engine);
               drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
             } finally {
@@ -124,13 +122,17 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      //stage.setFullScreen(true);
+      stage.setFullScreen(true);
 
     } catch (IOException e) {
       //TODO gracefully exit
       e.printStackTrace();
       System.exit(-1);
     }
+  }
+
+  private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, String layerId) {
+    engine.getDecoy();
   }
 
   private void drawRate(GraphicsContext gc, long rate) {
@@ -144,7 +146,7 @@ public class MorphoidApp extends Application {
   }
 
   private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
-    Collection<Creature> entities = engine.getEntitiesJava();
+    Collection<Creature> entities = engine.getCreaturesJava();
     GameGeometry geometry = ascii.getGeometry();
     double cellWidth = geometry.getCellWidth();
     double cellHeight = geometry.getCellHeight();

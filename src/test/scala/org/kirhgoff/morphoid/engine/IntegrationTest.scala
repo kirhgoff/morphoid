@@ -17,7 +17,7 @@ class IntegrationTest extends FlatSpec with Matchers with MockFactory {
       try {
         for (_ <- 0 to 100) {
           engine.tick()
-          engine.getEntitiesJava should not be null
+          engine.getCreaturesJava should not be null
         }
       } catch {
         case e: Exception => fail(e)

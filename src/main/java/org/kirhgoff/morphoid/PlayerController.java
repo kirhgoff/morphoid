@@ -1,9 +1,15 @@
 package org.kirhgoff.morphoid;
 
 import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
+
+import static javafx.scene.input.KeyCode.*;
 
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 31/8/17.
@@ -11,6 +17,7 @@ import java.util.concurrent.locks.Lock;
 public class PlayerController implements EventHandler<KeyEvent> {
   private final PlayerInputState input;
   private Lock inputLock;
+  private Set<KeyCode> known_codes = new HashSet<KeyCode>(Arrays.asList(W, S, D, A, LEFT, RIGHT, UP, DOWN));
 
   // Do I need a lock to sync another lock?
   PlayerController(PlayerInputState input, Lock inputLock) {
@@ -65,7 +72,9 @@ public class PlayerController implements EventHandler<KeyEvent> {
           break;
         }
       }
-      event.consume(); //TODO consume only when ours
+      if (!known_codes.contains(event.getCode())) {
+        event.consume();
+      }
       //System.out.println("PC set " + input);
     } finally {
       inputLock.unlock();

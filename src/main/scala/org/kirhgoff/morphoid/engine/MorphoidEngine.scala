@@ -58,6 +58,18 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //private val player = initialEntities.head
   private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
+  private val decoy =  mutable.Map[String, Decoy]() //TODO optimize - memory leak
+
+  private var energyBalanceController = EnergyBalanceController.generic()
+
+  def setEnergyBalanceController(controller:EnergyBalanceController): Unit = {
+    energyBalanceController = controller
+  }
+
+  //TODO move to test where it is used
+  def fullEnergy = creatures.values.map(_.energy).sum // Including player
+
+  def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
 
   //TODO implement surroundings properly
   def surroundings(creature: Creature, sight:Int):List[Physical] = {
@@ -67,10 +79,32 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //Test interface
   def soulById(id:String) = souls(id)
 
-  // TODO Rename to getCreatures()
   // UI Interface
-  def getEntities: List[Creature] = creatures.values.toList
-  def getEntitiesJava = JavaConverters.asJavaCollection(getEntities)
+  def getCreatures: List[Creature] = creatures.values.toList
+  def getCreaturesJava = JavaConverters.asJavaCollection(getCreatures)
+
+  def getDecoy:List[Decoy] = decoy.values.toList
+  def getDecoyJava = JavaConverters.asJavaCollection(getDecoy)
+
+  def init() = {
+    initialEntities.foreach(psyche => {
+      psyche.setEngine(this)
+
+      val creature = psyche.creature
+      creature.updateEnergy(initialEnergy(creature))
+      registerCreature(creature)
+    })
+    this
+  }
+
+  // TODO move to controller
+  def initialEnergy(creature: Creature):Double = creature.kind match {
+    case "shroom" => energyBalanceController.shroomLife
+    case "ooze" => energyBalanceController.oozeLife
+    case "player" => energyBalanceController.playerLife
+    case "projectile" => energyBalanceController.projectile
+    case _ => -666 // To easily notice if forgot to add
+  }
 
   private def addEntity(psyche: Psyche) = {
     val creature = psyche.creature
@@ -79,21 +113,22 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     psyche.setEngine(this)
   }
 
-  def init() = {
-    initialEntities.foreach(p => {
-      p.setEngine(this)
-      registerCreature(p.creature)
-    })
-    this
-  }
-
-  def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
-  def fullEnergy = creatures.values.map(_.energy).sum // Including player
+  def createDecoy(creature: Creature):Decoy = new Decoy
 
   def tick() = {
     //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
-    souls.values
-      .filter(_.creature.isAlive)
+    val (dead,alive) = souls.values.partition(_.creature.energy > 0)
+
+    // Turn dead to decay
+    dead.foreach(psyche => {
+      val newDecoy = createDecoy(psyche.creature)
+      val creatureId = psyche.creature.id
+      souls.remove(psyche.id)
+      creatures.remove(creatureId )
+      decoy.put(creatureId , newDecoy)
+    })
+
+    alive
       .filter(_.readyToAct)
       .foreach(p => {
         val sur = surroundings(p.creature, p.sight)
@@ -110,13 +145,26 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     //TODO ask Michal how to rewrite functionally
     creatures.values.foreach(creature => {
       creature.updateEnergy(creature.cells.foldLeft(0.0)(
-        (a, c) => a + cellType(c).energyGrowth
+        (a, c) => a + energyGrowth(cellType(c))
       ))
     })
+
+    decoy.foreach { case (id, item) => {
+      item.updateEnergy(energyBalanceController.decoyDecay)
+      if (item.energy <= 0) decoy.remove(id)
+    }}
 
     //println(s"MEngine.tick() end: $souls")
     this
   }
+
+  // TODO move to controller
+  def energyGrowth(cellType:CellType):Double = cellType match {
+    case _:Seed => energyBalanceController.seedGrowth
+    case _:ShroomSeed => energyBalanceController.shroomIncrease
+    case _ => energyBalanceController.cellDecay
+  }
+
 
   def validate(events: List[GameEvent]):List[GameEvent] = {
     events.filter(event => event match {
@@ -148,7 +196,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         creature.attack(direction)
         val newId = Dice.makeId("pew")
         val projectileOrigin = creature.origin.nextTo(direction)
-        val projectile = new Creature(newId, "projectile", 50, Map(projectileOrigin -> new Seed))
+        val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
         addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }
