@@ -67,7 +67,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   }
 
   //TODO move to test where it is used
-  def fullEnergy = creatures.values.map(_.energy).sum // Including player
+  //TODO make decoy creature + add Alive interface with energy
+  def fullEnergy = creatures.values.map(_.energy).sum + decoy.values.map(_.energy).sum
 
   def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
 
@@ -113,11 +114,12 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     psyche.setEngine(this)
   }
 
-  def createDecoy(creature: Creature):Decoy = new Decoy
+  def createDecoy(creature: Creature):Decoy = new Decoy(creature.energy)
 
   def tick() = {
     //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
-    val (dead,alive) = souls.values.partition(_.creature.energy > 0)
+    val (dead,alive) = souls.values
+      .partition(_.creature.energy <= energyBalanceController.decoyThreshold)
 
     // Turn dead to decay
     dead.foreach(psyche => {
@@ -132,9 +134,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       .filter(_.readyToAct)
       .foreach(p => {
         val sur = surroundings(p.creature, p.sight)
-
         // TODO understand how act works with multicellulars
-
         val batch = p.act(sur)
         //      println(s"creature ${p.creature}" +
         //        s"\n\tsurr=${sur.map(s => str(s)).mkString(" ")}" +
@@ -151,10 +151,11 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
     decoy.foreach { case (id, item) => {
       item.updateEnergy(energyBalanceController.decoyDecay)
-      if (item.energy <= 0) decoy.remove(id)
+      if (item.energy <= energyBalanceController.completeDecoy)
+        decoy.remove(id)
     }}
 
-    //println(s"MEngine.tick() end: $souls")
+    //println(s"MEngine.tick() end: $souls $decoy")
     this
   }
 
@@ -204,6 +205,12 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 }
 
 object MorphoidEngine {
+  def apply(energyBalanceController: EnergyBalanceController, psyche: Psyche*) = {
+    val engine = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList)
+    engine.setEnergyBalanceController(energyBalanceController)
+    engine.init()
+  }
+
   def apply(psyche: Psyche*) = new MorphoidEngine(Rect(0, 0, 10, 10), psyche.toList).init()
 
   def create(scenario:String, playerInputState: PlayerInputState) = scenario match {

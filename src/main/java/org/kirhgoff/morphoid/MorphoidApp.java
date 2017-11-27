@@ -16,9 +16,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
 import org.kirhgoff.morphoid.engine.Creature;
+import org.kirhgoff.morphoid.engine.Decoy;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.engine.Physical;
 import org.kirhgoff.morphoid.render.GameGeometry;
+import scala.collection.immutable.List;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -132,7 +134,8 @@ public class MorphoidApp extends Application {
   }
 
   private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, String layerId) {
-    engine.getDecoy();
+    List<Decoy> decoy = engine.getDecoy();
+
   }
 
   private void drawRate(GraphicsContext gc, long rate) {
@@ -162,11 +165,9 @@ public class MorphoidApp extends Application {
       for (Physical cell : entity.getCellsJava()) {
         Point2D origin = geometry.convertToScreen(cell);
 
-        String kind = engine.creatureType(cell);
-        String cellType = engine.cellType(cell).toString();
+        Color color = ascii.getPalette(engine.creatureType(cell));
+        String chr = ascii.getCell(engine.cellType(cell).toString());
 
-        Color color = ascii.getPalette(kind);
-        String chr = ascii.getCell(cellType);
         gc.setFill(color);
         gc.setStroke(color.darker());
 

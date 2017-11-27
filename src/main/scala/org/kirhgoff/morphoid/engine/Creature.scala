@@ -6,8 +6,10 @@ import scala.collection.JavaConverters
 
 trait Live {
   def energy: Double
+}
 
-  def isAlive = energy > 0
+trait Multicellular {
+  def getCellsJava: util.Collection[Cell]
 }
 
 trait CellType {
@@ -49,7 +51,7 @@ object ShroomSeed {
 class Creature(
                 val id: String,
                 val kind: String,
-                val cellsMap: Map[Physical, CellType]) extends Live {
+                val cellsMap: Map[Physical, CellType]) extends Live with Multicellular {
 
   var energy: Double = 0
 

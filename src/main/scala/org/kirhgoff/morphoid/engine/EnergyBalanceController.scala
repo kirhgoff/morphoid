@@ -9,6 +9,9 @@ class EnergyBalanceController {
   def shroomIncrease = 1
 
   def decoyDecay = cellDecay
+  def decoyThreshold = shroomLife/10
+  def completeDecoy = 0
+
   // Lives
   def shroomLife = 10
   def oozeLife = shroomLife * 20
