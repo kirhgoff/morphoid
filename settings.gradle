@@ -1,0 +1,1 @@
+include 'morphoid-bridge', 'morphoid-engine', 'morphoid-java-ui'

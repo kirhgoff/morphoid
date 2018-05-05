@@ -1,6 +1,6 @@
 package org.kirhgoff.morphoid.engine
 
-import org.kirhgoff.morphoid.{PlayerController, PlayerInputState}
+import org.kirhgoff.morphoid.{PlayerInputState}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

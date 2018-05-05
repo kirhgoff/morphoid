@@ -180,6 +180,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick().fullEnergy should be > initialEnergy
   }
 
+/*
   "Decoy" should "appear if ooze has died" in {
     val engine = MorphoidEngine(new EnergyBalanceController {
       override def oozeLife = 3
@@ -223,5 +224,5 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
     engine.getDecoy shouldBe empty
   }
-
+*/
 }

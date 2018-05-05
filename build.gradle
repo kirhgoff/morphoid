@@ -1,0 +1,52 @@
+configure(subprojects - project(':morphoid-engine')) { 
+    println "applying java plugin to $project"
+    apply plugin: 'java'  
+}
+
+project(':morphoid-bridge') { 
+}
+
+project(':morphoid-engine') {
+
+    // dependencies {
+    //   compile project(':morphoid-bridge')
+    // }
+
+    task test(type: Exec) {
+        executable "sbt"
+        args "test"
+    }
+
+    task build(type: Exec) {
+        executable "sbt"
+        args "compile"
+    }
+
+    task compile(type: Exec) {
+        executable "sbt"
+        args "compile"
+    }
+
+    task publish(type: Exec) {
+        executable "sbt"
+        args "publishM2"
+    }
+
+    task clean(type: Exec) {
+        executable "sbt"
+        args "clean"
+    }    
+}
+
+project(':morphoid-java-ui') {
+    dependencies {
+        compile project(':morphoid-bridge')
+        publish project(':morphoid-bridge')
+        //compile project(':morphoid-engine')
+    }
+
+    compileJava {
+      dependsOn ':morphoid-bridge:publishToMavenLocal'
+      dependsOn ':morphoid-engine:publish'
+    }
+}

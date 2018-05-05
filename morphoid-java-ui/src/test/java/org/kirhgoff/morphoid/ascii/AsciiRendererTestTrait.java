@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
+// TODO rename
 public class AsciiRendererTestTrait implements TestUtilsTrait {
   @Test
   public void testLoadSimple() throws Exception {
