@@ -8,9 +8,9 @@ trait Live {
   def energy: Double
 }
 
-trait Multicellular {
-  def getCellsJava: util.Collection[Cell]
-}
+// trait Multicellular {
+//   def getCellsJava: util.Collection[Cell]
+// }
 
 trait CellType {
   override def toString: String = getClass.getSimpleName.toLowerCase
@@ -51,7 +51,7 @@ object ShroomSeed {
 class Creature(
                 val id: String,
                 val kind: String,
-                val cellsMap: Map[Physical, CellType]) extends Live with Multicellular {
+                val cellsMap: Map[Physical, CellType]) extends Live/* with Multicellular*/ {
 
   var energy: Double = 0
 

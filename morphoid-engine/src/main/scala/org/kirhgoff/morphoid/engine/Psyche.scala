@@ -78,7 +78,7 @@ class Projectile(id:String, direction:Direction, velocity:Int, creature:Creature
 class PlayerSoul(id:String, input: PlayerInputState, velocity: Int, creature: Creature) extends Psyche(id, velocity, creature) {
   override def act(surroundings: List[Physical]) = {
     //println("PS read " + input)
-    var events = ListBuffer[GameEvent]()
+    val events = ListBuffer[GameEvent]()
 
     if(input.isMovingLeft) events += CreatureMoves(id, creature.id, West)
     if(input.isMovingRight) events += CreatureMoves(id, creature.id, East)

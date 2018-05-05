@@ -58,7 +58,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //private val player = initialEntities.head
   private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
-  private val decoy =  mutable.Map[String, Decoy]() //TODO optimize - memory leak
+  //private val decoy =  mutable.Map[String, Decoy]() //TODO optimize - memory leak
 
   private var energyBalanceController = EnergyBalanceController.generic()
 
@@ -68,7 +68,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   //TODO move to test where it is used
   //TODO make decoy creature + add Alive interface with energy
-  def fullEnergy = creatures.values.map(_.energy).sum + decoy.values.map(_.energy).sum
+  def fullEnergy = creatures.values.map(_.energy).sum // + decoy.values.map(_.energy).sum
 
   def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
 
@@ -84,8 +84,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def getCreatures: List[Creature] = creatures.values.toList
   def getCreaturesJava = JavaConverters.asJavaCollection(getCreatures)
 
-  def getDecoy:List[Decoy] = decoy.values.toList
-  def getDecoyJava = JavaConverters.asJavaCollection(getDecoy)
+  //def getDecoy:List[Decoy] = decoy.values.toList
+  //def getDecoyJava = JavaConverters.asJavaCollection(getDecoy)
 
   def init() = {
     initialEntities.foreach(psyche => {
@@ -114,7 +114,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     psyche.setEngine(this)
   }
 
-  def createDecoy(creature: Creature):Decoy = new Decoy(creature.energy)
+  //def createDecoy(creature: Creature):Decoy = new Decoy(creature.energy)
 
   def tick() = {
     //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
@@ -122,13 +122,13 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       .partition(_.creature.energy <= energyBalanceController.decoyThreshold)
 
     // Turn dead to decay
-    dead.foreach(psyche => {
+    /*dead.foreach(psyche => {
       val newDecoy = createDecoy(psyche.creature)
       val creatureId = psyche.creature.id
       souls.remove(psyche.id)
       creatures.remove(creatureId )
       decoy.put(creatureId , newDecoy)
-    })
+    })*/
 
     alive
       .filter(_.readyToAct)
@@ -149,12 +149,12 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       ))
     })
 
-    decoy.foreach { case (id, item) => {
+/*    decoy.foreach { case (id, item) => {
       item.updateEnergy(energyBalanceController.decoyDecay)
       if (item.energy <= energyBalanceController.completeDecoy)
         decoy.remove(id)
     }}
-
+*/
     //println(s"MEngine.tick() end: $souls $decoy")
     this
   }

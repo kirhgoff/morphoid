@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
 import org.kirhgoff.morphoid.engine.Creature;
-import org.kirhgoff.morphoid.engine.Decoy;
+//import org.kirhgoff.morphoid.engine.Decoy;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.engine.Physical;
 import org.kirhgoff.morphoid.render.GameGeometry;
@@ -108,7 +108,7 @@ public class MorphoidApp extends Application {
               engine.tick();
 
               cleanScreen(gc, stage);
-              drawLayer(gc, ascii, engine, "decoy");
+              //drawLayer(gc, ascii, engine, "decoy");
               drawEntities(gc, ascii, engine);
               drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
             } finally {
@@ -133,10 +133,10 @@ public class MorphoidApp extends Application {
     }
   }
 
-  private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, String layerId) {
-    List<Decoy> decoy = engine.getDecoy();
+  // private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, String layerId) {
+  //   List<Decoy> decoy = engine.getDecoy();
 
-  }
+  // }
 
   private void drawRate(GraphicsContext gc, long rate) {
     gc.setStroke(Color.BLACK);
@@ -158,33 +158,54 @@ public class MorphoidApp extends Application {
     Font cellFont = Font.font(FONT_NAME, fontSize);
     Font energyFont = Font.font(FONT_NAME, fontSize/3);
 
+    // TODO remove duplication
+    // for (Decoy decoy : engine.getDecoyJava()) {
+    //   gc.setFont(cellFont);
+
+    //   for (Physical cell : decoy.getCellsJava()) {
+    //     drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
+    //         ascii.getPalette(engine.creatureType(cell)),
+    //         ascii.getCell(engine.cellType(cell).toString())
+    //     );
+    //   }
+
+    //   gc.setFont(energyFont);
+    //   drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
+    // }
+
     // TODO permutations : could be optimized
     // TODO drawing : could be optimized
     for (Creature entity : entities) {
       gc.setFont(cellFont);
+
       for (Physical cell : entity.getCellsJava()) {
-        Point2D origin = geometry.convertToScreen(cell);
-
-        Color color = ascii.getPalette(engine.creatureType(cell));
-        String chr = ascii.getCell(engine.cellType(cell).toString());
-
-        gc.setFill(color);
-        gc.setStroke(color.darker());
-
-        gc.fillRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
-        gc.strokeText(chr, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
-        gc.strokeRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
+        drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
+            ascii.getPalette(engine.creatureType(cell)),
+            ascii.getCell(engine.cellType(cell).toString())
+        );
       }
 
       gc.setFont(energyFont);
-      Point2D origin = geometry.convertToScreen(entity.origin());
-      String energy = String.format("%4.0f", entity.getEnergy());
-
-      gc.setStroke(Color.YELLOW);
-      gc.setFill(Color.YELLOW);
-
-      gc.fillText(energy, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
-      gc.strokeText(energy, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+      drawEnergy(gc, geometry.convertToScreen(entity.origin()), cellWidth, cellHeight, entity.getEnergy());
     }
+  }
+
+  private void drawEnergy(GraphicsContext gc, Point2D origin, double cellWidth, double cellHeight, double energy) {
+    String string = String.format("%4.0f", energy);
+
+    gc.setStroke(Color.YELLOW);
+    gc.setFill(Color.YELLOW);
+
+    gc.fillText(string, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+    gc.strokeText(string, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+  }
+
+  private void drawCell(GraphicsContext gc, Point2D origin, double cellWidth, double cellHeight, Color color, String chr) {
+    gc.setFill(color);
+    gc.setStroke(color.darker());
+
+    gc.fillRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
+    gc.strokeText(chr, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+    gc.strokeRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
   }
 }
