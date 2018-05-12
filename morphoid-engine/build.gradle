@@ -1,0 +1,65 @@
+apply plugin: 'scala'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+// sourceSets {
+//     main {
+//         scala {
+//             srcDirs = ['src/main/scala']
+//         }
+//     }
+//     test {
+//         scala {
+//             srcDirs = ['src/test/scala']
+//         }
+//     }
+// }
+
+dependencies {
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.6'
+    compile group: 'org.kirhgoff', name: 'morphoid-bridge', version: '2.0'
+
+    //testCompile 'org.scalatest:scalatest:3.0.1:test',
+    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
+    // 'org.scalamock:scalamock-scalatest-support:3.6.0:test',
+    testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
+    //'org.scalacheck:scalacheck:1.13.4:test',
+    testCompile group: 'org.scalacheck', name: 'scalacheck_2.12', version: '1.14.0'
+
+    //testRuntime group: 'org.pegdown', name: 'pegdown', version:'1.4.2'
+    //'ch.qos.logback' %  'logback-classic'   % '1.1.3',
+}
+
+test {
+    maxParallelForks = 1
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'org.kirhgoff'
+            artifactId 'morphoid-engine'
+            version '2.0'
+            
+            from components.java
+        }
+    }
+}
+
+test {
+    //useTestNG()    
+
+    include 'org/kirhgoff/morphoid/engine/**'
+
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+    }
+}
