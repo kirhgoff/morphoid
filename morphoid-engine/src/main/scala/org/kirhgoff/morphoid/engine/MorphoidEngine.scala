@@ -142,7 +142,6 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         execute(validate(batch))
     })
 
-    //TODO ask Michal how to rewrite functionally
     creatures.values.foreach(creature => {
       creature.updateEnergy(creature.cells.foldLeft(0.0)(
         (a, c) => a + energyGrowth(cellType(c))
@@ -189,6 +188,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         val creature = creatures(id)
         //println(s"execute creatureMoves=$creature direction=$direction")
 
+        // Update cell indices
         unregisterCreature(creature)
         registerCreature(creature.move(direction))
       }
@@ -238,6 +238,7 @@ object MorphoidEngine {
       PlayerSoul(playerInputState, 10, 10, 5),
       Ooze(3, 5, 40),
       Ooze(15, 15, 60),
+      Ooze(19, 19, 60),
       Ooze(9, 11, 50),
       Shroom(1, 8),
       Shroom(6, 13),

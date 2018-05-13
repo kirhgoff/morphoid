@@ -167,17 +167,29 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   // TODO ask Michal
   "Ooze" should "die without food" in {
-    val engine = MorphoidEngine(Ooze(0, 0, 1)).init()
-    val initialEnergy = engine.fullEnergy
+    val engine = MorphoidEngine(Shroom(0, 0), Ooze(3, 3, 1)).init()
+    val ooze = findCreatureByType(engine, "ooze")
 
-    engine.tick().fullEnergy should be < initialEnergy
+    val systemInitialEnergy = engine.fullEnergy
+    val oozeInitialEnergy = ooze.energy
+
+    engine.tick()
+
+    engine.fullEnergy should be < systemInitialEnergy
+    ooze.energy should be < oozeInitialEnergy
   }
 
   "Ooze" should "live near shroom" in {
     val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
-    val initialEnergy = engine.fullEnergy
+    val ooze = findCreatureByType(engine, "ooze")
 
-    engine.tick().fullEnergy should be > initialEnergy
+    val systemInitialEnergy = engine.fullEnergy
+    val oozeInitialEnergy = ooze.energy
+
+    engine.tick()
+
+    engine.fullEnergy should be > systemInitialEnergy
+    ooze.energy should be > oozeInitialEnergy
   }
 
 /*
