@@ -18,6 +18,8 @@ class EnergyBalanceController {
   def playerLife = oozeLife * 1000
   def projectile = shroomLife / 4
 
+  // Attacks
+  def oozeAttack = shroomLife / 4
 }
 
 object EnergyBalanceController {

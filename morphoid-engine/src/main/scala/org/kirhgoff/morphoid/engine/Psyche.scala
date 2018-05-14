@@ -44,10 +44,10 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
       case Some(cell) => {
         val direction = bestDirection(cell)
 
-        println(s"Cell: $cell direction: $direction")
+        //println(s"Cell: $cell direction: $direction")
         List(
-          CreatureAttacks(id, creature.id, direction),
-          CreatureMoves(id, creature.id, direction)
+          CreatureMoves(id, creature.id, direction),
+          CreatureAttacks(id, creature.id, direction)
         )
       }
       case None => List(CreatureMoves(id, creature.id, Dice.randomDirection))

@@ -184,32 +184,45 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     creatures.values.filter(creature != _)
   }
 
-  def execute(events: List[GameEvent]) = events match {
+  def isPlayer(creature: Creature) = "player".equals(creature.kind)
+
+  def execute(events: List[GameEvent]): Unit = events match {
     case Nil =>
     case List() =>
-    case event :: rest => event match {
-      case CreatureMoves(_, id, direction) => {
-        val creature = creatures(id)
-        //println(s"execute creatureMoves=$creature direction=$direction")
+    case event :: rest => {
+      //println(s"Processing $event")
+      event match {
+        case CreatureMoves(_, id, direction) => {
+          val creature = creatures(id)
+          //println(s"execute creatureMoves=$creature direction=$direction")
 
-        // Update cell indices
-        unregisterCreature(creature)
-        registerCreature(creature.move(direction))
+          // Update cell indices
+          unregisterCreature(creature)
+          registerCreature(creature.move(direction))
+        }
+        case CreatureAttacks(_, creatureId, direction) => {
+          val attacker = creatures(creatureId)
+          val rect = attacker.boundingRect
+
+          others(attacker).find(p => rect.touches(p.boundingRect, direction)) match {
+            case Some(prey) => {
+              //println(s"Attacker: $creatureId, prey: $prey rect=$rect")
+              attacker.updateEnergy(EnergyBalanceController.generic().oozeAttack)
+              prey.updateEnergy(-EnergyBalanceController.generic().oozeAttack)
+            }
+            case None => {
+              if (isPlayer(attacker)) {
+                val newId = Dice.makeId("pew")
+                val projectileOrigin = attacker.origin.nextTo(direction)
+                val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
+                addEntity(new Projectile(newId, direction, 5, projectile))
+              }
+            }
+          }
+        }
       }
-      case CreatureAttacks(_, id, direction) => {
-        val attacker = creatures(id)
-        val rect = attacker.boundingRect
-        val prey = others(attacker).find(p => rect.touches(p.boundingRect, direction))
-        println(s"Attacker: $id, prey: $prey rect=$rect")
 
-
-        //TODO shoot attack
-//        creature.attack(direction)
-//        val newId = Dice.makeId("pew")
-//        val projectileOrigin = creature.origin.nextTo(direction)
-//        val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
-//        addEntity(new Projectile(newId, direction, 5, projectile))
-      }
+      execute(rest)
     }
   }
 }
