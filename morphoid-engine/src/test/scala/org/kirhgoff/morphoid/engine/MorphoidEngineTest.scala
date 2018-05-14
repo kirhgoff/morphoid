@@ -153,7 +153,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
     engine.tick()
 
-    engine.fullEnergy should be < systemInitialEnergy
+    engine.fullEnergy should be > systemInitialEnergy
     ooze.energy should be < oozeInitialEnergy
   }
 

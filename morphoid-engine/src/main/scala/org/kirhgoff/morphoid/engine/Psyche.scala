@@ -40,11 +40,18 @@ class HerbivoreSoul(id:String, velocity:Int, creature:Creature) extends Psyche(i
   override def sight = 3
 
   override def act(surroundings: List[Physical]) = {
-    val direction = surroundings.find(shroom) match {
-      case Some(cell) => bestDirection(cell)
-      case None => Dice.randomDirection
+    surroundings.find(shroom) match {
+      case Some(cell) => {
+        val direction = bestDirection(cell)
+
+        println(s"Cell: $cell direction: $direction")
+        List(
+          CreatureAttacks(id, creature.id, direction),
+          CreatureMoves(id, creature.id, direction)
+        )
+      }
+      case None => List(CreatureMoves(id, creature.id, Dice.randomDirection))
     }
-    List(CreatureMoves(id, creature.id, direction))
   }
 
   def shroom(cell:Physical):Boolean = {

@@ -64,9 +64,9 @@ case class Rect(x1:Int, y1:Int, x2:Int, y2:Int) {
     } else if (direction == East) {
       x1 - 1 == rect.x2 && verticallyAligned
     } else if (direction == North) {
-      y2 + 1 == rect.y1 && horizontallyAligned
-    } else if (direction == South) {
       y1 - 1 == rect.y2 && horizontallyAligned
+    } else if (direction == South) {
+      y2 + 1 == rect.y1 && horizontallyAligned
     } else {
       false
     }

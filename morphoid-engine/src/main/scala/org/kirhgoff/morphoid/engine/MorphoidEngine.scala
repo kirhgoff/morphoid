@@ -198,8 +198,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       }
       case CreatureAttacks(_, id, direction) => {
         val attacker = creatures(id)
-        val rect = attacker.boundingRect.move(direction)
-        val prey = others(attacker).map(_.boundingRect).find(_.touches(rect, direction))
+        val rect = attacker.boundingRect
+        val prey = others(attacker).find(p => rect.touches(p.boundingRect, direction))
+        println(s"Attacker: $id, prey: $prey rect=$rect")
+
 
         //TODO shoot attack
 //        creature.attack(direction)

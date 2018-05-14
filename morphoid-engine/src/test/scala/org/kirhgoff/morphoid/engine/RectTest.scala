@@ -35,7 +35,7 @@ class RectTest extends FlatSpec with Matchers with MockFactory {
 
   "touches" should "fail on incorrect direction of touch" in {
     // Touching, but direction is wrong
-    Rect(0, 0, 1, 1).touches(Rect(0, 2, 1, 3), South) shouldBe false
+    Rect(0, 0, 1, 1).touches(Rect(0, 2, 1, 3), North) shouldBe false
     Rect(0, 0, 1, 1).touches(Rect(0, 2, 1, 3), East) shouldBe false
     Rect(0, 0, 1, 1).touches(Rect(0, 2, 1, 3), West) shouldBe false
   }
@@ -45,6 +45,9 @@ class RectTest extends FlatSpec with Matchers with MockFactory {
     Rect(0, 0, 1, 1).touches(Rect(2, 0, 3, 1), West) shouldBe true
     Rect(2, 2, 4, 6).touches(Rect(1, 3, 1, 5), East) shouldBe true
     Rect(1, 3, 1, 5).touches(Rect(2, 2, 4, 6), West) shouldBe true
+
+    // Case from other test
+    Rect(0,1,1,1).touches(Rect(0,0,0,0), North) shouldBe true
   }
 
   "touches" should "work with intersecting rects" in {
