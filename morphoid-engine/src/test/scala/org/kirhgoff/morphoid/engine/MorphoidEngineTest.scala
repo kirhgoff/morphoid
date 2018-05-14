@@ -29,28 +29,6 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   // ------------------ Rect
 
-  "Rect" should "be possible to check if it is inside" in {
-    Rect(0, 0, 10, 10).includes(Rect(1,1, 2,2)) shouldBe true
-    Rect(0, 0, 10, 10).includes(Rect(1,1, 12,2)) shouldBe false
-    Rect(0, 0, 10, 10).includes(Rect(-10,-10, -2, -2)) shouldBe false
-  }
-
-  "Rect" should "be able to detect intersects" in {
-    // include examples
-    Rect(0, 0, 10, 10).intersects(Rect(1,1, 2,2)) shouldBe true
-    Rect(0, 0, 10, 10).intersects(Rect(1,1, 12,2)) shouldBe true
-    Rect(0, 0, 10, 10).intersects(Rect(-10,-10, -2, -2)) shouldBe false
-
-    Rect(0, 0, 1, 1).intersects(Rect(1,1, 2,2)) shouldBe true
-    Rect(0, 0, 10, 10).intersects(Rect(1,1, 12,12)) shouldBe true
-    Rect(0, 0, 10, 10).intersects(Rect(-1,-1, 0,0)) shouldBe true
-  }
-
-  "Rect" should "be able to inflate" in {
-    Rect(0, 0, 10, 10).inflate(2) shouldBe Rect(-2, -2, 12, 12)
-    Rect(0, 0, 0, 0).inflate(1) shouldBe Rect(-1, -1, 1, 1)
-  }
-
   "MorphoidEngine" should "provide surroundings" in {
     val engine = MorphoidEngine.createEmpty(10, 10)
     val creature = mock[Creature]

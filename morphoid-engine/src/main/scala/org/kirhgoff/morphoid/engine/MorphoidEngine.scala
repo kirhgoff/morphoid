@@ -5,10 +5,10 @@ import org.kirhgoff.morphoid.engine.Dice._
 
 import scala.collection.{JavaConverters, mutable}
 
-abstract class GameEvent(sourceId:String, targetId:String)
-case class CreatureMoves(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
-case class CreatureAttacks(sourceId:String, targetId:String, direction:Direction) extends GameEvent(sourceId, targetId)
-case class CreatureObserve(sourceId:String, targetId:String, surroundings:List[Physical]) extends GameEvent(sourceId, targetId)
+abstract class GameEvent(soulId:String, creatureId:String)
+case class CreatureMoves(soulId:String, creatureId:String, direction:Direction) extends GameEvent(soulId, creatureId)
+case class CreatureAttacks(soulId:String, creatureId:String, direction:Direction) extends GameEvent(soulId, creatureId)
+case class CreatureObserve(soulId:String, creatureId:String, surroundings:List[Physical]) extends GameEvent(soulId, creatureId)
 
 class Cell(var kind:String, var cellType:CellType)
 
@@ -171,13 +171,17 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       case CreatureMoves(_, id, direction) => {
         val creature = creatures(id)
         val rect = creature.boundingRect.move(direction)
-        val intersectsWithSomething = creatures.values.filter(creature != _).map(_.boundingRect).exists(_.intersects(rect))
+        val intersectsWithSomething = others(creature).map(_.boundingRect).exists(_.intersects(rect))
         val insideBorders = levelRect.includes(rect)
         //println(s"Validating creature $creatures(id) direction=$direction iws=$intersectsWithSomething ib=$insideBorders")
         !intersectsWithSomething && insideBorders
       }
       case _ => true
     })
+  }
+
+  private def others(creature: Creature) = {
+    creatures.values.filter(creature != _)
   }
 
   def execute(events: List[GameEvent]) = events match {
@@ -193,12 +197,16 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
         registerCreature(creature.move(direction))
       }
       case CreatureAttacks(_, id, direction) => {
-        val creature = creatures(id)
-        creature.attack(direction)
-        val newId = Dice.makeId("pew")
-        val projectileOrigin = creature.origin.nextTo(direction)
-        val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
-        addEntity(new Projectile(newId, direction, 5, projectile))
+        val attacker = creatures(id)
+        val rect = attacker.boundingRect.move(direction)
+        val prey = others(attacker).map(_.boundingRect).find(_.touches(rect, direction))
+
+        //TODO shoot attack
+//        creature.attack(direction)
+//        val newId = Dice.makeId("pew")
+//        val projectileOrigin = creature.origin.nextTo(direction)
+//        val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
+//        addEntity(new Projectile(newId, direction, 5, projectile))
       }
     }
   }
