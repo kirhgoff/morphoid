@@ -61,8 +61,9 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   private var energyBalanceController = EnergyBalanceController.generic()
 
-  def setEnergyBalanceController(controller:EnergyBalanceController): Unit = {
+  def setEnergyBalanceController(controller:EnergyBalanceController): MorphoidEngine = {
     energyBalanceController = controller
+    this
   }
 
   //TODO move to test where it is used
@@ -264,7 +265,7 @@ object MorphoidEngine {
       Shroom(6, 13),
       Shroom(16, 12)
     )
-  ).init()
+  ).setEnergyBalanceController(EnergyBalanceController.simple()).init()
 
   def createProduction(playerInputState: PlayerInputState) = {
     val width = 30

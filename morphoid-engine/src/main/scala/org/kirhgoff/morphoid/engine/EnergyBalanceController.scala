@@ -25,4 +25,8 @@ class EnergyBalanceController {
 
 object EnergyBalanceController {
   def generic() = new EnergyBalanceController
+
+  def simple() = new EnergyBalanceController {
+    override def oozeLife = shroomLife * 2
+  }
 }

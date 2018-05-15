@@ -105,6 +105,7 @@ public class AsciiRenderer {
       case "feeder": return ">";
       case "player": return "&";
       case "projectile": return ".";
+      case "decayingcell": return "_";
       default: return "?";
     }
   }
@@ -115,6 +116,7 @@ public class AsciiRenderer {
       case "shroom": return Color.BLUE;
       case "player": return Color.RED;
       case "projectile": return Color.YELLOW;
+      case "decayingcell": return Color.LIGHTSTEELBLUE;
       default: return Color.BLACK;
     }
   }
