@@ -20,6 +20,7 @@ class EnergyBalanceController {
 
   // Attacks
   def oozeAttack = shroomLife / 4
+
 }
 
 object EnergyBalanceController {

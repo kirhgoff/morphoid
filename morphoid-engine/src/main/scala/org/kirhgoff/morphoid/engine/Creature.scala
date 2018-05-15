@@ -18,6 +18,8 @@ trait CellType {
 
 object Dummy extends CellType
 
+object DecayingCell extends CellType
+
 class Seed extends CellType {
   override def toString: String = "seed"
 }
