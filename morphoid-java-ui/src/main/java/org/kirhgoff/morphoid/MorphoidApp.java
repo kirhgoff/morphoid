@@ -17,6 +17,7 @@ import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
 import org.kirhgoff.morphoid.engine.Creature;
 //import org.kirhgoff.morphoid.engine.Decoy;
+import org.kirhgoff.morphoid.engine.Decoy;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.engine.Physical;
 import org.kirhgoff.morphoid.render.GameGeometry;
@@ -158,20 +159,20 @@ public class MorphoidApp extends Application {
     Font cellFont = Font.font(FONT_NAME, fontSize);
     Font energyFont = Font.font(FONT_NAME, fontSize/3);
 
-    // TODO remove duplication
-    // for (Decoy decoy : engine.getDecoyJava()) {
-    //   gc.setFont(cellFont);
+     // TODO remove duplication - extract drawLayer method
+     for (Decoy decoy : engine.getDecoyJava()) {
+       gc.setFont(cellFont);
 
-    //   for (Physical cell : decoy.getCellsJava()) {
-    //     drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
-    //         ascii.getPalette(engine.creatureType(cell)),
-    //         ascii.getCell(engine.cellType(cell).toString())
-    //     );
-    //   }
+       for (Physical cell : decoy.getCellsJava()) {
+         drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
+             ascii.getPalette(engine.creatureType(cell)),
+             ascii.getCell(engine.cellType(cell).toString())
+         );
+       }
 
-    //   gc.setFont(energyFont);
-    //   drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
-    // }
+       gc.setFont(energyFont);
+       drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
+     }
 
     // TODO permutations : could be optimized
     // TODO drawing : could be optimized
