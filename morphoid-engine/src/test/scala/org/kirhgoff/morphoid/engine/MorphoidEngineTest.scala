@@ -5,6 +5,10 @@ import org.scalamock.scalatest.MockFactory
 /**
   * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 2/9/17.
   */
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
 class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
    // ------------------ Creature

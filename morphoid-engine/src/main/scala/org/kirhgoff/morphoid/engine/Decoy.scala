@@ -10,5 +10,5 @@ class Decoy(deadCreature: Creature, initialEnergy: Double)
   energy = initialEnergy
 
   override def updateEnergy(growth:Double) = energy += growth
-  override def toString = s"Decoy($energy)"
+  override def toString = s"[Decoy $id $energy]"
 }

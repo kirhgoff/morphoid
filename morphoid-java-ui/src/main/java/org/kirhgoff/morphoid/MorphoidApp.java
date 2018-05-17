@@ -160,7 +160,11 @@ public class MorphoidApp extends Application {
     Font energyFont = Font.font(FONT_NAME, fontSize/3);
 
      // TODO remove duplication - extract drawLayer method
-     for (Decoy decoy : engine.getDecoyJava()) {
+    Collection<Decoy> decoys = engine.getDecoyJava();
+    System.out.println("Decoys: " + decoys + ", entities: " + entities);
+
+    for (Decoy decoy : decoys) {
+
        gc.setFont(cellFont);
 
        for (Physical cell : decoy.getCellsJava()) {
