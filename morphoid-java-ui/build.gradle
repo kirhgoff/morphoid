@@ -25,8 +25,10 @@ dependencies {
     //compile 'com.google.guava:guava:22.0'
     compile 'org.apache.commons:commons-lang3:3.5'
 
-    compile 'org.kirhgoff:morphoid-bridge:2.0'
-    compile 'org.kirhgoff:morphoid-engine:2.0'
+    //compile 'org.kirhgoff:morphoid-bridge:2.0'
+    //compile 'org.kirhgoff:morphoid-engine:2.0'
+    // compile project(':morphoid-bridge')
+    // compile project(':morphoid-engine')
 
     // Use JUnit test framework
     testCompile 'org.testng:testng:6.11'
