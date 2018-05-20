@@ -1,0 +1,23 @@
+subprojects {
+    apply plugin: 'java'
+    group = 'org.kirhgoff'
+    version = '2.0'
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(':morphoid-bridge') {
+}
+
+project(':morphoid-engine') {
+    dependencies {
+        compile project(':morphoid-bridge')
+    }
+}
+
+project(':morphoid-java-ui') {
+    dependencies {
+        compile project(':morphoid-bridge'), project(':morphoid-engine')
+    }
+}
