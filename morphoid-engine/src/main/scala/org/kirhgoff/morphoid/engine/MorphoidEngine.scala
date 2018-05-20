@@ -55,9 +55,9 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   val GOD_ENGINE = "GOD ENGINE v.03" //-> multi-cell organisms
 
   //private val player = initialEntities.head
-  private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
-  private val decoy =  mutable.Map[String, Decoy]() //TODO optimize - memory leak
+  private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
+  private val decoy =  mutable.Map[String, Creature]() //TODO optimize - memory leak
 
   private var energyBalanceController = EnergyBalanceController.generic()
 
@@ -84,7 +84,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def getCreatures: List[Creature] = creatures.values.toList
   def getCreaturesJava = JavaConverters.asJavaCollection(getCreatures)
 
-  def getDecoy:List[Decoy] = decoy.values.toList
+  def getDecoy:List[Creature] = decoy.values.toList
   def getDecoyJava = JavaConverters.asJavaCollection(getDecoy)
 
   def init() = {
@@ -107,6 +107,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case _ => -666 // To easily notice if forgot to add
   }
 
+  // TODO refactor using layers
   private def addEntity(psyche: Psyche) = {
     val creature = psyche.creature
     creatures(creature.id) = creature
@@ -114,8 +115,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     psyche.setEngine(this)
   }
 
-  def createDecoy(creature: Creature):Decoy =
-    new Decoy(creature, energyBalanceController.decoyThreshold)
+  def createDecoy(creature: Creature):Psyche = Decoy.fromDead(creature)
 
   def tick() = {
     //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
@@ -127,7 +127,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       val creatureId = psyche.creature.id
       souls.remove(psyche.id)
       creatures.remove(creatureId )
-      decoy.put(creatureId, createDecoy(psyche.creature))
+
+      val decoySoul = createDecoy(psyche.creature)
+      souls.put(decoySoul.id, decoySoul)
+      decoy.put(creatureId, decoySoul.creature)
     })
 
     alive
@@ -263,7 +266,8 @@ object MorphoidEngine {
       Ooze(9, 11, 50),
       Shroom(1, 8),
       Shroom(6, 13),
-      Shroom(16, 12)
+      Shroom(16, 12),
+      Decoy(4, 6, 10.0)
     )
   ).setEnergyBalanceController(EnergyBalanceController.simple()).init()
 

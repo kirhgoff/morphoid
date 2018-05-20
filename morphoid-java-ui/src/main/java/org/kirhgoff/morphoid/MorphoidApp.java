@@ -30,8 +30,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
-  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
-  */
+ * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
+ */
 public class MorphoidApp extends Application {
   //TODO create settings class
   private static final String FONT_NAME = "Monospaced";
@@ -87,8 +87,8 @@ public class MorphoidApp extends Application {
     canvas.heightProperty().bind(stage.heightProperty());
 
     GameGeometry geometry = new GameGeometry(
-        stage.widthProperty(), stage.heightProperty(),
-        LEVEL_WIDTH, LEVEL_HEIGHT);
+      stage.widthProperty(), stage.heightProperty(),
+      LEVEL_WIDTH, LEVEL_HEIGHT);
 
     GraphicsContext gc = canvas.getGraphicsContext2D();
     gc.setTextAlign(TextAlignment.CENTER);
@@ -101,21 +101,21 @@ public class MorphoidApp extends Application {
       gameLoop.setCycleCount(Timeline.INDEFINITE);
 
       KeyFrame keyFrame = new KeyFrame(
-          Duration.seconds(FPS_60),
-          actionEvent -> {
-            long start = System.currentTimeMillis();
-            engineLock.lock();
-            try {
-              engine.tick();
+        Duration.seconds(FPS_60),
+        actionEvent -> {
+          long start = System.currentTimeMillis();
+          engineLock.lock();
+          try {
+            engine.tick();
 
-              cleanScreen(gc, stage);
-              //drawLayer(gc, ascii, engine, "decoy");
-              drawEntities(gc, ascii, engine);
-              drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
-            } finally {
-              engineLock.unlock();
-            }
+            cleanScreen(gc, stage);
+            //drawLayer(gc, ascii, engine, "decoy");
+            drawEntities(gc, ascii, engine);
+            drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
+          } finally {
+            engineLock.unlock();
           }
+        }
       );
 
       gameLoop.getKeyFrames().add(keyFrame);
@@ -150,48 +150,38 @@ public class MorphoidApp extends Application {
   }
 
   private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
-    Collection<Creature> entities = engine.getCreaturesJava();
+    Collection<Creature> creatures = engine.getCreaturesJava();
+    Collection<Creature> decoys = engine.getDecoyJava();
+
+    //System.out.println("Decoys: " + decoys + ", creatures: " + creatures);
+
     GameGeometry geometry = ascii.getGeometry();
-    double cellWidth = geometry.getCellWidth();
-    double cellHeight = geometry.getCellHeight();
     double fontSize = geometry.getFontSize();
 
     Font cellFont = Font.font(FONT_NAME, fontSize);
-    Font energyFont = Font.font(FONT_NAME, fontSize/3);
+    Font energyFont = Font.font(FONT_NAME, fontSize / 3);
 
-     // TODO remove duplication - extract drawLayer method
-    Collection<Decoy> decoys = engine.getDecoyJava();
-    System.out.println("Decoys: " + decoys + ", entities: " + entities);
+    drawLayer(gc, ascii, engine, geometry, cellFont, energyFont, decoys);
+    drawLayer(gc, ascii, engine, geometry, cellFont, energyFont, creatures);
+  }
 
-    for (Decoy decoy : decoys) {
+  private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, GameGeometry geometry, Font cellFont, Font energyFont, Collection<Creature> decoys) {
+    double cellWidth = geometry.getCellWidth();
+    double cellHeight = geometry.getCellHeight();
 
-       gc.setFont(cellFont);
+    for (Creature decoy : decoys) {
 
-       for (Physical cell : decoy.getCellsJava()) {
-         drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
-             ascii.getPalette(engine.creatureType(cell)),
-             ascii.getCell(engine.cellType(cell).toString())
-         );
-       }
-
-       gc.setFont(energyFont);
-       drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
-     }
-
-    // TODO permutations : could be optimized
-    // TODO drawing : could be optimized
-    for (Creature entity : entities) {
       gc.setFont(cellFont);
 
-      for (Physical cell : entity.getCellsJava()) {
+      for (Physical cell : decoy.getCellsJava()) {
         drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
-            ascii.getPalette(engine.creatureType(cell)),
-            ascii.getCell(engine.cellType(cell).toString())
+          ascii.getPalette(engine.creatureType(cell)),
+          ascii.getCell(engine.cellType(cell).toString())
         );
       }
 
       gc.setFont(energyFont);
-      drawEnergy(gc, geometry.convertToScreen(entity.origin()), cellWidth, cellHeight, entity.getEnergy());
+      drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
     }
   }
 
@@ -201,8 +191,8 @@ public class MorphoidApp extends Application {
     gc.setStroke(Color.YELLOW);
     gc.setFill(Color.YELLOW);
 
-    gc.fillText(string, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
-    gc.strokeText(string, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+    gc.fillText(string, origin.getX() + cellWidth / 2, origin.getY() + cellHeight / 2);
+    gc.strokeText(string, origin.getX() + cellWidth / 2, origin.getY() + cellHeight / 2);
   }
 
   private void drawCell(GraphicsContext gc, Point2D origin, double cellWidth, double cellHeight, Color color, String chr) {
@@ -210,7 +200,7 @@ public class MorphoidApp extends Application {
     gc.setStroke(color.darker());
 
     gc.fillRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
-    gc.strokeText(chr, origin.getX() + cellWidth/2, origin.getY() + cellHeight/2);
+    gc.strokeText(chr, origin.getX() + cellWidth / 2, origin.getY() + cellHeight / 2);
     gc.strokeRect(origin.getX(), origin.getY(), cellWidth, cellHeight);
   }
 }
