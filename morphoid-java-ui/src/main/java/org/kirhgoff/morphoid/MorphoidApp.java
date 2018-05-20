@@ -17,11 +17,9 @@ import javafx.util.Duration;
 import org.kirhgoff.morphoid.ascii.AsciiRenderer;
 import org.kirhgoff.morphoid.engine.Creature;
 //import org.kirhgoff.morphoid.engine.Decoy;
-import org.kirhgoff.morphoid.engine.Decoy;
 import org.kirhgoff.morphoid.engine.MorphoidEngine;
 import org.kirhgoff.morphoid.engine.Physical;
 import org.kirhgoff.morphoid.render.GameGeometry;
-import scala.collection.immutable.List;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -146,9 +144,8 @@ public class MorphoidApp extends Application {
 
   private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
     Collection<Creature> creatures = engine.getCreaturesJava();
-    Collection<Creature> decoys = engine.getDecoyJava();
 
-    System.out.println("Decoys: " + decoys + ", creatures: " + creatures);
+    System.out.println("Creatures: " + creatures);
 
     GameGeometry geometry = ascii.getGeometry();
     double fontSize = geometry.getFontSize();
@@ -156,15 +153,10 @@ public class MorphoidApp extends Application {
     Font cellFont = Font.font(FONT_NAME, fontSize);
     Font energyFont = Font.font(FONT_NAME, fontSize / 3);
 
-    drawLayer(gc, ascii, engine, geometry, cellFont, energyFont, decoys);
-    drawLayer(gc, ascii, engine, geometry, cellFont, energyFont, creatures);
-  }
-
-  private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, GameGeometry geometry, Font cellFont, Font energyFont, Collection<Creature> decoys) {
     double cellWidth = geometry.getCellWidth();
     double cellHeight = geometry.getCellHeight();
 
-    for (Creature decoy : decoys) {
+    for (Creature decoy : creatures) {
 
       gc.setFont(cellFont);
 

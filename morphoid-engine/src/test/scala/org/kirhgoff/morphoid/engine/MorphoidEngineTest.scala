@@ -174,8 +174,14 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     ooze.energy should be > oozeInitialEnergy
   }
 
+  def creatures(implicit engine: MorphoidEngine): List[Creature] =
+    engine.getCreatures.filter(_.kind != "decoy")
+
+  def decoy(implicit engine: MorphoidEngine): List[Creature] =
+    engine.getCreatures.filter(_.kind == "decoy")
+
   "Decoy" should "appear if ooze has died" in {
-    val engine = MorphoidEngine(new EnergyBalanceController {
+    implicit val engine = MorphoidEngine(new EnergyBalanceController {
       override def oozeLife = 3
       override def cellDecay = -1
       override def decoyDecay = -0.1
@@ -185,18 +191,18 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     // Energy decreased at the end of the tick
     engine.tick()
 
-    engine.getCreatures should not be empty
-    engine.getDecoy shouldBe empty
+    creatures should not be empty
+    decoy shouldBe empty
 
     // Creature killed on the third when energy is zero
     engine.tick()
 
-    engine.getCreatures shouldBe empty
-    engine.getDecoy should not be empty
+    creatures shouldBe empty
+    decoy should not be empty
   }
 
   "Decoy" should "decay with time" in {
-    val engine = MorphoidEngine(new EnergyBalanceController {
+    implicit val engine = MorphoidEngine(new EnergyBalanceController {
       override def oozeLife = 3
       override def cellDecay = -1
       override def decoyDecay = -0.7
@@ -204,8 +210,8 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     }, Ooze(0, 0, 1))
 
     engine.tick().tick()
-    engine.getCreatures shouldBe empty
-    engine.getDecoy should not be empty
+    creatures shouldBe empty
+    decoy should not be empty
 
     val initialEnergy = engine.fullEnergy
 
@@ -215,6 +221,6 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
     engine.tick()
 
-    engine.getDecoy shouldBe empty
+    decoy shouldBe empty
   }
 }

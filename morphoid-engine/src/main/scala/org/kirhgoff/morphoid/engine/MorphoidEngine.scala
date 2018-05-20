@@ -66,8 +66,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   }
 
   //TODO move to test where it is used
-  //TODO make decoy creature + add Alive interface with energy
-  def fullEnergy = creatures.values.map(_.energy).sum + decoy.values.map(_.energy).sum
+  def fullEnergy = creatures.values.map(_.energy).sum
 
   def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
 
@@ -104,30 +103,29 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case _ => -666 // To easily notice if forgot to add
   }
 
-  // TODO refactor using layers
-  private def addEntity(psyche: Psyche) = {
-    val creature = psyche.creature
-    creatures(creature.id) = creature
-    souls(psyche.id) = psyche
-    psyche.setEngine(this)
-  }
-
   def createDecoy(creature: Creature):Psyche = Decoy.fromDead(creature)
 
   def tick() = {
     //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
-    val (dead,alive) = souls.values
-      .partition(_.creature.energy <= energyBalanceController.decoyThreshold)
+//    val (dead,alive) = souls.values
+//      .partition(_.creature.energy <= energyBalanceController.decoyThreshold)
+
+    val entitiesMap = souls.values.groupBy(c => if (c.creature.kind == "decoy") {
+      "decoy"
+    } else if (c.creature.energy <= energyBalanceController.decoyThreshold) {
+      "dead"
+    } else {
+      "alive"
+    })
+
+    val decoy = entitiesMap.getOrElse("decoy", List())
+    val dead = entitiesMap.getOrElse("dead", List())
+    val alive = entitiesMap.getOrElse("alive", List())
 
     // Turn dead to decay
     dead.foreach(psyche => {
-      val creatureId = psyche.creature.id
-      souls.remove(psyche.id)
-      creatures.remove(creatureId )
-
-      val decoySoul = createDecoy(psyche.creature)
-      souls.put(decoySoul.id, decoySoul)
-      decoy.put(creatureId, decoySoul.creature)
+      removePsyche(psyche)
+      addPsyche(createDecoy(psyche.creature))
     })
 
     alive
@@ -147,13 +145,26 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
       ))
     })
 
-    decoy.foreach { case (id, item) => {
-      item.updateEnergy(energyBalanceController.decoyDecay)
-      if (item.energy <= energyBalanceController.completeDecoy)
-        decoy.remove(id)
+    decoy.foreach { psyche => {
+      psyche.creature.updateEnergy(energyBalanceController.decoyDecay)
+      if (psyche.creature.energy <= energyBalanceController.completeDecoy) {
+        removePsyche(psyche)
+      }
     }}
     //println(s"MEngine.tick() end: $souls $decoy")
     this
+  }
+
+  private def removePsyche(psyche: Psyche) = {
+    souls.remove(psyche.id)
+    creatures.remove(psyche.creature.id)
+  }
+
+  private def addPsyche(psyche: Psyche) = {
+    val creature = psyche.creature
+    creatures.put(creature.id, creature)
+    souls.put(psyche.id, psyche)
+    psyche.setEngine(this)
   }
 
   // TODO move to controller
@@ -213,7 +224,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
                 val newId = Dice.makeId("pew")
                 val projectileOrigin = attacker.origin.nextTo(direction)
                 val projectile = new Creature(newId, "projectile", Map(projectileOrigin -> new Seed))
-                addEntity(new Projectile(newId, direction, 5, projectile))
+                addPsyche(new Projectile(newId, direction, 5, projectile))
               }
             }
           }
