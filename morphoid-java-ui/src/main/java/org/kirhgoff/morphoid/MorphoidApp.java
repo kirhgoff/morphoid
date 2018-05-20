@@ -103,7 +103,7 @@ public class MorphoidApp extends Application {
       KeyFrame keyFrame = new KeyFrame(
         Duration.seconds(FPS_60),
         actionEvent -> {
-          long start = System.currentTimeMillis();
+          long start = System.nanoTime();
           engineLock.lock();
           try {
             engine.tick();
@@ -111,7 +111,7 @@ public class MorphoidApp extends Application {
             cleanScreen(gc, stage);
             //drawLayer(gc, ascii, engine, "decoy");
             drawEntities(gc, ascii, engine);
-            drawRate(gc, rate.getAndSet(System.currentTimeMillis() - start));
+            drawRate(gc, rate.getAndSet(System.nanoTime() - start));
           } finally {
             engineLock.unlock();
           }
@@ -121,7 +121,7 @@ public class MorphoidApp extends Application {
       gameLoop.getKeyFrames().add(keyFrame);
       gameLoop.play();
 
-      stage.setTitle("MorphoidApp v0.3");
+      stage.setTitle("MorphoidApp v2.0");
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
@@ -134,26 +134,21 @@ public class MorphoidApp extends Application {
     }
   }
 
-  // private void drawLayer(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, String layerId) {
-  //   List<Decoy> decoy = engine.getDecoy();
-
-  // }
+  private void cleanScreen(GraphicsContext gc, Stage stage) {
+    gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
+  }
 
   private void drawRate(GraphicsContext gc, long rate) {
     gc.setStroke(Color.BLACK);
     gc.setFill(Color.BLACK);
-    gc.fillText("Framerate: " + rate + " ms", 120, 20);
-  }
-
-  private void cleanScreen(GraphicsContext gc, Stage stage) {
-    gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
+    gc.fillText("Framerate: 0." + rate/1000 + " millis", 120, 20);
   }
 
   private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
     Collection<Creature> creatures = engine.getCreaturesJava();
     Collection<Creature> decoys = engine.getDecoyJava();
 
-    //System.out.println("Decoys: " + decoys + ", creatures: " + creatures);
+    System.out.println("Decoys: " + decoys + ", creatures: " + creatures);
 
     GameGeometry geometry = ascii.getGeometry();
     double fontSize = geometry.getFontSize();

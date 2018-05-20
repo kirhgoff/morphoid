@@ -1,9 +1,7 @@
 apply plugin: 'scala'
-apply plugin: 'maven-publish'
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {

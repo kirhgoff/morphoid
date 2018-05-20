@@ -57,7 +57,6 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   //private val player = initialEntities.head
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
   private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
-  private val decoy =  mutable.Map[String, Creature]() //TODO optimize - memory leak
 
   private var energyBalanceController = EnergyBalanceController.generic()
 
@@ -84,9 +83,6 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def getCreatures: List[Creature] = creatures.values.toList
   def getCreaturesJava = JavaConverters.asJavaCollection(getCreatures)
 
-  def getDecoy:List[Creature] = decoy.values.toList
-  def getDecoyJava = JavaConverters.asJavaCollection(getDecoy)
-
   def init() = {
     initialEntities.foreach(psyche => {
       psyche.setEngine(this)
@@ -104,6 +100,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     case "ooze" => energyBalanceController.oozeLife
     case "player" => energyBalanceController.playerLife
     case "projectile" => energyBalanceController.projectile
+    case "decoy" => 0.0 // it is already set
     case _ => -666 // To easily notice if forgot to add
   }
 

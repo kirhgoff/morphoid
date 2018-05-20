@@ -110,8 +110,8 @@ public class AsciiRenderer {
     }
   }
 
-  public Color getPalette(String id) {
-    switch (id) {
+  public Color getPalette(String kind) {
+    switch (kind) {
       case "ooze": return Color.GREEN;
       case "shroom": return Color.BLUE;
       case "player": return Color.RED;
