@@ -116,7 +116,7 @@ public class AsciiRenderer {
       case "shroom": return Color.BLUE;
       case "player": return Color.RED;
       case "projectile": return Color.YELLOW;
-      case "decayingcell": return Color.LIGHTSTEELBLUE;
+      case "decoy": return Color.LIGHTSTEELBLUE;
       default: return Color.BLACK;
     }
   }

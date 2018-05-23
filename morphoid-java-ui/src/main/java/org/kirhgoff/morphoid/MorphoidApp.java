@@ -31,17 +31,20 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 12/3/17.
  */
 public class MorphoidApp extends Application {
+
   //TODO create settings class
   private static final String FONT_NAME = "Monospaced";
   private static final String ASCII_MAP_FILE = "sample_map.txt";
 
+  private static final double FPS_60 = 0.017;
+
   private static final int SCREEN_WIDTH = 640;
   private static final int SCREEN_HEIGHT = 480;
-  private static final double FPS_60 = 0.017;
+
   private static final int LEVEL_HEIGHT = 30;
   private static final int LEVEL_WIDTH = 30;
 
-  private static String initialScenario = "simple";//"production"; //
+  private static String initialScenario = "lonely";//"production"; //
 
   public static void main(String[] args) {
     if (args.length == 1) initialScenario = args[0];
@@ -54,6 +57,8 @@ public class MorphoidApp extends Application {
   @Override
   public void start(Stage stage) {
     AtomicLong rate = new AtomicLong();
+    AtomicLong frameNumber = new AtomicLong();
+
     // Model
     MorphoidEngine engine;
     PlayerController playerController;
@@ -103,13 +108,16 @@ public class MorphoidApp extends Application {
         actionEvent -> {
           long start = System.nanoTime();
           engineLock.lock();
+
           try {
             engine.tick();
 
+            boolean printStats = frameNumber.incrementAndGet() % 60 == 0;
+
             cleanScreen(gc, stage);
-            //drawLayer(gc, ascii, engine, "decoy");
-            drawEntities(gc, ascii, engine);
+            drawEntities(gc, ascii, engine, printStats);
             drawRate(gc, rate.getAndSet(System.nanoTime() - start));
+
           } finally {
             engineLock.unlock();
           }
@@ -123,7 +131,7 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      stage.setFullScreen(true);
+      stage.setFullScreen(false);
 
     } catch (IOException e) {
       //TODO gracefully exit
@@ -142,10 +150,10 @@ public class MorphoidApp extends Application {
     gc.fillText("Framerate: 0." + rate/1000 + " millis", 120, 20);
   }
 
-  private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine) {
+  private void drawEntities(GraphicsContext gc, AsciiRenderer ascii, MorphoidEngine engine, boolean printStats) {
     Collection<Creature> creatures = engine.getCreaturesJava();
 
-    System.out.println("Creatures: " + creatures);
+    if (printStats) System.out.println("Creatures: " + creatures);
 
     GameGeometry geometry = ascii.getGeometry();
     double fontSize = geometry.getFontSize();

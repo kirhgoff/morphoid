@@ -223,4 +223,18 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
     decoy shouldBe empty
   }
+
+  "Decoy" should "decay with time 2" in {
+    implicit val engine = MorphoidEngine(new EnergyBalanceController {
+      override def oozeLife = 1.5
+      override def cellDecay = -1
+    }, Decoy(0, 0, 1.5))
+
+    engine.tick().tick()
+    decoy should not be empty
+
+    engine.tick()
+    decoy shouldBe empty
+  }
+
 }

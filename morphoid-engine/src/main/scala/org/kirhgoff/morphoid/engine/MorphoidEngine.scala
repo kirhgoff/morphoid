@@ -56,9 +56,9 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
   //private val player = initialEntities.head
   private val souls = mutable.Map[String, Psyche](initialEntities map (p => p.id -> p): _*)
-  private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.id -> p.creature): _*)
+  private val creatures =  mutable.Map[String, Creature](initialEntities map (p => p.creature.id -> p.creature): _*)
 
-  private var energyBalanceController = EnergyBalanceController.generic()
+  private var energyBalanceController = EnergyBalanceController.simple()
 
   def setEnergyBalanceController(controller:EnergyBalanceController): MorphoidEngine = {
     energyBalanceController = controller
@@ -106,9 +106,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def createDecoy(creature: Creature):Psyche = Decoy.fromDead(creature)
 
   def tick() = {
-    //println(s"MEngine.tick() ${Dice.nextTickNumber} begin: $souls")
-//    val (dead,alive) = souls.values
-//      .partition(_.creature.energy <= energyBalanceController.decoyThreshold)
+    //println(s"MEngine.tick() ${Dice.nextTickNumber} souls: ${souls.keys} creatures: ${creatures.keys} ------------------ ")
 
     val entitiesMap = souls.values.groupBy(c => if (c.creature.kind == "decoy") {
       "decoy"
@@ -121,6 +119,15 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     val decoy = entitiesMap.getOrElse("decoy", List())
     val dead = entitiesMap.getOrElse("dead", List())
     val alive = entitiesMap.getOrElse("alive", List())
+
+    decoy.foreach(psyche => {
+      //println(s"Checking decoy: ${psyche.creature}")
+
+      if (psyche.creature.energy <= energyBalanceController.completeDecoy) {
+        //println(s"Removing!")
+        removePsyche(psyche)
+      }
+    })
 
     // Turn dead to decay
     dead.foreach(psyche => {
@@ -140,30 +147,31 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     })
 
     creatures.values.foreach(creature => {
-      creature.updateEnergy(creature.cells.foldLeft(0.0)(
-        (a, c) => a + energyGrowth(cellType(c))
-      ))
+      val energyUpdate = creature.cells
+        .foldLeft(0.0)((a, c) => a + energyGrowth(cellType(c)))
+
+//      println(s"Updating creature: ${creature}" +
+//        s" adding energy: $energyUpdate")
+
+      creature.updateEnergy(energyUpdate)
     })
 
-    decoy.foreach { psyche => {
-      psyche.creature.updateEnergy(energyBalanceController.decoyDecay)
-      if (psyche.creature.energy <= energyBalanceController.completeDecoy) {
-        removePsyche(psyche)
-      }
-    }}
-    //println(s"MEngine.tick() end: $souls $decoy")
+//    println(s"MEngine.tick() end: ${entitiesMap.size}")
     this
   }
 
   private def removePsyche(psyche: Psyche) = {
+//    println(s">>> Souls size: ${souls.size} creatures: ${creatures.keys}")
+
     souls.remove(psyche.id)
     creatures.remove(psyche.creature.id)
+//    println(s"Removing creature: ${psyche.creature.id}")
+//    println(s"<<< Souls size: ${souls.size} creatures: ${creatures.keys}")
   }
 
   private def addPsyche(psyche: Psyche) = {
-    val creature = psyche.creature
-    creatures.put(creature.id, creature)
     souls.put(psyche.id, psyche)
+    creatures.put(psyche.creature.id, psyche.creature)
     psyche.setEngine(this)
   }
 
@@ -216,8 +224,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
           others(attacker).find(p => rect.touches(p.boundingRect, direction)) match {
             case Some(prey) => {
               //println(s"Attacker: $creatureId, prey: $prey rect=$rect")
-              attacker.updateEnergy(EnergyBalanceController.generic().oozeAttack)
-              prey.updateEnergy(-EnergyBalanceController.generic().oozeAttack)
+              attacker.updateEnergy(EnergyBalanceController.simple().oozeAttack)
+              prey.updateEnergy(-EnergyBalanceController.simple().oozeAttack)
             }
             case None => {
               if (isPlayer(attacker)) {
@@ -248,6 +256,7 @@ object MorphoidEngine {
   def create(scenario:String, playerInputState: PlayerInputState) = scenario match {
     case "simple" => createSimple(20, 20, playerInputState)
     case "empty" => createEmpty(20, 20, playerInputState)
+    case "lonely" => createLonely(20, 20, playerInputState)
     case _ => createProduction(playerInputState)
   }
 
@@ -263,6 +272,15 @@ object MorphoidEngine {
     )
   ).init()
 
+  def createLonely(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
+    Rect(0, 0, width, height),
+    List(
+      PlayerSoul(playerInputState, 10, 10, 5),
+      Ooze(3, 5, 40),
+      Decoy(4, 6, 10.0)
+    )
+  ).setEnergyBalanceController(EnergyBalanceController.realistic()).init()
+
 
   def createSimple(width:Int, height:Int, playerInputState: PlayerInputState) = new MorphoidEngine (
     Rect(0, 0, width, height),
@@ -277,7 +295,7 @@ object MorphoidEngine {
       Shroom(16, 12),
       Decoy(4, 6, 10.0)
     )
-  ).setEnergyBalanceController(EnergyBalanceController.simple()).init()
+  ).setEnergyBalanceController(EnergyBalanceController.realistic()).init()
 
   def createProduction(playerInputState: PlayerInputState) = {
     val width = 30
