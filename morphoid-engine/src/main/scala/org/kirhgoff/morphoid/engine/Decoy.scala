@@ -24,7 +24,7 @@ object Decoy {
 
   def apply(x: Int, y: Int, energy: Double): Psyche = new PlantSoul(
     Dice.makeId(),
-    new Decoy (Dice.makeId (), "decoy", Map(Physical(x, y) -> DecayingCell))
+    new Decoy (Dice.makeId ("decoy"), "decoy", Map(Physical(x, y) -> DecayingCell))
       .withEnergy(energy)
   )
 }

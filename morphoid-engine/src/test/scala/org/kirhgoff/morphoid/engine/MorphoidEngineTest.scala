@@ -2,14 +2,14 @@ package org.kirhgoff.morphoid.engine
 
 import org.scalatest._
 import org.scalamock.scalatest.MockFactory
-/**
-  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 2/9/17.
-  */
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
+/**
+  * Created by <a href="mailto:kirill.lastovirya@gmail.com">kirhgoff</a> on 2/9/17.
+  */
 @RunWith(classOf[JUnitRunner])
-class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
+class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory with EngineHelperTrait {
 
    // ------------------ Creature
 
@@ -77,10 +77,11 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   // TODO decide how to split tests
   "Shroom" should "produce energy" in {
-    val engine = MorphoidEngine(Shroom(0, 0)).init()
-    val initialEnergy = engine.fullEnergy
+    implicit val engine:MorphoidEngine = MorphoidEngine(Shroom(0, 0)).init()
+    val initialEnergy = fullEnergy
 
-    engine.tick().fullEnergy should be > initialEnergy
+    engine.tick()
+    fullEnergy should be > initialEnergy
   }
 
 
@@ -97,7 +98,7 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     val entity = Ooze(2, 5, 3)
     val creature = entity.creature
     val origin = creature.origin
-    val engine = MorphoidEngine(entity)
+    implicit val engine = MorphoidEngine(entity)
     engine.tick()
     origin should equal(creature.origin)
     engine.tick()
@@ -109,18 +110,15 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     newOrigin should equal(creature.origin)
   }
 
-  private def findCreatureByType(engine: MorphoidEngine, creature: String) =
-    engine.getCreatures.find(c => c.kind.equals(creature)).get
-
   "Ooze" should "move towards shrooms" in {
-    val engine = MorphoidEngine(
+    implicit val engine = MorphoidEngine(
       Shroom(0, 0),
       Ooze(0, 3, 1)
     ).init()
 
     engine.creatureType(Physical(0, 0)) shouldEqual "shroom"
 
-    def ooze = findCreatureByType(engine, "ooze")
+    def ooze = findCreatureByType("ooze")
 
     engine.tick()
     ooze.origin shouldBe Physical(0, 2) // Moves towards shroom
@@ -149,36 +147,30 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
 
   // TODO ask Michal
   "Ooze" should "die without food" in {
-    val engine = MorphoidEngine(Shroom(0, 0), Ooze(3, 3, 1)).init()
-    val ooze = findCreatureByType(engine, "ooze")
+    implicit val engine = MorphoidEngine(Shroom(0, 0), Ooze(3, 3, 1)).init()
+    val ooze = findCreatureByType("ooze")
 
-    val systemInitialEnergy = engine.fullEnergy
+    val systemInitialEnergy = fullEnergy
     val oozeInitialEnergy = ooze.energy
 
     engine.tick()
 
-    engine.fullEnergy should be > systemInitialEnergy
+    fullEnergy should be > systemInitialEnergy
     ooze.energy should be < oozeInitialEnergy
   }
 
   "Ooze" should "live near shroom" in {
-    val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
-    val ooze = findCreatureByType(engine, "ooze")
+    implicit val engine = MorphoidEngine(Shroom(0, 0), Ooze(0, 1, 1)).init()
+    val ooze = findCreatureByType("ooze")
 
-    val systemInitialEnergy = engine.fullEnergy
+    val systemInitialEnergy = fullEnergy
     val oozeInitialEnergy = ooze.energy
 
     engine.tick()
 
-    engine.fullEnergy should be > systemInitialEnergy
+    fullEnergy should be > systemInitialEnergy
     ooze.energy should be > oozeInitialEnergy
   }
-
-  def creatures(implicit engine: MorphoidEngine): List[Creature] =
-    engine.getCreatures.filter(_.kind != "decoy")
-
-  def decoy(implicit engine: MorphoidEngine): List[Creature] =
-    engine.getCreatures.filter(_.kind == "decoy")
 
   "Decoy" should "appear if ooze has died" in {
     implicit val engine = MorphoidEngine(new EnergyBalanceController {
@@ -209,18 +201,23 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
       override def decoyThreshold = 2
     }, Ooze(0, 0, 1))
 
+    creatures should not be empty
+    allCells should contain theSameElementsAs Iterable("seed", "mover")
+    decoy shouldBe empty
+
     engine.tick().tick()
     creatures shouldBe empty
     decoy should not be empty
+    allCells should contain theSameElementsAs Iterable(
+      "decaying", "decaying"
+    )
 
-    val initialEnergy = engine.fullEnergy
+    val initialEnergy = fullEnergy
 
     engine.tick()
-
-    engine.fullEnergy should be < initialEnergy
+    fullEnergy should be < initialEnergy
 
     engine.tick()
-
     decoy shouldBe empty
   }
 
@@ -236,5 +233,4 @@ class MorphoidEngineTest extends FlatSpec with Matchers with MockFactory {
     engine.tick()
     decoy shouldBe empty
   }
-
 }

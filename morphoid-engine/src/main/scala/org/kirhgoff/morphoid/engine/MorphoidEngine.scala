@@ -65,9 +65,6 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     this
   }
 
-  //TODO move to test where it is used
-  def fullEnergy = creatures.values.map(_.energy).sum
-
   def whoIsHere(cell:Physical) = s"${creatureType(cell)}$cell"
 
   //TODO implement surroundings properly
@@ -106,7 +103,8 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
   def createDecoy(creature: Creature):Psyche = Decoy.fromDead(creature)
 
   def tick() = {
-    //println(s"MEngine.tick() ${Dice.nextTickNumber} souls: ${souls.keys} creatures: ${creatures.keys} ------------------ ")
+//    println(s"MEngine.tick() ${Dice.nextTickNumber} ------------------\n " +
+//      s"souls: ${souls.keys} creatures: ${creatures.keys} cells: ${creatures.values.flatMap(_.cellsMap).map(_.toString)}")
 
     val entitiesMap = souls.values.groupBy(c => if (c.creature.kind == "decoy") {
       "decoy"
@@ -121,10 +119,10 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     val alive = entitiesMap.getOrElse("alive", List())
 
     decoy.foreach(psyche => {
-      //println(s"Checking decoy: ${psyche.creature}")
+//      println(s"Checking decoy: ${psyche.creature}")
 
       if (psyche.creature.energy <= energyBalanceController.completeDecoy) {
-        //println(s"Removing!")
+//        println(s"Removing!")
         removePsyche(psyche)
       }
     })
@@ -165,6 +163,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
 
     souls.remove(psyche.id)
     creatures.remove(psyche.creature.id)
+    unregisterCreature(psyche.creature)
 //    println(s"Removing creature: ${psyche.creature.id}")
 //    println(s"<<< Souls size: ${souls.size} creatures: ${creatures.keys}")
   }
@@ -173,6 +172,7 @@ class MorphoidEngine (val levelRect:Rect, initialEntities:List[Psyche])
     souls.put(psyche.id, psyche)
     creatures.put(psyche.creature.id, psyche.creature)
     psyche.setEngine(this)
+    registerCreature(psyche.creature)
   }
 
   // TODO move to controller

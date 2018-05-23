@@ -131,7 +131,7 @@ public class MorphoidApp extends Application {
       stage.setFullScreenExitHint(""); //TODO add exit button
 
       stage.show();
-      stage.setFullScreen(false);
+      stage.setFullScreen(true);
 
     } catch (IOException e) {
       //TODO gracefully exit
@@ -164,19 +164,25 @@ public class MorphoidApp extends Application {
     double cellWidth = geometry.getCellWidth();
     double cellHeight = geometry.getCellHeight();
 
-    for (Creature decoy : creatures) {
+    gc.setFont(cellFont);
 
-      gc.setFont(cellFont);
+    for (Creature creature : creatures) {
+      for (Physical cell : creature.getCellsJava()) {
+        String kind = engine.creatureType(cell);
+        String cellType = engine.cellType(cell).toString();
+        Color palette = ascii.getPalette(kind);
+        String cellChar = ascii.getCell(cellType);
 
-      for (Physical cell : decoy.getCellsJava()) {
-        drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight,
-          ascii.getPalette(engine.creatureType(cell)),
-          ascii.getCell(engine.cellType(cell).toString())
-        );
+//        if (printStats) {
+//          System.out.println(String.format("cell kind=%s type=%s palette=%s char=%s",
+//          kind, cellType, palette, cellChar));
+//        }
+
+        drawCell(gc, geometry.convertToScreen(cell), cellWidth, cellHeight, palette, cellChar);
       }
 
       gc.setFont(energyFont);
-      drawEnergy(gc, geometry.convertToScreen(decoy.origin()), cellWidth, cellHeight, decoy.getEnergy());
+      drawEnergy(gc, geometry.convertToScreen(creature.origin()), cellWidth, cellHeight, creature.getEnergy());
     }
   }
 
